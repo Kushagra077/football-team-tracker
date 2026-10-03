@@ -3,7 +3,7 @@ name = "football-team-tracker"
 version = "0.1.0"
 description = "Multi-object tracking + team assignment for football broadcast video, evaluated with HOTA/IDF1 against SoccerNet-Tracking ground truth (oracle vs real detections)."
 readme = "README.md"
-requires-python = ">=3.14"
+requires-python = ">=3.13"
 
 # Runtime dependencies that every step needs. Deliberately NOT listed yet:
 #   * the tracker library (boxmot AGPL-3.0 vs supervision MIT) -> decided at step 3

@@ -1,4 +1,7 @@
-"""Step 8: annotated MP4 via supervision (ellipse at feet, track id, team colour); plus one failure clip."""
+"""Step 8: annotated MP4 via supervision.
+
+Ellipse at the feet, track id, team colour; plus one failure clip.
+"""
 
 from __future__ import annotations
 

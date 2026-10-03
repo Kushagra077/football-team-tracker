@@ -1,4 +1,7 @@
-"""Per-clip KMeans k=2 on PLAYER detections only (first ~50 frames), plus the goalkeeper heuristic."""
+"""Per-clip KMeans k=2 on PLAYER detections only (first ~50 frames).
+
+Also holds the goalkeeper heuristic.
+"""
 
 from __future__ import annotations
 

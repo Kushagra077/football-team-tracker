@@ -31,7 +31,7 @@ DTYPES: Final[dict[str, str]] = {
     "frame_id": "int64",
     "timestamp": "float64",
     "track_id": "int64",      # TODO(DD-003): B1 wants string
-    "team": "Int8",           # TODO: cluster id {0,1} vs left/right vs home/away: decide with B1 mapping
+    "team": "Int8",           # TODO: cluster id vs left/right vs home/away; decide with B1 mapping
     "jersey_number": "Int16",  # nullable, always null in A2
     "x_pitch": "float64",     # NaN until A3
     "y_pitch": "float64",     # NaN until A3
@@ -48,10 +48,16 @@ def empty_frame() -> pd.DataFrame:
 
 
 def validate(df: pd.DataFrame) -> pd.DataFrame:
-    """Assert A2's own contract: columns, dtypes, pitch/jersey columns all-null, ids unique per frame."""
+    """Assert A2's own contract.
+
+    Columns and dtypes match, pitch/jersey columns are all-null, ids unique per frame.
+    """
     raise NotImplementedError
 
 
 def to_b1(df: pd.DataFrame) -> pd.DataFrame:
-    """Adapt an A2 frame to B1's canonical frame (period, is_gk, ball_state, home/away, string ids)."""
+    """Adapt an A2 frame to B1's canonical frame.
+
+    Adds period, is_gk, ball_state; maps team to home/away; converts ids to strings.
+    """
     raise NotImplementedError
