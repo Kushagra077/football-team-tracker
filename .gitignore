@@ -1,0 +1,37 @@
+# Python-generated files
+__pycache__/
+*.py[oc]
+build/
+dist/
+wheels/
+*.egg-info
+
+# Virtual environments
+.venv
+.claude
+.pytest_cache/
+.ruff_cache/
+.ipynb_checkpoints/
+
+# Build spec + working notes: local only, not published
+A2-tracking-team-assignment-build-spec.md
+PROGRESS.md
+design_decision.md
+INTERVIEW_NOTES.md
+
+# Data lives on Kaggle. Locally keep only tiny samples.
+data/*
+!data/README.md
+!data/samples/
+data/samples/*
+!data/samples/.gitkeep
+
+# Cached detector output / tracker output: regenerate with scripts/
+cache/*
+!cache/.gitkeep
+
+# Big artefacts
+*.pt
+*.onnx
+*.mp4
+runs/

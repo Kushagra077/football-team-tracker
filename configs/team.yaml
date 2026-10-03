@@ -1,0 +1,21 @@
+# Team assignment v1: colour clustering. All values are initial guesses to be evaluated, not tuned.
+crop:
+  y_top: 0.15                 # torso band as fraction of box height (legs/head add grass + skin noise)
+  y_bottom: 0.50
+  x_trim: 0.20                # drop this fraction of width on each side (arms, neighbours)
+grass_mask:                   # OpenCV HSV ranges (H 0-179)
+  h: [35, 85]
+  s_min: 40
+  v_min: 40
+features:
+  color_space: lab            # lab | rgb | hsv
+cluster:
+  k: 2
+  fit_frames: 50              # first N frames of the clip
+  fit_on: player              # players only; keepers/referees would pull centroids apart
+goalkeeper:
+  assign_by: nearest_centroid_x   # crude heuristic; A3 pitch coords fix it properly
+vote:
+  window: 25                  # frames (1 s at 25 fps)
+  lock_min_agree: 15          # lock the label once this many frames in the window agree
+fps: 25

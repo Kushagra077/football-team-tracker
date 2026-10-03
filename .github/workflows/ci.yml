@@ -1,0 +1,26 @@
+# pytest + ruff on every push and PR. Tests only: no GPU work, no SoccerNet data in CI.
+name: CI
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: astral-sh/setup-uv@v10.2.0
+        with:
+          enable-cache: true
+
+      # --locked fails if uv.lock is stale; commit uv.lock first. Python version comes from .python-version.
+      - name: Install
+        run: uv sync --locked --extra dev
+
+      - name: Lint
+        run: uv run ruff check .
+
+      - name: Test
+        run: uv run pytest -m "not integration" -q

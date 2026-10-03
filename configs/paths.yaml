@@ -1,0 +1,9 @@
+# Sibling projects are referenced, never copied. Paths are relative to this repo root.
+a1_repo: ../football-detect-serve
+a1_weights: ../football-detect-serve/models/football_detection_v3.pt   # TODO(decision): pin which A1 checkpoint is "the detector"
+b1_repo: ../football-tactical-metrics                                  # source of the schema contract (src/ftm/schema.py)
+
+# SoccerNet-Tracking frames live on Kaggle. Locally this is only a small sample.
+data_root: data/samples
+cache_dir: cache                  # cache/detections/<clip>.parquet, cache/tracks/<clip>__<config>.parquet
+reports_dir: reports

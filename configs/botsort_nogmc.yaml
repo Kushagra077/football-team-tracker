@@ -1,0 +1,9 @@
+# BoT-SORT without camera-motion compensation. Isolates BoT-SORT's own refinements.
+name: botsort_nogmc
+frame_rate: 25
+high_conf_threshold: 0.5
+low_conf_threshold: 0.1
+match_threshold: 0.8
+track_buffer: 30
+gmc_method: none              # no camera-motion compensation
+with_reid: false              # TODO(step 3): decide whether ReID is part of this ablation arm

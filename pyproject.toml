@@ -1,0 +1,48 @@
+[project]
+name = "football-team-tracker"
+version = "0.1.0"
+description = "Multi-object tracking + team assignment for football broadcast video, evaluated with HOTA/IDF1 against SoccerNet-Tracking ground truth (oracle vs real detections)."
+readme = "README.md"
+requires-python = ">=3.14"
+
+# Runtime dependencies that every step needs. Deliberately NOT listed yet:
+#   * the tracker library (boxmot AGPL-3.0 vs supervision MIT) -> decided at step 3
+#   * TrackEval / SoccerNet devkit                              -> step 2
+#   * torch / ultralytics (detector runs on Kaggle, not here)   -> step 4, Kaggle only
+# Add each when its step starts, pinned: tracker APIs drift between releases.
+dependencies = [
+    "numpy",
+    "pandas",
+    "pyarrow",
+    "pyyaml",
+    "scipy",
+    "scikit-learn",
+    "opencv-python",
+    "supervision",
+]
+
+[project.optional-dependencies]
+dev = ["pytest", "ruff"]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/ftt"]
+
+[tool.ruff]
+line-length = 100
+src = ["src", "scripts", "tests"]
+# Notebooks are learning scratch, not library code.
+extend-exclude = ["notebooks"]
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B"]
+
+[tool.pytest.ini_options]
+pythonpath = ["src"]
+testpaths = ["tests"]
+markers = [
+    "integration: needs SoccerNet data / GPU outputs; skipped in CI",
+]

@@ -1,0 +1,9 @@
+# ByteTrack: motion (Kalman) + IoU association, two passes (high- then low-confidence boxes).
+# Key names are library-agnostic placeholders; rename to match the chosen library at step 3.
+# Values are STARTING points to be tuned on the dev subset, not recommendations.
+name: bytetrack
+frame_rate: 25
+high_conf_threshold: 0.5      # first-pass boxes
+low_conf_threshold: 0.1       # second-pass boxes; detections must be cached at <= this
+match_threshold: 0.8          # IoU-distance gate
+track_buffer: 30              # frames a lost track survives (1.2 s at 25 fps)
