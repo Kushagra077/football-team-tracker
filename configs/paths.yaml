@@ -3,7 +3,11 @@ a1_repo: ../football-detect-serve
 a1_weights: ../football-detect-serve/models/football_detection_v3.pt   # TODO(decision): pin which A1 checkpoint is "the detector"
 b1_repo: ../football-tactical-metrics                                  # source of the schema contract (src/ftm/schema.py)
 
-# SoccerNet-Tracking frames live on Kaggle. Locally this is only a small sample.
-data_root: data/samples
+# Original SoccerNet-Tracking text files (gt.txt, gameinfo.ini, seqinfo.ini, det.txt), copied from Drive.
+meta_root: data/raw_meta          # data/raw_meta/{train,test}/<clip>/...
+# Frames: A1's local YOLO copy, byte-identical to the originals (verified on 318 sampled frames).
+# Names are <clip>_<frame:06d>.jpg inside images/{train,val,test}/.
+a1_images: ../football-detect-serve/dataset/images
+data_root: data/samples           # tiny local samples for tests only
 cache_dir: cache                  # cache/detections/<clip>.parquet, cache/tracks/<clip>__<config>.parquet
 reports_dir: reports
