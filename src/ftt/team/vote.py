@@ -5,6 +5,11 @@ from __future__ import annotations
 import numpy as np
 
 
-def vote_labels(track_ids: np.ndarray, frames: np.ndarray, labels: np.ndarray, window: int = 25,
-                lock_min_agree: int = 15) -> np.ndarray:
+def vote_labels(
+    track_ids: np.ndarray,
+    frames: np.ndarray,
+    labels: np.ndarray,
+    window: int = 25,
+    lock_min_agree: int = 15,
+) -> np.ndarray:
     raise NotImplementedError

@@ -4,5 +4,4 @@ import pytest
 
 
 @pytest.mark.skip(reason="step 3: needs adapters")
-def test_adapters_obey_interface():
-    ...
+def test_adapters_obey_interface(): ...
