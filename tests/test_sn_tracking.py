@@ -6,9 +6,17 @@ Expected values below were read off the raw files by hand, not produced by the c
 from collections import Counter
 from pathlib import Path
 
+import pandas as pd
 import pytest
 
-from ftt.data.sn_tracking import Role, list_clips, load_gt, load_roles, role_to_team
+from ftt.data.sn_tracking import (
+    Role,
+    list_clips,
+    load_gt,
+    load_persons_gt,
+    load_roles,
+    role_to_team,
+)
 
 RAW_META = Path("data/raw_meta")
 CLIP = RAW_META / "test" / "SNMOT-116"
@@ -89,7 +97,7 @@ def test_role_counts_over_all_clips():
     assert counts == {
         ("player", "left"): 1062,
         ("player", "right"): 1058,
-        ("goalkeeper", "left"): 66,   # the plural "goalkeepers" spelling
+        ("goalkeeper", "left"): 66,  # the plural "goalkeepers" spelling
         ("goalkeeper", "right"): 76,
         ("referee", None): 227,
         ("ball", None): 139,
@@ -114,3 +122,29 @@ def test_role_to_team_only_none_for_non_team_roles():
         for role in load_roles(clip).values():
             has_team = role_to_team(role) is not None
             assert has_team == (role.cls in ("player", "goalkeeper"))
+
+
+def test_load_persons_gt_snmot116():
+    # Counted from the raw files: 11460 rows, of which 724 belong to tracklet 20 (the ball);
+    # 27 tracklets minus the ball leaves 26. SNMOT-116 has no "other" tracklets.
+    persons = load_persons_gt(CLIP)
+    assert len(persons) == 11460 - 724
+    assert persons["track_id"].nunique() == 26
+    assert 20 not in set(persons["track_id"])
+    assert set(persons["cls"]) == {"player", "goalkeeper", "referee"}
+
+
+def test_load_persons_gt_attaches_class_and_team():
+    persons = load_persons_gt(CLIP)
+    by_track = persons.drop_duplicates("track_id").set_index("track_id")
+    assert by_track.loc[5, "cls"] == "player" and by_track.loc[5, "team"] == "left"
+    assert by_track.loc[3, "team"] == "right"
+    assert by_track.loc[19, "cls"] == "goalkeeper" and by_track.loc[19, "team"] == "left"
+    # A missing team is stored as NaN in a DataFrame column (not None), so test with isna.
+    assert by_track.loc[4, "cls"] == "referee" and pd.isna(by_track.loc[4, "team"])
+
+
+def test_load_persons_gt_keeps_frame_order():
+    persons = load_persons_gt(CLIP)
+    keys = persons[["frame", "track_id"]]
+    assert keys.equals(keys.sort_values(["frame", "track_id"]).reset_index(drop=True))

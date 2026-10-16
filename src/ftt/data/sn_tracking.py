@@ -48,7 +48,9 @@ def _parse_role(text: str) -> Role:
 
     return Role(cls, side, tag)
 
+
 SPLITS = ("train", "val", "test")
+
 
 def list_clips(data_root: Path, split: str) -> list[str]:
     """Clip ids for a split, sorted. 'val' = every 5th sorted train clip (A1's rule)."""
@@ -57,7 +59,8 @@ def list_clips(data_root: Path, split: str) -> list[str]:
 
     folder = "test" if split == "test" else "train"
     clips = sorted(
-        p.name for p in (Path(data_root) / folder).iterdir()
+        p.name
+        for p in (Path(data_root) / folder).iterdir()
         if p.is_dir() and p.name.startswith("SNMOT-")
     )
 
@@ -108,3 +111,23 @@ def role_to_team(role: Role) -> str | None:
     Players and goalkeepers carry a side (see ``_parse_role``); everyone else has None.
     """
     return role.side
+
+
+# Class policy (DD-002): evaluate persons only. Ball is A4's job; "other" is excluded.
+PERSON_CLS = ("player", "goalkeeper", "referee")
+
+
+def load_persons_gt(clip_dir: Path) -> pd.DataFrame:
+    """GT boxes for persons only, with each tracklet's class and team attached.
+
+    Columns: frame, track_id, x1, y1, x2, y2, conf, cls, team. ``team`` is 'left'/'right' for
+    players and goalkeepers and None for referees. Ball and 'other' tracklets are dropped.
+    """
+    gt = load_gt(clip_dir)
+    roles = pd.DataFrame(
+        [(tid, role.cls, role_to_team(role)) for tid, role in load_roles(clip_dir).items()],
+        columns=["track_id", "cls", "team"],
+    )
+    persons = roles[roles["cls"].isin(PERSON_CLS)]
+    # Inner join: GT rows whose track_id is not a person tracklet disappear.
+    return gt.merge(persons, on="track_id", how="inner")
