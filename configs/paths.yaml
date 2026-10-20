@@ -1,6 +1,6 @@
 # Sibling projects are referenced, never copied. Paths are relative to this repo root.
 a1_repo: ../football-detect-serve
-a1_weights: ../football-detect-serve/models/football_detection_v3.pt   # TODO(decision): pin which A1 checkpoint is "the detector"
+a1_weights: ../football-detect-serve/models/football_detection_v3.pt   # pinned: v3 (yolo26n, 20 epochs), A1's promoted nano
 b1_repo: ../football-tactical-metrics                                  # source of the schema contract (src/ftm/schema.py)
 
 # Original SoccerNet-Tracking text files (gt.txt, gameinfo.ini, seqinfo.ini, det.txt), copied from Drive.
