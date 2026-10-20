@@ -30,6 +30,10 @@ data/samples/*
 cache/*
 !cache/.gitkeep
 
+# Evaluation outputs (MOT files, result json): regenerate with scripts/. Figures are kept.
+reports/*
+!reports/figures/
+
 # Big artefacts
 *.pt
 *.onnx

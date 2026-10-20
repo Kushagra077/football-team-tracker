@@ -131,3 +131,8 @@ def load_persons_gt(clip_dir: Path) -> pd.DataFrame:
     persons = roles[roles["cls"].isin(PERSON_CLS)]
     # Inner join: GT rows whose track_id is not a person tracklet disappear.
     return gt.merge(persons, on="track_id", how="inner")
+
+
+def frame_path(images_root: Path, split: str, clip: str, frame: int) -> Path:
+    """A1's YOLO copy of the frames: ``<root>/<split>/<clip>_<frame:06d>.jpg`` (frame 1-indexed)."""
+    return Path(images_root) / split / f"{clip}_{frame:06d}.jpg"
