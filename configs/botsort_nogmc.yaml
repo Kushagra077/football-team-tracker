@@ -1,9 +1,14 @@
 # BoT-SORT without camera-motion compensation. Isolates BoT-SORT's own refinements.
 name: botsort_nogmc
-frame_rate: 25
-high_conf_threshold: 0.5
-low_conf_threshold: 0.1
-match_threshold: 0.8
+tracker_type: botsort
+track_high_thresh: 0.5
+track_low_thresh: 0.1
+new_track_thresh: 0.5
 track_buffer: 30
+match_thresh: 0.8
+fuse_score: true
 gmc_method: none              # no camera-motion compensation
-with_reid: false              # TODO(step 3): decide whether ReID is part of this ablation arm
+proximity_thresh: 0.5
+appearance_thresh: 0.8
+with_reid: false              # motion-only arm; ReID is a separate follow-up (teammates look alike)
+model: auto

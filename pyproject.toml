@@ -20,6 +20,8 @@ dependencies = [
     "opencv-python",
     "supervision",
     "trackeval==1.3.0",
+    "ultralytics>=8.4.183",
+    "lap>=0.5.13",
 ]
 
 [project.optional-dependencies]

@@ -1,9 +1,14 @@
 # BoT-SORT + global motion compensation. Hypothesis: matters a lot (panning main camera).
 name: botsort_gmc
-frame_rate: 25
-high_conf_threshold: 0.5
-low_conf_threshold: 0.1
-match_threshold: 0.8
+tracker_type: botsort
+track_high_thresh: 0.5
+track_low_thresh: 0.1
+new_track_thresh: 0.5
 track_buffer: 30
-gmc_method: sparseOptFlow     # name depends on library (e.g. ecc / orb / sift / sparseOptFlow)
+match_thresh: 0.8
+fuse_score: true
+gmc_method: sparseOptFlow     # Ultralytics: sparseOptFlow | orb | sift | ecc | none
+proximity_thresh: 0.5
+appearance_thresh: 0.8
 with_reid: false
+model: auto
