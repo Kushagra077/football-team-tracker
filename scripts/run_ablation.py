@@ -1,9 +1,14 @@
-"""Step 3-4: 3 tracker configs x {oracle, A1} detection sources -> reports/tracking.json.
+"""Step 3-4: 3 tracker configs x {oracle, real} detection sources.
 
-Step 3 (this version) runs the oracle source only: GT person boxes, conf = 1.0, so every
-point lost is the tracker's fault, not the detector's.
+Results go to reports/tracking_<source>_<split>.json.
 
-    uv run python scripts/run_ablation.py --split val
+--source oracle : GT person boxes, conf = 1.0, so every point lost is the tracker's fault.
+--source real   : A1's cached detections (scripts/cache_detections.py), conf >= 0.1.
+Both come through the same table format (ftt.data.detections), so the tracker cannot tell which
+it got. Both are scored against the same GT persons.
+
+    uv run python scripts/run_ablation.py --source oracle --split val
+    uv run python scripts/run_ablation.py --source real --split val
 """
 
 from __future__ import annotations
@@ -17,6 +22,7 @@ import numpy as np
 import pandas as pd
 import yaml
 
+from ftt.data.detections import gt_as_detections, load_cached_detections
 from ftt.data.sn_tracking import frame_path, list_clips, load_persons_gt
 from ftt.eval.mot_io import write_mot
 from ftt.eval.trackeval_wrap import evaluate
@@ -27,25 +33,25 @@ CONFIGS = ["bytetrack", "botsort_nogmc", "botsort_gmc"]
 COLS = ["frame", "track_id", "x1", "y1", "x2", "y2", "conf"]
 
 
-def run_clip(tracker, gt: pd.DataFrame, frame_loader) -> pd.DataFrame:
-    """Feed one clip's GT boxes through ``tracker`` frame by frame; return its tracks."""
+def run_clip(tracker, dets: pd.DataFrame, n_frames: int, frame_loader) -> pd.DataFrame:
+    """Feed one clip's detections through ``tracker`` frame by frame; return its tracks."""
     tracker.reset()
-    by_frame = dict(tuple(gt.groupby("frame")))
+    by_frame = dict(tuple(dets.groupby("frame")))
     rows = []
-    for f in range(1, int(gt["frame"].max()) + 1):
-        g = by_frame.get(f)
-        dets = np.empty((0, 6), np.float32)
-        if g is not None:
-            boxes = g[["x1", "y1", "x2", "y2"]].to_numpy(np.float32)
-            dets = np.column_stack([boxes, np.ones(len(g)), np.zeros(len(g))]).astype(np.float32)
+    for f in range(1, n_frames + 1):
+        d = by_frame.get(f)
+        arr = np.empty((0, 6), np.float32)
+        if d is not None:
+            arr = d[["x1", "y1", "x2", "y2", "conf", "cls"]].to_numpy(np.float32)
         frame = frame_loader(f) if tracker.needs_frame else None
-        for x1, y1, x2, y2, tid, conf, _ in tracker.update(dets, frame):
+        for x1, y1, x2, y2, tid, conf, _ in tracker.update(arr, frame):
             rows.append((f, int(tid), x1, y1, x2, y2, conf))
     return pd.DataFrame(rows, columns=COLS)
 
 
 def main() -> None:
     ap = argparse.ArgumentParser()
+    ap.add_argument("--source", default="oracle", choices=["oracle", "real"])
     ap.add_argument("--split", default="val", choices=["train", "val", "test"])
     ap.add_argument("--limit", type=int, default=None, help="only the first N clips (smoke test)")
     ap.add_argument("--configs", nargs="+", default=CONFIGS)
@@ -57,10 +63,16 @@ def main() -> None:
     folder = "test" if args.split == "test" else "train"
     clips = list_clips(meta_root, args.split)[: args.limit]
 
-    out_dir = ROOT / paths["reports_dir"] / "oracle" / args.split
+    out_dir = ROOT / paths["reports_dir"] / args.source / args.split
     gt_by_clip = {c: load_persons_gt(meta_root / folder / c) for c in clips}
     for c, gt in gt_by_clip.items():
         write_mot(gt, out_dir / "gt" / f"{c}.txt")
+
+    if args.source == "oracle":
+        dets_by_clip = {c: gt_as_detections(meta_root / folder / c) for c in clips}
+    else:
+        cache_dir = ROOT / paths["cache_dir"]
+        dets_by_clip = {c: load_cached_detections(cache_dir, c) for c in clips}
 
     results = {}
     for name in args.configs:
@@ -70,13 +82,15 @@ def main() -> None:
             def load(f, c=c):
                 return cv2.imread(str(frame_path(images_root, args.split, c, f)))
 
-            write_mot(run_clip(tracker, gt, load), out_dir / name / f"{c}.txt")
+            n_frames = int(gt["frame"].max())
+            tracks = run_clip(tracker, dets_by_clip[c], n_frames, load)
+            write_mot(tracks, out_dir / name / f"{c}.txt")
         results[name] = evaluate(out_dir / "gt", out_dir / name)
         print(name, {k: round(v, 1) for k, v in results[name].items()}, flush=True)
 
-    report = {"source": "oracle", "split": args.split, "clips": len(clips), "results": results}
+    report = {"source": args.source, "split": args.split, "clips": len(clips), "results": results}
     (ROOT / paths["reports_dir"]).mkdir(exist_ok=True)
-    out = ROOT / paths["reports_dir"] / f"tracking_oracle_{args.split}.json"
+    out = ROOT / paths["reports_dir"] / f"tracking_{args.source}_{args.split}.json"
     out.write_text(json.dumps(report, indent=2))
 
 
