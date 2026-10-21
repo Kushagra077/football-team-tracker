@@ -24,7 +24,7 @@ from ftt.data.detections import gt_as_detections, load_cached_detections
 from ftt.data.sn_tracking import frame_path, list_clips, load_persons_gt
 from ftt.eval.mot_io import write_mot
 from ftt.eval.trackeval_wrap import evaluate
-from ftt.track.adapters import build_tracker
+from ftt.track.adapters import UltralyticsTracker
 from ftt.track.runner import run_clip
 
 ROOT = Path(__file__).parents[1]
@@ -37,7 +37,12 @@ def main() -> None:
     ap.add_argument("--split", default="val", choices=["train", "val", "test"])
     ap.add_argument("--limit", type=int, default=None, help="only the first N clips (smoke test)")
     ap.add_argument("--configs", nargs="+", default=CONFIGS)
+    ap.add_argument("--set", nargs="*", default=[], help="config overrides, e.g. match_thresh=0.9")
+    ap.add_argument("--tag", default="", help="suffix for result names, required with --set")
     args = ap.parse_args()
+    overrides = {k: yaml.safe_load(v) for k, _, v in (item.partition("=") for item in args.set)}
+    if overrides and not args.tag:
+        ap.error("--set needs --tag, so tuned results do not overwrite the untuned ones")
 
     paths = yaml.safe_load((ROOT / "configs" / "paths.yaml").read_text())
     meta_root = ROOT / paths["meta_root"]
@@ -57,8 +62,10 @@ def main() -> None:
         dets_by_clip = {c: load_cached_detections(cache_dir, c) for c in clips}
 
     results = {}
-    for name in args.configs:
-        tracker = build_tracker(ROOT / "configs" / f"{name}.yaml")
+    for config in args.configs:
+        name = f"{config}__{args.tag}" if args.tag else config  # label for output dirs / results
+        cfg = {**yaml.safe_load((ROOT / "configs" / f"{config}.yaml").read_text()), **overrides}
+        tracker = UltralyticsTracker(cfg)
         for c, gt in gt_by_clip.items():
 
             def load(f, c=c):
