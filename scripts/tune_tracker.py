@@ -32,10 +32,10 @@ ALL_TRACKERS = [
 ]  # fmt: skip
 # One-at-a-time grid: every other knob stays at the config's value.
 GRID = {
-    "track_high_thresh": [0.3, 0.7],
+    "track_high_thresh": [0.2, 0.25, 0.3, 0.7],
     "new_track_thresh": [0.4, 0.7],
     "track_buffer": [15, 60],
-    "match_thresh": [0.7, 0.9],
+    "match_thresh": [0.7, 0.9, 0.95],
 }
 
 
