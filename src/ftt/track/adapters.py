@@ -12,11 +12,17 @@ from types import SimpleNamespace
 
 import numpy as np
 import yaml
-from ultralytics.trackers import BOTSORT, BYTETracker
+from ultralytics.trackers import BOTSORT, OCSORT, BYTETracker, DeepOCSORT, FASTTracker
 
 from ftt.track.base import Tracker
 
-TRACKERS = {"bytetrack": BYTETracker, "botsort": BOTSORT}
+TRACKERS = {
+    "bytetrack": BYTETracker,
+    "botsort": BOTSORT,
+    "ocsort": OCSORT,
+    "deepocsort": DeepOCSORT,
+    "fasttrack": FASTTracker,
+}
 
 
 class _Dets:

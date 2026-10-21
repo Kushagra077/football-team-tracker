@@ -18,8 +18,6 @@ import json
 from pathlib import Path
 
 import cv2
-import numpy as np
-import pandas as pd
 import yaml
 
 from ftt.data.detections import gt_as_detections, load_cached_detections
@@ -27,26 +25,10 @@ from ftt.data.sn_tracking import frame_path, list_clips, load_persons_gt
 from ftt.eval.mot_io import write_mot
 from ftt.eval.trackeval_wrap import evaluate
 from ftt.track.adapters import build_tracker
+from ftt.track.runner import run_clip
 
 ROOT = Path(__file__).parents[1]
 CONFIGS = ["bytetrack", "botsort_nogmc", "botsort_gmc"]
-COLS = ["frame", "track_id", "x1", "y1", "x2", "y2", "conf"]
-
-
-def run_clip(tracker, dets: pd.DataFrame, n_frames: int, frame_loader) -> pd.DataFrame:
-    """Feed one clip's detections through ``tracker`` frame by frame; return its tracks."""
-    tracker.reset()
-    by_frame = dict(tuple(dets.groupby("frame")))
-    rows = []
-    for f in range(1, n_frames + 1):
-        d = by_frame.get(f)
-        arr = np.empty((0, 6), np.float32)
-        if d is not None:
-            arr = d[["x1", "y1", "x2", "y2", "conf", "cls"]].to_numpy(np.float32)
-        frame = frame_loader(f) if tracker.needs_frame else None
-        for x1, y1, x2, y2, tid, conf, _ in tracker.update(arr, frame):
-            rows.append((f, int(tid), x1, y1, x2, y2, conf))
-    return pd.DataFrame(rows, columns=COLS)
 
 
 def main() -> None:
@@ -88,9 +70,11 @@ def main() -> None:
         results[name] = evaluate(out_dir / "gt", out_dir / name)
         print(name, {k: round(v, 1) for k, v in results[name].items()}, flush=True)
 
-    report = {"source": args.source, "split": args.split, "clips": len(clips), "results": results}
     (ROOT / paths["reports_dir"]).mkdir(exist_ok=True)
     out = ROOT / paths["reports_dir"] / f"tracking_{args.source}_{args.split}.json"
+    if out.exists():  # a partial --configs run must not erase the other trackers' results
+        results = {**json.loads(out.read_text())["results"], **results}
+    report = {"source": args.source, "split": args.split, "clips": len(clips), "results": results}
     out.write_text(json.dumps(report, indent=2))
 
 

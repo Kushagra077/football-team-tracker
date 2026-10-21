@@ -1,0 +1,16 @@
+# VARIANT of ocsort: use_byte ON, so low-confidence boxes get a ByteTrack-style second pass. Only change.
+# OC-SORT: observation-centric Kalman re-update + direction (OCM) cost; no appearance, no GMC.
+# use_byte is OFF (as in Ultralytics' default): low-confidence boxes are not used for a second pass.
+# Keys are Ultralytics' defaults; the shared thresholds are overridden to match the other
+# configs so trackers differ by algorithm, not by thresholds. Untuned starting values.
+name: ocsort_byte
+tracker_type: ocsort
+track_high_thresh: 0.5
+track_low_thresh: 0.1
+new_track_thresh: 0.5
+track_buffer: 30
+match_thresh: 0.8
+fuse_score: true
+delta_t: 3
+inertia: 0.2
+use_byte: true

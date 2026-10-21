@@ -8,7 +8,16 @@ import pytest
 from ftt.track.adapters import build_tracker
 
 CONFIGS = Path(__file__).parents[1] / "configs"
-NAMES = ["bytetrack", "botsort_nogmc", "botsort_gmc"]
+NAMES = [
+    "bytetrack",
+    "botsort_nogmc",
+    "botsort_gmc",
+    "ocsort",
+    "deepocsort",
+    "fasttrack",
+    "ocsort_byte",
+    "deepocsort_gmc",
+]
 
 
 def moving_dets(t: int) -> np.ndarray:
