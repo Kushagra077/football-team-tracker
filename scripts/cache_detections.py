@@ -11,7 +11,7 @@ from pathlib import Path
 
 import yaml
 
-from ftt.data.detections import cached_path
+from ftt.data.detections import cached_path, detector_name
 from ftt.data.sn_tracking import list_clips
 from ftt.detect.run_detector import frame_number, load_detector, run_detector
 
@@ -40,13 +40,15 @@ def main() -> None:
     weights = (ROOT / paths["a1_weights"]).resolve()
     images_root = (ROOT / paths["a1_images"]).resolve()
     cache_dir = ROOT / paths["cache_dir"]
+    detector = detector_name(weights)
     clips = list_clips(ROOT / paths["meta_root"], args.split)[: args.limit]
 
     model = load_detector(weights)  # once, not per clip
-    print(f"{weights.name} on {args.device}, conf {args.conf}, {len(clips)} {args.split} clips")
+    print(f"detector {detector} on {args.device}, conf {args.conf}")
+    print(f"{len(clips)} {args.split} clips")
     start = time.perf_counter()
     for clip in clips:
-        out = cached_path(cache_dir, clip)
+        out = cached_path(cache_dir, detector, clip)
         if out.exists() and not args.force:
             print(f"  {clip}: cached, skipping")
             continue

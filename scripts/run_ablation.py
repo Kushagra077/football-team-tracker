@@ -20,7 +20,7 @@ from pathlib import Path
 import cv2
 import yaml
 
-from ftt.data.detections import gt_as_detections, load_cached_detections
+from ftt.data.detections import detector_name, gt_as_detections, load_cached_detections
 from ftt.data.sn_tracking import frame_path, list_clips, load_persons_gt
 from ftt.eval.mot_io import write_mot
 from ftt.eval.trackeval_wrap import evaluate
@@ -50,7 +50,12 @@ def main() -> None:
     folder = "test" if args.split == "test" else "train"
     clips = list_clips(meta_root, args.split)[: args.limit]
 
-    out_dir = ROOT / paths["reports_dir"] / args.source / args.split
+    detector = detector_name(paths["a1_weights"])
+    # Oracle results do not depend on the detector; real ones live under reports/<detector>/.
+    base = ROOT / paths["reports_dir"]
+    if args.source == "real":
+        base = base / detector
+    out_dir = base / args.source / args.split
     gt_by_clip = {c: load_persons_gt(meta_root / folder / c) for c in clips}
     for c, gt in gt_by_clip.items():
         write_mot(gt, out_dir / "gt" / f"{c}.txt")
@@ -59,7 +64,7 @@ def main() -> None:
         dets_by_clip = {c: gt_as_detections(meta_root / folder / c) for c in clips}
     else:
         cache_dir = ROOT / paths["cache_dir"]
-        dets_by_clip = {c: load_cached_detections(cache_dir, c) for c in clips}
+        dets_by_clip = {c: load_cached_detections(cache_dir, detector, c) for c in clips}
 
     results = {}
     for config in args.configs:
@@ -77,8 +82,8 @@ def main() -> None:
         results[name] = evaluate(out_dir / "gt", out_dir / name)
         print(name, {k: round(v, 1) for k, v in results[name].items()}, flush=True)
 
-    (ROOT / paths["reports_dir"]).mkdir(exist_ok=True)
-    out = ROOT / paths["reports_dir"] / f"tracking_{args.source}_{args.split}.json"
+    base.mkdir(parents=True, exist_ok=True)
+    out = base / f"tracking_{args.source}_{args.split}.json"
     if out.exists():  # a partial --configs run must not erase the other trackers' results
         results = {**json.loads(out.read_text())["results"], **results}
     report = {"source": args.source, "split": args.split, "clips": len(clips), "results": results}

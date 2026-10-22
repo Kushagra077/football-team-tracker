@@ -20,7 +20,7 @@ from pathlib import Path
 import cv2
 import yaml
 
-from ftt.data.detections import load_cached_detections
+from ftt.data.detections import detector_name, load_cached_detections
 from ftt.data.sn_tracking import frame_path, list_clips, load_persons_gt
 from ftt.eval.mot_io import write_mot
 from ftt.eval.trackeval_wrap import evaluate
@@ -57,15 +57,18 @@ def main() -> None:
     print(f"fold A ({len(folds['A'])}): {' '.join(c[-3:] for c in folds['A'])}")
     print(f"fold B ({len(folds['B'])}): {' '.join(c[-3:] for c in folds['B'])}")
 
-    work = ROOT / paths["reports_dir"] / "folds"
+    detector = detector_name(paths["a1_weights"])
+    base = ROOT / paths["reports_dir"] / detector
+    work = base / "folds"
     gt = {c: load_persons_gt(meta_root / "train" / c) for c in clips}
     for name, members in folds.items():  # one GT dir per fold, so evaluate() scores that fold only
         shutil.rmtree(work / f"gt_{name}", ignore_errors=True)
         for c in members:
             write_mot(gt[c], work / f"gt_{name}" / f"{c}.txt")
-    dets = {c: load_cached_detections(ROOT / paths["cache_dir"], c) for c in clips}
+    cache_dir = ROOT / paths["cache_dir"]
+    dets = {c: load_cached_detections(cache_dir, detector, c) for c in clips}
 
-    tuning_log = ROOT / paths["reports_dir"] / "tuning" / "val.jsonl"
+    tuning_log = base / "tuning" / "val.jsonl"
     logged = {}
     if tuning_log.exists():
         for r in map(json.loads, tuning_log.open()):
@@ -110,7 +113,7 @@ def main() -> None:
         print(f"{name:15} {cells[0]:>13} {cells[1]:>13} {cells[2]:>13}   "
               f"{'PASS' if ok else 'FAIL'} (A {gains['A']:+.1f}, B {gains['B']:+.1f})")  # fmt: skip
 
-    out_json = ROOT / paths["reports_dir"] / "folds_val.json"
+    out_json = base / "folds_val.json"
     out_json.write_text(json.dumps({"tuned": tuned, "folds": folds, "summary": summary}, indent=2))
 
 

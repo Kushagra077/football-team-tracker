@@ -78,14 +78,23 @@ def gt_as_detections(clip_dir: Path) -> pd.DataFrame:
     return validate_detections(dets)
 
 
-def cached_path(cache_dir: Path, clip_id: str) -> Path:
-    """Where ``detect/run_detector.py`` saves a clip's detections."""
-    return Path(cache_dir) / "detections" / f"{clip_id}.parquet"
+def detector_name(weights: Path) -> str:
+    """The detector's name is its weights file name (``football_detection_v3``).
+
+    Cache and result folders are keyed by it, so a new detector can never silently reuse
+    another detector's cached boxes (the cache script skips clips that already exist).
+    """
+    return Path(weights).stem
 
 
-def load_cached_detections(cache_dir: Path, clip_id: str) -> pd.DataFrame:
+def cached_path(cache_dir: Path, detector: str, clip_id: str) -> Path:
+    """Where ``detect/run_detector.py`` saves a clip's detections for one detector."""
+    return Path(cache_dir) / "detections" / detector / f"{clip_id}.parquet"
+
+
+def load_cached_detections(cache_dir: Path, detector: str, clip_id: str) -> pd.DataFrame:
     """A1 detections cached by ``detect/run_detector.py`` (conf threshold ~0.1), same format."""
-    path = cached_path(cache_dir, clip_id)
+    path = cached_path(cache_dir, detector, clip_id)
     if not path.exists():
-        raise FileNotFoundError(f"no cached detections for {clip_id} at {path}")
+        raise FileNotFoundError(f"no cached detections from {detector} for {clip_id} at {path}")
     return validate_detections(pd.read_parquet(path))

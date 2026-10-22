@@ -17,7 +17,7 @@ from pathlib import Path
 import pandas as pd
 import yaml
 
-from ftt.data.detections import gt_as_detections, load_cached_detections
+from ftt.data.detections import detector_name, gt_as_detections, load_cached_detections
 from ftt.data.sn_tracking import list_clips
 from ftt.eval.mot_io import write_mot
 from ftt.eval.trackeval_wrap import evaluate
@@ -42,7 +42,9 @@ def main() -> None:
     meta_root = ROOT / paths["meta_root"]
     folder = "test" if args.split == "test" else "train"
     clips = list_clips(meta_root, args.split)
-    out_dir = ROOT / paths["reports_dir"] / "det_only" / args.split
+    detector = detector_name(paths["a1_weights"])
+    base = ROOT / paths["reports_dir"] / detector
+    out_dir = base / "det_only" / args.split
 
     for c in clips:
         write_mot(as_mot(gt_as_detections(meta_root / folder / c)), out_dir / "gt" / f"{c}.txt")
@@ -54,7 +56,8 @@ def main() -> None:
     assert sanity["DetA"] > 99.9, f"GT-as-detections should score DetA 100, got {sanity['DetA']}"
     print(f"sanity (GT as detections): DetA {sanity['DetA']:.1f}")
 
-    cached = {c: load_cached_detections(ROOT / paths["cache_dir"], c) for c in clips}
+    cache_dir = ROOT / paths["cache_dir"]
+    cached = {c: load_cached_detections(cache_dir, detector, c) for c in clips}
     results = {}
     for thr in args.confs:
         for c, dets in cached.items():
@@ -65,8 +68,8 @@ def main() -> None:
             f"conf >= {thr:<4}: DetA {results[thr]:5.1f}   ({n / len(clips) / 750:.1f} boxes/frame)"
         )
 
-    (ROOT / paths["reports_dir"]).mkdir(exist_ok=True)
-    out = ROOT / paths["reports_dir"] / f"det_only_{args.split}.json"
+    base.mkdir(parents=True, exist_ok=True)
+    out = base / f"det_only_{args.split}.json"
     out.write_text(json.dumps({"split": args.split, "DetA_by_conf": results}, indent=2))
 
 

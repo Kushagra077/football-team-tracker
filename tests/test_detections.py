@@ -9,6 +9,7 @@ from ftt.data.detections import (
     CLASS_IDS,
     DET_COLUMNS,
     cached_path,
+    detector_name,
     gt_as_detections,
     load_cached_detections,
     validate_detections,
@@ -53,16 +54,30 @@ def test_validate_rejects_bad_input(mutate):
 
 
 def test_cached_round_trip(tmp_path):
-    path = cached_path(tmp_path, "SNMOT-999")
+    path = cached_path(tmp_path, "det_a", "SNMOT-999")
     path.parent.mkdir(parents=True)
     good().to_parquet(path)
-    back = load_cached_detections(tmp_path, "SNMOT-999")
+    back = load_cached_detections(tmp_path, "det_a", "SNMOT-999")
     assert list(back.columns) == DET_COLUMNS and len(back) == 2
+
+
+def test_detector_name_is_the_weights_stem():
+    assert detector_name(Path("../models/football_detection_v3.pt")) == "football_detection_v3"
+
+
+def test_another_detector_cannot_see_a_cached_clip(tmp_path):
+    """The reason for keying the cache by detector: a new detector must not reuse old boxes."""
+    path = cached_path(tmp_path, "football_detection_v3", "SNMOT-999")
+    path.parent.mkdir(parents=True)
+    good().to_parquet(path)
+    assert cached_path(tmp_path, "football_detection_v6", "SNMOT-999") != path
+    with pytest.raises(FileNotFoundError):
+        load_cached_detections(tmp_path, "football_detection_v6", "SNMOT-999")
 
 
 def test_missing_cache_fails_loud(tmp_path):
     with pytest.raises(FileNotFoundError):
-        load_cached_detections(tmp_path, "SNMOT-000")
+        load_cached_detections(tmp_path, "det_a", "SNMOT-000")
 
 
 @needs_data

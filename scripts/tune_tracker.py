@@ -18,7 +18,7 @@ from pathlib import Path
 import cv2
 import yaml
 
-from ftt.data.detections import load_cached_detections
+from ftt.data.detections import detector_name, load_cached_detections
 from ftt.data.sn_tracking import frame_path, list_clips, load_persons_gt
 from ftt.eval.mot_io import write_mot
 from ftt.eval.trackeval_wrap import evaluate
@@ -64,14 +64,17 @@ def main() -> None:
     meta_root = ROOT / paths["meta_root"]
     images_root = (ROOT / paths["a1_images"]).resolve()
     clips = list_clips(meta_root, args.split)
-    work = ROOT / paths["reports_dir"] / "tuning" / args.split
-    log_path = ROOT / paths["reports_dir"] / "tuning" / f"{args.split}.jsonl"
+    detector = detector_name(paths["a1_weights"])
+    base = ROOT / paths["reports_dir"] / detector
+    work = base / "tuning" / args.split
+    log_path = base / "tuning" / f"{args.split}.jsonl"
     log_path.parent.mkdir(parents=True, exist_ok=True)
 
     gt = {c: load_persons_gt(meta_root / "train" / c) for c in clips}
     for c, g in gt.items():
         write_mot(g, work / "gt" / f"{c}.txt")
-    dets = {c: load_cached_detections(ROOT / paths["cache_dir"], c) for c in clips}
+    cache_dir = ROOT / paths["cache_dir"]
+    dets = {c: load_cached_detections(cache_dir, detector, c) for c in clips}
 
     done = set()
     if log_path.exists():
