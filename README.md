@@ -4,7 +4,7 @@ Persistent player IDs and team labels from football broadcast video. Every track
 HOTA / DetA / AssA / IDF1 on SoccerNet-Tracking twice: on ground-truth boxes (**oracle**, the tracker's
 ceiling) and on the boxes of my own detector, A1 (**real**). The gap between the two is what the detector costs.
 
-**Demo video:** [YouTube (unlisted)](https://youtu.be/7crGFAqdM8E). A broadcast highlights clip run through
+**Demo video:** [YouTube (unlisted)](https://youtu.be/YrP9KGjes4g). A broadcast highlights clip run through
 `scripts/process_video.py`, ids and team colours drawn on. Footage © its rights holder, shown as a non-commercial
 portfolio demo. No SoccerNet footage is published anywhere in this repo.
 
@@ -129,9 +129,9 @@ experiment), `configs/` (tracker YAMLs, `team.yaml`), `tests/`.
   (distance to the nearest team colour > 1.0 x the distance between the two team colours) gets no team. That catches part
   of a black-kit referee or keeper, not all of it. A club crest in a logo card was detected as a player.
 - **Goalkeeper thresholds are in pixels of a 1920-wide frame**, so they are stricter than intended on 720p video.
-- **Failure case seen in the demo** (visible in the YouTube video, which was rendered before the two rules above): in a
-  medium shot at 38 s, a red-shirted player is drawn in the other team's colour, because the frame passes the
-  pitch-view check while the colours learned on distant views do not fit. With the rules he now gets no team instead.
+- **Failure case seen in the demo:** in a medium shot at 38 s, a red-shirted player was drawn in the other team's colour,
+  because the frame passed the pitch-view check while the colours learned on distant views did not fit. The two rules
+  above now give him no team (white in the video) instead of a wrong one; the shot is still not labelled correctly.
 - **The schema contract with B1 is deferred** until A3 supplies pitch coordinates (B1 requires them non-null).
 - **Rendering uses plain OpenCV drawing** rather than `supervision`'s annotators (fewer API changes to track).
 
