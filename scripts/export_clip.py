@@ -2,7 +2,7 @@
 
 cached A1 boxes -> tracker (BoT-SORT + GMC, tuned shared setting) -> team labels for the
 tracked players (torso colour, KMeans, rolling vote) -> ``build_tracks`` -> validated parquet.
-Referees get no team; goalkeepers stay null until the keeper rule is wired in; pitch and
+Referees get no team; goalkeepers get the keeper rule's team or null when it cannot tell; pitch and
 jersey columns are null. The file goes under ``reports/<detector>/exports/`` (gitignored).
 
     uv run python scripts/export_clip.py --split val --clip SNMOT-064
@@ -19,12 +19,13 @@ import yaml
 from ftt.data.detections import detector_name, load_cached_detections
 from ftt.data.sn_tracking import frame_path, load_persons_gt
 from ftt.export import build_tracks, export_tracks, read_tracks
-from ftt.team.assign import label_players
+from ftt.team.assign import label_goalkeepers, label_players
 from ftt.track.adapters import UltralyticsTracker
 from ftt.track.runner import tracks_for_clip
 
 ROOT = Path(__file__).parents[1]
 PLAYER_CLS = 2
+GK_CLS = 1
 TUNED = {"track_high_thresh": 0.25, "match_thresh": 0.9}  # the shared tuned setting (DD-018)
 
 
@@ -65,7 +66,13 @@ def main() -> None:
     merged = tracks.merge(
         labelled[["frame", "track_id", "team"]], on=["frame", "track_id"], how="left"
     )
-    table = build_tracks(merged, merged["team"])
+    # Goalkeepers: one decision per keeper track from where the keeper stands (undecided -> null).
+    keepers = tracks[tracks["cls"] == GK_CLS]
+    gk_team = label_goalkeepers(keepers, labelled, cfg).set_index("track_id")["team"]
+    is_gk = (merged["cls"] == GK_CLS).to_numpy()
+    team = merged["team"].astype("float64")
+    team[is_gk] = merged.loc[is_gk, "track_id"].map(gk_team.astype("float64"))
+    table = build_tracks(merged, team)
 
     out = ROOT / paths["reports_dir"] / detector / "exports" / f"{args.clip}__tracks.parquet"
     export_tracks(table, out)

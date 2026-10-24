@@ -25,3 +25,31 @@ def test_only_kept_pixels_are_averaged():
 def test_empty_mask_gives_nan():
     crop = np.full((2, 2, 3), 255, np.uint8)
     assert np.isnan(colour_feature(crop, np.zeros((2, 2), bool))).all()
+
+
+def test_box_features_keep_the_input_row_and_drop_all_grass_crops():
+    import cv2
+    import pandas as pd
+
+    from ftt.team.features import box_features
+
+    cfg = {
+        "crop": {"y_top": 0.15, "y_bottom": 0.50, "x_trim": 0.20},
+        "grass_mask": {"h": [34, 42], "s_min": 40, "v_min": 40},
+    }
+    img = np.zeros((200, 200, 3), np.uint8)
+    img[:, :100] = (255, 255, 255)  # left half white: a "shirt"
+    img[:, 100:] = cv2.cvtColor(np.uint8([[[38, 150, 150]]]), cv2.COLOR_HSV2BGR)[0, 0]  # pitch
+    boxes = pd.DataFrame(
+        {
+            "frame": [1, 1],
+            "x1": [10.0, 110.0],
+            "y1": [20.0, 20.0],
+            "x2": [90.0, 190.0],
+            "y2": [120.0, 120.0],
+        },
+        index=[7, 9],
+    )
+    out = box_features(boxes, lambda f: img, cfg)
+    assert out.index.tolist() == [7]  # row 9 is all pitch: dropped; row 7 keeps its own index
+    assert out.loc[7, "L"] > 99
