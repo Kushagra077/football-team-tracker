@@ -39,3 +39,6 @@ reports/*
 *.onnx
 *.mp4
 runs/
+
+# Input/showcase videos (copyrighted or large): local only
+demo/
