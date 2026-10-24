@@ -1,6 +1,6 @@
 import pandas as pd
 
-from ftt.team.gate import pitch_view_frames
+from ftt.team.gate import pitch_view_frames, small_boxes
 
 
 def _rows(frame, n, height):
@@ -18,3 +18,8 @@ def test_only_frames_with_enough_small_players_pass():
 def test_non_players_do_not_count():
     t = pd.DataFrame([(1, 0.0, 50.0, 3)] * 5, columns=["frame", "y1", "y2", "cls"])
     assert len(pitch_view_frames(t, 1000, 3, 0.2)) == 0
+
+
+def test_small_boxes_is_per_box():
+    t = pd.DataFrame({"y1": [0.0, 0.0, 0.0], "y2": [100.0, 200.0, 201.0]})
+    assert small_boxes(t, frame_height=1000, max_box_height=0.20).tolist() == [True, True, False]

@@ -1,6 +1,6 @@
 import numpy as np
 
-from ftt.team.cluster import choose_fit_frames, fit_team_clusters
+from ftt.team.cluster import choose_fit_frames, far_from_both_teams, fit_team_clusters
 
 
 def test_two_separated_blobs_are_split_cleanly():
@@ -28,3 +28,11 @@ def test_fit_frames_skip_frames_without_a_pitch_view():
 def test_fit_frames_match_the_first_frames_on_a_normal_clip():
     box_frames = np.repeat(np.arange(1, 101), 6)
     assert choose_fit_frames(box_frames, 50, 3).tolist() == list(range(1, 51))
+
+
+def test_far_from_both_teams_flags_a_third_colour():
+    centres = np.array([[0.0, 0.0, 0.0], [10.0, 0.0, 0.0]])  # gap 10
+    feats = np.array([[1.0, 0, 0], [9.0, 0, 0], [5.0, 0, 0], [5.0, 9.0, 0]])
+    # nearest distances: 1, 1, 5, ~10.3 -> ratios 0.1, 0.1, 0.5, 1.03
+    out = far_from_both_teams(feats, centres, max_ratio=0.7)
+    assert out.tolist() == [False, False, False, True]

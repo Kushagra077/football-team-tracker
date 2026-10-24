@@ -16,7 +16,9 @@ cluster:
   fit_on: player              # players only; keepers/referees would pull centroids apart
 pitch_view:                   # upload path only: trust team colours on wide pitch views (DD-025)
   min_players: 3
-  max_box_height: 0.20        # median player height / frame height; SoccerNet val max is 0.166
+  max_box_height: 0.20        # median player height / frame height; SoccerNet val max is 0.166.
+                              # Also applied per box: a taller player box gets no team (DD-028)
+  max_colour_ratio: 1.0       # colour far from both teams -> no team (black-kit referee/keeper called "player"); 0.7 dropped 19% of white-kit players on SportsMOT (DD-028)
 goalkeeper:
   assign_by: nearest_centroid_x   # crude heuristic; A3 pitch coords fix it properly
   min_team_gap: 150           # px (of 1920): teams' average x closer than this -> unknown

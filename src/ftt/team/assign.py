@@ -7,7 +7,12 @@ from collections.abc import Callable
 import numpy as np
 import pandas as pd
 
-from ftt.team.cluster import assign_goalkeepers, choose_fit_frames, fit_team_clusters
+from ftt.team.cluster import (
+    assign_goalkeepers,
+    choose_fit_frames,
+    far_from_both_teams,
+    fit_team_clusters,
+)
 from ftt.team.features import box_features
 from ftt.team.vote import vote_labels
 
@@ -24,11 +29,18 @@ def label_players(
     return label_from_features(tracks, box_features(tracks, frame_loader, cfg), cfg)
 
 
-def label_from_features(tracks: pd.DataFrame, feats: pd.DataFrame, cfg: dict) -> pd.DataFrame:
+def label_from_features(
+    tracks: pd.DataFrame,
+    feats: pd.DataFrame,
+    cfg: dict,
+    max_colour_ratio: float | None = None,
+) -> pd.DataFrame:
     """Same as ``label_players`` from ``box_features`` output (indexed like ``tracks``).
 
     KMeans fits on the first ``fit_frames`` frames that look like a pitch view and never sees a
     label. Cluster ids are arbitrary per clip. Rows whose crop is empty or all grass are dropped.
+    With ``max_colour_ratio`` set, a colour far from both teams is labelled -1 (no team) before
+    the vote, so a referee or keeper the detector called "player" ends up with no team.
     Output is sorted by (frame, track_id).
     """
     out = feats.join(tracks["track_id"]).sort_values(["frame", "track_id"]).reset_index(drop=True)
@@ -39,6 +51,8 @@ def label_from_features(tracks: pd.DataFrame, feats: pd.DataFrame, cfg: dict) ->
     )
     km = fit_team_clusters(lab[np.isin(out["frame"].to_numpy(), fit_frames)])
     raw = km.predict(lab)
+    if max_colour_ratio is not None:
+        raw[far_from_both_teams(lab, km.cluster_centers_, max_colour_ratio)] = -1
     v = cfg["vote"]
     team = vote_labels(
         out["track_id"].to_numpy(), out["frame"].to_numpy(), raw, v["window"], v["lock_min_agree"]
@@ -85,6 +99,7 @@ def team_for_tracks(
         labelled[["frame", "track_id", "team"]], on=["frame", "track_id"], how="left"
     )
     team = merged["team"].astype("float64").to_numpy(copy=True)
+    team[team < 0] = np.nan  # -1: colour fits neither team
     team[(merged["cls"] != PLAYER_CLS).to_numpy()] = np.nan
     in_view = (
         np.ones(len(merged), bool) if frames is None else merged["frame"].isin(frames).to_numpy()

@@ -24,7 +24,8 @@ Settings were chosen on the 11 validation clips only; the test split was run onc
 
 - **The detector costs about 19-25 HOTA points**, e.g. BoT-SORT+GMC 84.2 -> 59.0 and ByteTrack 74.1 -> 55.3.
   The split is approximate, not additive: a missed box hurts differently depending on the tracker's settings.
-- **Association suffers more than detection.** Real AssA falls to 45-49 while DetA stays near 68-71.
+- **Detection and association both drop by about 18-25 points** (e.g. BoT-SORT+GMC DetA 95.4 -> 70.9, AssA 74.4 -> 49.4).
+  Association ends up the weaker of the two (45-49 vs 68-71).
 - **Camera-motion compensation (GMC) matters for broadcast video.** It is BoT-SORT+GMC's edge: on oracle boxes it cuts
   ID switches from 3524 to 1251.
 - **The bottom five trackers are within 0.4 HOTA** and swap places between val and test, so treat them as equal.
@@ -58,8 +59,9 @@ The same one-command pipeline (`process_video.py`, settings unchanged) on 2 foot
 
 - **Tracking transfers about as well as on SoccerNet** (BoT-SORT+GMC real HOTA 59.0 on SoccerNet test), with only 2 clips,
   so this is a sanity check, not a benchmark. The two datasets also draw boxes slightly differently.
-- **Team colours:** SportsMOT has no team labels, so this is checked by eye only. Most players are coloured correctly, but
-  **the referee in black is detected as a player and joins a team**, and a few red shirts flip on the 22 s clip.
+- **Team colours:** SportsMOT has no team labels, so this is checked by eye only. Most players are coloured correctly; a few
+  red shirts flip on the 22 s clip. The referee in black is detected as a "player": the colour rule below now gives his
+  boxes no team about a third of the time (22-34% of non-player boxes), at a cost of 0.2-1.0% of real players.
 - No SportsMOT frames are published here (its terms forbid redistribution without permission).
 
 ## How it works
@@ -79,10 +81,11 @@ flowchart LR
 1. **Detect.** A1's YOLO (v3, yolo26n) finds players, goalkeepers and referees. Confidence is kept low (0.1) so the
    tracker's second pass can use weak boxes.
 2. **Track.** Ultralytics' tracker classes give each box an id. Evaluation feeds cached boxes to the tracker; uploaded
-   video goes through `model.track(stream=True)`, and both give identical output on a val clip.
+   video goes through `model.track(stream=True)`, and both give identical output on one val clip's frames.
 3. **Colour.** For each player box: take the torso band (15-50% of the height, 20% trimmed off each side), drop grass
    pixels (HSV hue 34-42), and take the mean colour in Lab space, where distances match how different colours look.
 4. **Cluster.** KMeans with k=2 on the players of the first 50 frames that show at least 3 players. No labels needed.
+   On uploaded video, only wide pitch-view frames are used and labelled (close-ups get no team).
 5. **Vote.** Each track's label is the majority of its last 25 frames. There is no permanent lock: trackers sometimes move
    an id onto another player, and a lock would keep the wrong team for the rest of the clip (lock cost 6-8 accuracy points).
 6. **Goalkeepers.** A keeper's colour matches neither team, so a keeper joins the team whose players stand nearer in the
@@ -107,6 +110,9 @@ uv run python scripts/run_ablation.py --source real --split val
 uv run python scripts/eval_team_vote.py --split val
 ```
 
+Speed (Apple-silicon Mac, MPS): detector + tracker + GMC run at about 35-45 fps; the 2-minute 1080p demo took 1 min 50 s
+end to end, including rendering.
+
 Layout: `src/ftt/` (data, detect, track, team, eval, schema, export, render, video), `scripts/` (one command per
 experiment), `configs/` (tracker YAMLs, `team.yaml`), `tests/`.
 
@@ -117,14 +123,17 @@ experiment), `configs/` (tracker YAMLs, `team.yaml`), `tests/`.
 - **Goalkeepers use image position**, so camera pans, counter-attacks and set pieces can fool the rule. It abstains on
   about half the keepers.
 - **Close-ups on uploaded video.** Team colours are only trusted on wide pitch views (at least 3 players, median box
-  height <= 20% of the frame). Medium shots can slip through, because the rule uses the per-frame median.
-- **Detector errors pass through:** a keeper or referee in a dark kit detected as "player" joins a team (seen on the
-  demo and on SportsMOT); a club crest in a logo card was detected as a player.
+  height <= 20% of the frame) and on player boxes that are themselves <= 20% of the frame height. A medium shot whose
+  players sit just under that height can still slip through.
+- **Detector errors are only partly caught.** On uploaded video, a "player" whose shirt colour is far from both teams
+  (distance to the nearest team colour > 1.0 x the distance between the two team colours) gets no team. That catches part
+  of a black-kit referee or keeper, not all of it. A club crest in a logo card was detected as a player.
 - **Goalkeeper thresholds are in pixels of a 1920-wide frame**, so they are stricter than intended on 720p video.
-- **Failure case seen in the demo:** in a medium shot at 38 s, a red-shirted player is drawn in the other team's colour,
-  because the frame passes the pitch-view check while the colours learned on distant views do not fit.
+- **Failure case seen in the demo** (visible in the YouTube video, which was rendered before the two rules above): in a
+  medium shot at 38 s, a red-shirted player is drawn in the other team's colour, because the frame passes the
+  pitch-view check while the colours learned on distant views do not fit. With the rules he now gets no team instead.
 - **The schema contract with B1 is deferred** until A3 supplies pitch coordinates (B1 requires them non-null).
-- **Rendering uses plain OpenCV**, not `supervision`, so the drawing code has no extra dependency.
+- **Rendering uses plain OpenCV drawing** rather than `supervision`'s annotators (fewer API changes to track).
 
 ## Data and attribution
 

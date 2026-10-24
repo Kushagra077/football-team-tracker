@@ -21,7 +21,7 @@ from ftt.detect.run_detector import load_detector
 from ftt.export import build_tracks, export_tracks, read_tracks
 from ftt.render import render_video
 from ftt.team.assign import label_from_features, team_for_tracks
-from ftt.team.gate import pitch_view_frames
+from ftt.team.gate import pitch_view_frames, small_boxes
 from ftt.video import track_video
 
 ROOT = Path(__file__).parents[1]
@@ -59,14 +59,18 @@ def main() -> None:
           f"{n_ids} tracker ids, {t1 - t0:.0f}s")  # fmt: skip
     pv = cfg["pitch_view"]
     view = pitch_view_frames(tv.tracks, tv.size[1], pv["min_players"], pv["max_box_height"])
-    players = tv.tracks[(tv.tracks["cls"] == PLAYER_CLS) & tv.tracks["frame"].isin(view)]
+    small = small_boxes(tv.tracks, tv.size[1], pv["max_box_height"])
+    players = tv.tracks[(tv.tracks["cls"] == PLAYER_CLS) & tv.tracks["frame"].isin(view) & small]
     if players.empty:
         raise SystemExit("no wide pitch view with players found: is this football footage?")
     print(f"pitch-view frames (teams labelled only here): {len(view)} of {tv.n_frames} "
           f"({len(view) / tv.n_frames:.0%})")  # fmt: skip
 
     labelled = label_from_features(
-        players, tv.feats.loc[players.index.intersection(tv.feats.index)], cfg
+        players,
+        tv.feats.loc[players.index.intersection(tv.feats.index)],
+        cfg,
+        max_colour_ratio=pv["max_colour_ratio"],
     )
     table = build_tracks(tv.tracks, team_for_tracks(tv.tracks, labelled, cfg, view), fps=tv.fps)
     parquet = export_tracks(table, out_dir / "tracks.parquet", fps=tv.fps)

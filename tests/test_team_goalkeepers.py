@@ -68,3 +68,14 @@ def test_team_for_tracks_frames_limit_who_gets_a_team():
     )
     out = team_for_tracks(tracks, labelled, _CFG, frames=np.array([1]))
     assert out[0] == 1 and np.isnan(out[1])  # frame 2 is outside the pitch view: no team
+
+
+def test_team_for_tracks_minus_one_means_no_team():
+    from ftt.team.assign import team_for_tracks
+
+    tracks = pd.DataFrame(
+        {"frame": [1, 1], "track_id": [3, 4], "cls": [2, 2], "x1": [0.0, 50.0], "x2": [10.0, 60.0]}
+    )
+    labelled = tracks.drop(columns="cls").assign(team=[0, -1])  # track 4: colour fits neither team
+    out = team_for_tracks(tracks, labelled, _CFG)
+    assert out[0] == 0 and np.isnan(out[1])

@@ -28,6 +28,18 @@ def fit_team_clusters(features: np.ndarray, k: int = 2) -> KMeans:
     return KMeans(n_clusters=k, n_init=10, random_state=0).fit(features)
 
 
+def far_from_both_teams(features: np.ndarray, centres: np.ndarray, max_ratio: float) -> np.ndarray:
+    """True where a colour fits neither team: a referee or keeper the detector called "player".
+
+    Distance to the nearest of the two centroids, divided by the distance between them, so the
+    rule does not depend on how different the two kits are. On val GT (DD-028) players sit at a
+    median ratio of 0.24, referees and keepers at about 1.1.
+    """
+    gap = np.linalg.norm(centres[0] - centres[1])
+    nearest = np.linalg.norm(features[:, None, :] - centres[None], axis=2).min(axis=1)
+    return nearest > max_ratio * gap
+
+
 def assign_goalkeepers(
     gk_centres_x: np.ndarray,
     team_centroids_x: np.ndarray,

@@ -23,3 +23,12 @@ def pitch_view_frames(
     stats = pd.DataFrame({"n": g.size(), "median_height": g.median()})
     ok = (stats["n"] >= min_players) & (stats["median_height"] <= max_box_height)
     return stats.index[ok].to_numpy()
+
+
+def small_boxes(tracks: pd.DataFrame, frame_height: float, max_box_height: float) -> np.ndarray:
+    """True per row where the box is at most ``max_box_height`` x ``frame_height`` tall.
+
+    The frame rule above uses the MEDIAN player, so a medium shot can pass it while its biggest
+    players are already close-ups (DD-025). This drops those boxes one by one.
+    """
+    return ((tracks["y2"] - tracks["y1"]) / frame_height <= max_box_height).to_numpy()
