@@ -18,11 +18,19 @@ def label_players(
     """Per-frame cluster label (``raw``) and voted label (``team``) for tracked PLAYER rows.
 
     ``tracks`` needs frame, track_id, x1, y1, x2, y2 (players only: keepers and referees would
-    pull the centroids apart). KMeans fits on the first ``fit_frames`` frames that look like a
-    pitch view and never sees a label. Cluster ids are arbitrary per clip. Rows whose crop is
-    empty or all grass are dropped. Output is sorted by (frame, track_id).
+    pull the centroids apart). Reads the frames itself; see ``label_from_features`` when the
+    colours were already computed (streaming a video).
     """
-    feats = box_features(tracks, frame_loader, cfg)
+    return label_from_features(tracks, box_features(tracks, frame_loader, cfg), cfg)
+
+
+def label_from_features(tracks: pd.DataFrame, feats: pd.DataFrame, cfg: dict) -> pd.DataFrame:
+    """Same as ``label_players`` from ``box_features`` output (indexed like ``tracks``).
+
+    KMeans fits on the first ``fit_frames`` frames that look like a pitch view and never sees a
+    label. Cluster ids are arbitrary per clip. Rows whose crop is empty or all grass are dropped.
+    Output is sorted by (frame, track_id).
+    """
     out = feats.join(tracks["track_id"]).sort_values(["frame", "track_id"]).reset_index(drop=True)
     lab = out[["L", "a", "b"]].to_numpy()
     c = cfg["cluster"]
@@ -58,3 +66,24 @@ def label_goalkeepers(keepers: pd.DataFrame, players: pd.DataFrame, cfg: dict) -
         pred = assign_goalkeepers(keeper_x.to_numpy(), team_x, g["min_team_gap"], g["min_margin"])
     team = pd.array(np.where(pred < 0, np.nan, pred), dtype="Int8")
     return pd.DataFrame({"track_id": keeper_x.index.to_numpy(), "team": team})
+
+
+PLAYER_CLS, KEEPER_CLS = 2, 1  # A1 class ids
+
+
+def team_for_tracks(tracks: pd.DataFrame, labelled: pd.DataFrame, cfg: dict) -> np.ndarray:
+    """One team value per ROW of ``tracks`` (all classes): 0/1, or NaN where there is none.
+
+    Players get their voted label (NaN if their crop was unusable), keepers the keeper rule's
+    decision per track (NaN if undecided), referees and anything else NaN.
+    """
+    merged = tracks.merge(
+        labelled[["frame", "track_id", "team"]], on=["frame", "track_id"], how="left"
+    )
+    team = merged["team"].astype("float64").to_numpy(copy=True)
+    team[(merged["cls"] != PLAYER_CLS).to_numpy()] = np.nan
+    keepers = tracks[tracks["cls"] == KEEPER_CLS]
+    gk = label_goalkeepers(keepers, labelled, cfg).set_index("track_id")["team"].astype("float64")
+    is_gk = (merged["cls"] == KEEPER_CLS).to_numpy()
+    team[is_gk] = merged.loc[is_gk, "track_id"].map(gk).to_numpy()
+    return team

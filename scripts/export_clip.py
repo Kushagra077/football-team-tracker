@@ -19,7 +19,7 @@ import yaml
 from ftt.data.detections import detector_name, load_cached_detections
 from ftt.data.sn_tracking import frame_path, load_persons_gt
 from ftt.export import build_tracks, export_tracks, read_tracks
-from ftt.team.assign import label_goalkeepers, label_players
+from ftt.team.assign import label_players, team_for_tracks
 from ftt.track.adapters import UltralyticsTracker
 from ftt.track.runner import tracks_for_clip
 
@@ -62,17 +62,7 @@ def main() -> None:
     labelled = label_players(
         tracks[tracks["cls"] == PLAYER_CLS].reset_index(drop=True), loader, cfg
     )
-    # Join the voted label onto EVERY tracked row; keepers, referees, uncropped players get none.
-    merged = tracks.merge(
-        labelled[["frame", "track_id", "team"]], on=["frame", "track_id"], how="left"
-    )
-    # Goalkeepers: one decision per keeper track from where the keeper stands (undecided -> null).
-    keepers = tracks[tracks["cls"] == GK_CLS]
-    gk_team = label_goalkeepers(keepers, labelled, cfg).set_index("track_id")["team"]
-    is_gk = (merged["cls"] == GK_CLS).to_numpy()
-    team = merged["team"].astype("float64")
-    team[is_gk] = merged.loc[is_gk, "track_id"].map(gk_team.astype("float64"))
-    table = build_tracks(merged, team)
+    table = build_tracks(tracks, team_for_tracks(tracks, labelled, cfg))
 
     out = ROOT / paths["reports_dir"] / detector / "exports" / f"{args.clip}__tracks.parquet"
     export_tracks(table, out)

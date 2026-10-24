@@ -77,12 +77,12 @@ def coerce(df: pd.DataFrame) -> pd.DataFrame:
     return out[COLUMNS]
 
 
-def validate(df: pd.DataFrame) -> pd.DataFrame:
+def validate(df: pd.DataFrame, fps: float = FPS) -> pd.DataFrame:
     """Assert A2's own contract (DD-003: no B1 involved). Returns df with columns in order.
 
     Columns and dtypes match; pitch/jersey columns are ALL null (a zero is the centre spot);
     only ``team`` may otherwise be null; no ball rows; one row per (frame_id, track_id);
-    ``timestamp == frame_id / FPS``; boxes have positive size; conf in [0, 1].
+    ``timestamp == frame_id / fps``; boxes have positive size; conf in [0, 1].
     """
     missing, extra = set(COLUMNS) - set(df.columns), set(df.columns) - set(COLUMNS)
     if missing or extra:
@@ -107,8 +107,8 @@ def validate(df: pd.DataFrame) -> pd.DataFrame:
         raise SchemaError("A2 does not track the ball (A4): is_ball must be all False")
     if df.duplicated(["frame_id", "track_id"]).any():
         raise SchemaError("duplicate (frame_id, track_id) rows")
-    if not np.allclose(df["timestamp"], df["frame_id"] / FPS):
-        raise SchemaError(f"timestamp must equal frame_id / {FPS}")
+    if not np.allclose(df["timestamp"], df["frame_id"] / fps):
+        raise SchemaError(f"timestamp must equal frame_id / {fps}")
     if (df["frame_id"] < 1).any():
         raise SchemaError("frame_id is 1-indexed; found < 1")
     if ((df["x2"] <= df["x1"]) | (df["y2"] <= df["y1"])).any():
