@@ -21,6 +21,7 @@ from ftt.detect.run_detector import load_detector
 from ftt.export import build_tracks, export_tracks, read_tracks
 from ftt.render import render_video
 from ftt.team.assign import label_from_features, team_for_tracks
+from ftt.team.gate import pitch_view_frames
 from ftt.video import track_video
 
 ROOT = Path(__file__).parents[1]
@@ -56,12 +57,18 @@ def main() -> None:
     n_ids = tv.tracks["track_id"].nunique()
     print(f"pass 1: {tv.n_frames} frames at {tv.fps:g} fps, {w}x{h}, {len(tv.tracks)} boxes, "
           f"{n_ids} tracker ids, {t1 - t0:.0f}s")  # fmt: skip
-    players = tv.tracks[tv.tracks["cls"] == PLAYER_CLS]
+    pv = cfg["pitch_view"]
+    view = pitch_view_frames(tv.tracks, tv.size[1], pv["min_players"], pv["max_box_height"])
+    players = tv.tracks[(tv.tracks["cls"] == PLAYER_CLS) & tv.tracks["frame"].isin(view)]
     if players.empty:
-        raise SystemExit("no player tracks found: is this football footage?")
+        raise SystemExit("no wide pitch view with players found: is this football footage?")
+    print(f"pitch-view frames (teams labelled only here): {len(view)} of {tv.n_frames} "
+          f"({len(view) / tv.n_frames:.0%})")  # fmt: skip
 
-    labelled = label_from_features(players, tv.feats, cfg)
-    table = build_tracks(tv.tracks, team_for_tracks(tv.tracks, labelled, cfg), fps=tv.fps)
+    labelled = label_from_features(
+        players, tv.feats.loc[players.index.intersection(tv.feats.index)], cfg
+    )
+    table = build_tracks(tv.tracks, team_for_tracks(tv.tracks, labelled, cfg, view), fps=tv.fps)
     parquet = export_tracks(table, out_dir / "tracks.parquet", fps=tv.fps)
     back = read_tracks(parquet, fps=tv.fps)
     t2 = time.time()

@@ -71,19 +71,30 @@ def label_goalkeepers(keepers: pd.DataFrame, players: pd.DataFrame, cfg: dict) -
 PLAYER_CLS, KEEPER_CLS = 2, 1  # A1 class ids
 
 
-def team_for_tracks(tracks: pd.DataFrame, labelled: pd.DataFrame, cfg: dict) -> np.ndarray:
+def team_for_tracks(
+    tracks: pd.DataFrame, labelled: pd.DataFrame, cfg: dict, frames: np.ndarray | None = None
+) -> np.ndarray:
     """One team value per ROW of ``tracks`` (all classes): 0/1, or NaN where there is none.
 
     Players get their voted label (NaN if their crop was unusable), keepers the keeper rule's
-    decision per track (NaN if undecided), referees and anything else NaN.
+    decision per track (NaN if undecided), referees and anything else NaN. With ``frames``
+    (e.g. the pitch-view frames) only those frames count: keepers are judged from them alone and
+    every other row gets NaN.
     """
     merged = tracks.merge(
         labelled[["frame", "track_id", "team"]], on=["frame", "track_id"], how="left"
     )
     team = merged["team"].astype("float64").to_numpy(copy=True)
     team[(merged["cls"] != PLAYER_CLS).to_numpy()] = np.nan
-    keepers = tracks[tracks["cls"] == KEEPER_CLS]
+    in_view = (
+        np.ones(len(merged), bool) if frames is None else merged["frame"].isin(frames).to_numpy()
+    )
+    keepers = tracks[
+        (tracks["cls"] == KEEPER_CLS)
+        & (in_view if frames is None else tracks["frame"].isin(frames))
+    ]
     gk = label_goalkeepers(keepers, labelled, cfg).set_index("track_id")["team"].astype("float64")
     is_gk = (merged["cls"] == KEEPER_CLS).to_numpy()
     team[is_gk] = merged.loc[is_gk, "track_id"].map(gk).to_numpy()
+    team[~in_view] = np.nan
     return team

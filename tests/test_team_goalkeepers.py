@@ -55,3 +55,16 @@ def test_label_goalkeepers_is_null_when_teams_overlap_or_no_keepers():
     bunched = _players({0: [900, 950], 1: [1000, 1050]})
     assert label_goalkeepers(keepers, bunched, _CFG)["team"].isna().all()
     assert len(label_goalkeepers(keepers.iloc[0:0], bunched, _CFG)) == 0
+
+
+def test_team_for_tracks_frames_limit_who_gets_a_team():
+    from ftt.team.assign import team_for_tracks
+
+    tracks = pd.DataFrame(
+        {"frame": [1, 2], "track_id": [3, 3], "cls": [2, 2], "x1": [0.0, 0.0], "x2": [10.0, 10.0]}
+    )
+    labelled = pd.DataFrame(
+        {"frame": [1, 2], "track_id": [3, 3], "team": [1, 1], "x1": [0.0, 0.0], "x2": [10.0, 10.0]}
+    )
+    out = team_for_tracks(tracks, labelled, _CFG, frames=np.array([1]))
+    assert out[0] == 1 and np.isnan(out[1])  # frame 2 is outside the pitch view: no team
