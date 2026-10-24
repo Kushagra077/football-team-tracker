@@ -7,7 +7,7 @@ import pandas as pd
 
 from ftt.track.base import Tracker
 
-COLS = ["frame", "track_id", "x1", "y1", "x2", "y2", "conf"]
+COLS = ["frame", "track_id", "x1", "y1", "x2", "y2", "conf", "cls"]
 
 
 def run_clip(tracker: Tracker, dets: pd.DataFrame, n_frames: int, frame_loader) -> pd.DataFrame:
@@ -24,6 +24,6 @@ def run_clip(tracker: Tracker, dets: pd.DataFrame, n_frames: int, frame_loader) 
         if d is not None:
             arr = d[["x1", "y1", "x2", "y2", "conf", "cls"]].to_numpy(np.float32)
         frame = frame_loader(f) if tracker.needs_frame else None
-        for x1, y1, x2, y2, tid, conf, _ in tracker.update(arr, frame):
-            rows.append((f, int(tid), x1, y1, x2, y2, conf))
+        for x1, y1, x2, y2, tid, conf, cls in tracker.update(arr, frame):
+            rows.append((f, int(tid), x1, y1, x2, y2, conf, int(cls)))
     return pd.DataFrame(rows, columns=COLS)
