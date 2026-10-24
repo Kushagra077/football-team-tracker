@@ -11,7 +11,8 @@ features:
   color_space: lab            # lab | rgb | hsv
 cluster:
   k: 2
-  fit_frames: 50              # first N frames of the clip
+  fit_frames: 50              # first N frames of the clip that look like a pitch view
+  fit_min_players: 3          # a frame counts only if it shows this many player boxes (DD-023)
   fit_on: player              # players only; keepers/referees would pull centroids apart
 goalkeeper:
   assign_by: nearest_centroid_x   # crude heuristic; A3 pitch coords fix it properly

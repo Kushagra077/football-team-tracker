@@ -9,6 +9,17 @@ import numpy as np
 from sklearn.cluster import KMeans
 
 
+def choose_fit_frames(box_frames: np.ndarray, fit_n: int, min_players: int) -> np.ndarray:
+    """The first ``fit_n`` frames that show at least ``min_players`` player boxes.
+
+    Frames 1..fit_n would do for clips that open on the pitch, but a clip can open on a
+    close-up or replay (SNMOT-137: no players until frame 187); colours learned there are junk.
+    ``box_frames`` holds one frame number per player box.
+    """
+    frames, counts = np.unique(box_frames, return_counts=True)
+    return frames[counts >= min_players][:fit_n]
+
+
 def fit_team_clusters(features: np.ndarray, k: int = 2) -> KMeans:
     """Fit KMeans on (n, 3) Lab colours. n_init restarts + fixed seed keep results repeatable.
 

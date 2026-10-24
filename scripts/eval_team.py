@@ -28,7 +28,7 @@ from ftt.data.detections import (
 )
 from ftt.data.sn_tracking import frame_path, list_clips, load_persons_gt
 from ftt.eval.team_metrics import best_permutation_accuracy, per_track_accuracy
-from ftt.team.cluster import fit_team_clusters
+from ftt.team.cluster import choose_fit_frames, fit_team_clusters
 from ftt.team.crops import grass_mask, torso_crop
 from ftt.team.features import colour_feature
 
@@ -107,7 +107,10 @@ def main() -> None:
         dets = dets[dets["cls"] == PLAYER]
 
         # Fit on the first fit_n frames: every player detection, labels never used.
-        fit = features_for(dets, range(1, fit_n + 1), clip, args.split, cfg, images_root)
+        fit_frames = choose_fit_frames(
+            dets["frame"].to_numpy(), fit_n, cfg["cluster"]["fit_min_players"]
+        )
+        fit = features_for(dets, fit_frames, clip, args.split, cfg, images_root)
         km = fit_team_clusters(fit[:, 5:])
 
         ev = features_for(dets, range(1, 751, args.stride), clip, args.split, cfg, images_root)

@@ -25,7 +25,7 @@ import yaml
 from eval_team import features_for, match_to_gt  # noqa: E402  (sibling script)
 from ftt.data.detections import CLASS_IDS, detector_name, load_cached_detections
 from ftt.data.sn_tracking import frame_path, list_clips, load_persons_gt
-from ftt.team.cluster import fit_team_clusters
+from ftt.team.cluster import choose_fit_frames, fit_team_clusters
 from ftt.team.vote import vote_labels
 from ftt.track.adapters import UltralyticsTracker
 from ftt.track.runner import run_clip
@@ -92,7 +92,10 @@ def main() -> None:
         fcols = fcols.merge(tracks[["frame", "x1", "y1", "x2", "y2", "track_id"]], how="left")
         fcols = fcols.sort_values(["frame", "track_id"]).reset_index(drop=True)
         lab = fcols[["L", "a", "b"]].to_numpy()
-        km = fit_team_clusters(lab[fcols["frame"].to_numpy() <= fit_n])
+        fit_frames = choose_fit_frames(
+            tracks["frame"].to_numpy(), fit_n, cfg["cluster"]["fit_min_players"]
+        )
+        km = fit_team_clusters(lab[np.isin(fcols["frame"].to_numpy(), fit_frames)])
         raw = km.predict(lab)
 
         # True team per tracked box via GT match (one-to-one per frame).
