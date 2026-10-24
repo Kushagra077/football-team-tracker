@@ -19,16 +19,15 @@ from pathlib import Path
 
 import cv2
 import numpy as np
-import pandas as pd
 import yaml
 
-from eval_team import features_for, match_to_gt  # noqa: E402  (sibling script)
+from eval_team import match_to_gt  # noqa: E402  (sibling script)
 from ftt.data.detections import CLASS_IDS, detector_name, load_cached_detections
 from ftt.data.sn_tracking import frame_path, list_clips, load_persons_gt
-from ftt.team.cluster import choose_fit_frames, fit_team_clusters
+from ftt.team.assign import label_players
 from ftt.team.vote import vote_labels
 from ftt.track.adapters import UltralyticsTracker
-from ftt.track.runner import run_clip
+from ftt.track.runner import tracks_for_clip
 
 ROOT = Path(__file__).parents[1]
 PLAYER = CLASS_IDS["player"]
@@ -57,11 +56,7 @@ def main() -> None:
     images_root = (ROOT / paths["a1_images"]).resolve()
     folder = "test" if args.split == "test" else "train"
     detector = detector_name(paths["a1_weights"])
-    fit_n, window, lock = (
-        cfg["cluster"]["fit_frames"],
-        cfg["vote"]["window"],
-        cfg["vote"]["lock_min_agree"],
-    )
+    window = cfg["vote"]["window"]
     tcfg = {**yaml.safe_load((ROOT / "configs" / f"{args.tracker}.yaml").read_text()), **TUNED}
     tracker = UltralyticsTracker(tcfg)
     track_dir = ROOT / paths["cache_dir"] / "tracks" / detector
@@ -71,32 +66,20 @@ def main() -> None:
     for clip in list_clips(meta_root, args.split)[: args.limit]:
         gt = load_persons_gt(meta_root / folder / clip)
         n_frames = int(gt["frame"].max())
-        cache = track_dir / f"{clip}__{args.tracker}__tuned.parquet"
-        if cache.exists():
-            tracks = pd.read_parquet(cache)
-        else:
-            dets = load_cached_detections(ROOT / paths["cache_dir"], detector, clip)
-            tracks = run_clip(
-                tracker,
-                dets,
-                n_frames,
-                lambda f, c=clip: cv2.imread(str(frame_path(images_root, args.split, c, f))),
-            )
-            tracks.to_parquet(cache)
-        tracks = tracks[tracks["cls"] == PLAYER].reset_index(drop=True)
 
-        feats = features_for(tracks, range(1, n_frames + 1), clip, args.split, cfg, images_root)
-        fcols = pd.DataFrame(feats, columns=["frame", "x1", "y1", "x2", "y2", "L", "a", "b"])
-        fcols["frame"] = fcols["frame"].astype(int)
-        # Re-attach track ids: same float boxes went in, so an exact merge recovers them.
-        fcols = fcols.merge(tracks[["frame", "x1", "y1", "x2", "y2", "track_id"]], how="left")
-        fcols = fcols.sort_values(["frame", "track_id"]).reset_index(drop=True)
-        lab = fcols[["L", "a", "b"]].to_numpy()
-        fit_frames = choose_fit_frames(
-            tracks["frame"].to_numpy(), fit_n, cfg["cluster"]["fit_min_players"]
+        def loader(f, c=clip):
+            return cv2.imread(str(frame_path(images_root, args.split, c, f)))
+
+        tracks = tracks_for_clip(
+            track_dir / f"{clip}__{args.tracker}__tuned.parquet",
+            tracker,
+            lambda c=clip: load_cached_detections(ROOT / paths["cache_dir"], detector, c),
+            n_frames,
+            loader,
         )
-        km = fit_team_clusters(lab[np.isin(fcols["frame"].to_numpy(), fit_frames)])
-        raw = km.predict(lab)
+        tracks = tracks[tracks["cls"] == PLAYER].reset_index(drop=True)
+        fcols = label_players(tracks, loader, cfg)
+        raw = fcols["raw"].to_numpy()
 
         # True team per tracked box via GT match (one-to-one per frame).
         gt_players = gt[gt["cls"] == "player"]
@@ -115,7 +98,7 @@ def main() -> None:
         tid, fr = fcols["track_id"].to_numpy(), fcols["frame"].to_numpy()
         variants = {
             "raw": raw,
-            "vote": vote_labels(tid, fr, raw, window, lock),  # the config setting
+            "vote": fcols["team"].to_numpy(),  # the config setting
             "vote_lock15": vote_labels(tid, fr, raw, window, 15),  # reference: the lock we dropped
         }
         scored = true >= 0

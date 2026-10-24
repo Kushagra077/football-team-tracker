@@ -29,8 +29,7 @@ from ftt.data.detections import (
 from ftt.data.sn_tracking import frame_path, list_clips, load_persons_gt
 from ftt.eval.team_metrics import best_permutation_accuracy, per_track_accuracy
 from ftt.team.cluster import choose_fit_frames, fit_team_clusters
-from ftt.team.crops import grass_mask, torso_crop
-from ftt.team.features import colour_feature
+from ftt.team.features import box_features
 
 ROOT = Path(__file__).parents[1]
 PLAYER = CLASS_IDS["player"]
@@ -59,22 +58,12 @@ def match_to_gt(boxes: np.ndarray, gt_boxes: np.ndarray, min_iou: float) -> np.n
 
 
 def features_for(dets, frames, clip, split, cfg, images_root):
-    """One row per player detection: (frame, box x4, Lab x3). Empty/all-grass crops dropped."""
-    rows = []
-    for fr in frames:
-        d = dets[dets["frame"] == fr]
-        if d.empty:
-            continue
-        img = cv2.imread(str(frame_path(images_root, split, clip, fr)))
-        for r in d.itertuples():
-            box = np.array([r.x1, r.y1, r.x2, r.y2])
-            crop = torso_crop(img, box, cfg)
-            if crop.size == 0:
-                continue
-            f = colour_feature(crop, grass_mask(crop, cfg))
-            if not np.isnan(f).any():
-                rows.append((fr, *box, *f))
-    return np.array(rows).reshape(-1, 8)
+    """(frame, box x4, Lab x3) per player detection of the given frames, as one array."""
+    sub = dets[dets["frame"].isin(list(frames))]
+    feats = box_features(
+        sub, lambda f: cv2.imread(str(frame_path(images_root, split, clip, f))), cfg
+    )
+    return feats.to_numpy(dtype="float64").reshape(-1, 8)
 
 
 def main() -> None:
