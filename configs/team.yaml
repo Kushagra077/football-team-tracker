@@ -4,7 +4,7 @@ crop:
   y_bottom: 0.50
   x_trim: 0.20                # drop this fraction of width on each side (arms, neighbours)
 grass_mask:                   # OpenCV HSV ranges (H 0-179)
-  h: [35, 85]
+  h: [34, 42]                 # pitch hue is 35-40 on all 11 val clips; wider (35-85) ate green shirts
   s_min: 40
   v_min: 40
 features:
@@ -15,6 +15,8 @@ cluster:
   fit_on: player              # players only; keepers/referees would pull centroids apart
 goalkeeper:
   assign_by: nearest_centroid_x   # crude heuristic; A3 pitch coords fix it properly
+  min_team_gap: 150           # px (of 1920): teams' average x closer than this -> unknown
+  min_margin: 60              # px: keeper must be this much nearer one team, else unknown
 vote:
   window: 25                  # frames (1 s at 25 fps)
   lock_min_agree: 15          # lock the label once this many frames in the window agree
