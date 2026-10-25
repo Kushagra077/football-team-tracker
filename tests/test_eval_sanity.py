@@ -1,4 +1,4 @@
-"""Step 2 gate: the evaluator must be trustworthy BEFORE any tracker is blamed."""
+"""The evaluator must be trustworthy BEFORE any tracker is blamed."""
 
 from pathlib import Path
 

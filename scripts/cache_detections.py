@@ -1,4 +1,4 @@
-"""Step 4: run A1's detector once per clip and cache the boxes (cache/detections/<clip>.parquet).
+"""Run A1's detector once per clip and cache the boxes (cache/detections/<detector>/<clip>.parquet).
 
 uv run python scripts/cache_detections.py --split val
 """

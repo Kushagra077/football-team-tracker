@@ -1,10 +1,11 @@
-"""Step 5-6: permutation-invariant team accuracy.
+"""Permutation-invariant team accuracy.
 
 Reports per-detection and per-track accuracy per clip. ``--source gt`` uses ground-truth player
 boxes (an upper bound); ``--source real`` uses the cached detector boxes. Real boxes carry no team
 label, so each is matched one-to-one to a GT player by IoU and scored against that player's team;
 unmatched boxes (false positives) are counted but not scored. KMeans never sees a label.
-Per-track here = per GT person; tracker ids and voting come with Step 6.
+Per-track here = per GT person (loose: a majority vote).
+Tracker ids and voting are scored in eval_team_vote.py.
 
     uv run python scripts/eval_team.py --split val --source real
 """

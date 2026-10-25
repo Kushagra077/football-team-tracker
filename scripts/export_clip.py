@@ -1,4 +1,4 @@
-"""Step 7: one clip, end to end, to ``tracks.parquet`` in A2's schema.
+"""One clip, end to end, to ``tracks.parquet`` in A2's schema.
 
 cached A1 boxes -> tracker (BoT-SORT + GMC, tuned shared setting) -> team labels for the
 tracked players (torso colour, KMeans, rolling vote) -> ``build_tracks`` -> validated parquet.

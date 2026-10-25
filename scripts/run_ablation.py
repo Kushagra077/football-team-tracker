@@ -1,4 +1,4 @@
-"""Step 3-4: 3 tracker configs x {oracle, real} detection sources.
+"""Tracker configs x {oracle, real} detection sources (default: 3 configs; the README table uses 7).
 
 Results go to reports/tracking_<source>_<split>.json.
 

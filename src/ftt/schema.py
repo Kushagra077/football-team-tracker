@@ -19,7 +19,7 @@ import pandas as pd
 
 FPS: Final[int] = 25  # SoccerNet-Tracking clips are 25 fps; timestamp = frame_id / FPS
 
-# Shared program columns (spec step 7).
+# Shared program columns.
 SHARED_COLUMNS: Final[list[str]] = [
     "frame_id", "timestamp", "track_id", "team", "jersey_number",
     "x_pitch", "y_pitch", "is_ball",

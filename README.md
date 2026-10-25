@@ -87,6 +87,13 @@ flowchart LR
 
 Settings were chosen on the 11 validation clips only; the test split was run once at the end with them fixed.
 
+**How it was scored.** Metrics come from [TrackEval](https://github.com/JonathonLuiten/TrackEval)'s HOTA, CLEAR and
+Identity classes, called through my own thin wrapper (`src/ftt/eval/trackeval_wrap.py`), so the numbers are not
+directly comparable to the SoccerNet leaderboard. Players, goalkeepers and referees are scored together as persons
+(class labels are ignored; the ball and "other" are excluded). **No leakage:** the detector (A1) was never trained on
+any validation or test clip (checked by `scripts/prepare_data.py`). A1 did use its validation clips to pick a
+checkpoint, so validation numbers may be slightly optimistic; the numbers below are from the test split.
+
 <p align="center">
   <img src="reports/figures/tracker_benchmark.svg" alt="Oracle vs real HOTA for seven trackers" width="90%">
 </p>

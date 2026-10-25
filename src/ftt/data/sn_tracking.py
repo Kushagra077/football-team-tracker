@@ -3,7 +3,7 @@
 MOT ground-truth rows: ``frame, id, x, y, w, h, conf, -1, -1, -1`` with
 **1-indexed frames** (the classic off-by-one source). ``gameinfo.ini`` maps each
 tracklet id to a role string, e.g. ``player team left``, ``goalkeeper team right``,
-``referee``, ``side referee``, ``other``, ``ball``. That mapping is the free
+``referee`` (also ``referee;side bottom``), ``other``, ``ball``. That mapping is the free
 team-assignment ground truth.
 """
 

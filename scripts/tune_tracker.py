@@ -1,4 +1,4 @@
-"""Step 4 tuning: run a tracker on REAL detections with config overrides; log the scores.
+"""Run a tracker on REAL detections with config overrides; log the scores.
 
 One knob at a time (the others stay at the config's values). Tune on val only; the test split
 is for one final run. Results append to reports/tuning/<split>.jsonl and a run already in the

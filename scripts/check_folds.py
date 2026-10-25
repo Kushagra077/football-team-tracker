@@ -1,4 +1,4 @@
-"""Step 4: two-fold check of the tuned tracker settings (val clips only).
+"""Two-fold check of the tuned tracker settings (val clips only).
 
 Split the val clips into folds A and B (alternating sorted order), run each tracker with the
 baseline config and the tuned overrides once over ALL clips, then score fold A, fold B and all

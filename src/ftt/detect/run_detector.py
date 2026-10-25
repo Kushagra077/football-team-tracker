@@ -1,4 +1,4 @@
-"""Run the A1 detector ONCE per clip and cache to ``cache/detections/<clip>.parquet``.
+"""Run the A1 detector ONCE per clip and cache to ``cache/detections/<detector>/<clip>.parquet``.
 
 Runs locally on the Apple GPU (``device="mps"``; DD-010: frames are already on this machine).
 Use a LOW confidence threshold (~0.1): ByteTrack's second association pass needs low-confidence

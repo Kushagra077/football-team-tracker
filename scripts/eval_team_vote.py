@@ -1,4 +1,4 @@
-"""Step 6: per-frame team labels vs voted labels, on REAL tracker output.
+"""Per-frame team labels vs voted labels, on REAL tracker output.
 
 Pipeline per clip: cached A1 boxes -> tracker (BoT-SORT + GMC, tuned shared setting, DD-018)
 -> torso colour of every tracked player box -> KMeans (fit on frames 1..N, no labels) ->

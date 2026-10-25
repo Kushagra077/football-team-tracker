@@ -1,4 +1,4 @@
-"""Step 4: detection-only DetA of the cached A1 boxes vs GT persons, at several confidence cut-offs.
+"""Detection-only DetA of the cached A1 boxes vs GT persons, at several confidence cut-offs.
 
 Association is meaningless here, so each box just gets its index within its frame as an id (unique
 ids per box would make TrackEval's IDF1 allocate a matrix with thousands of rows). Only DetA is

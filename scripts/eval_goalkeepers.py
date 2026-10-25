@@ -1,4 +1,4 @@
-"""Step 5: goalkeeper heuristic vs ground truth, in isolation from colour clustering.
+"""Goalkeeper heuristic vs ground truth, in isolation from colour clustering.
 
 Team positions come from GT team labels (not KMeans), so this scores only the keeper rule.
 Two windows: the fit window (first N frames) and the whole clip. Output: correct / wrong /

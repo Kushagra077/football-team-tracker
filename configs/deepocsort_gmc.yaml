@@ -1,6 +1,6 @@
 # VARIANT of deepocsort: camera-motion compensation ON (sparseOptFlow, same as botsort_gmc). Only change.
 # Deep OC-SORT: OC-SORT + appearance + camera-motion compensation switches.
-# gmc_method none and with_reid false (Ultralytics defaults), so this row is motion-only like OC-SORT.
+# Here gmc_method is sparseOptFlow (GMC on) and with_reid is false, so this row is motion + GMC.
 # Keys are Ultralytics' defaults; the shared thresholds are overridden to match the other
 # configs so trackers differ by algorithm, not by thresholds. Untuned starting values.
 name: deepocsort_gmc

@@ -14,9 +14,12 @@ class Tracker(abc.ABC):
     ``frame`` : BGR image (H, W, 3); needed by GMC / ReID, ignored by pure-motion trackers
     returns   : float array (M, 7) = [x1, y1, x2, y2, track_id, conf, cls]
 
-    TODO(step 3): verify this against the pinned tracker library's real ``update()``
-    signature; these APIs change between releases.
+    ``needs_frame`` says whether ``update`` needs the image (GMC / ReID); the runner only loads
+    frames for trackers that set it. The Ultralytics adapter in ``adapters.py`` is checked
+    against the pinned library version (see ``pyproject.toml``).
     """
+
+    needs_frame: bool = False
 
     @abc.abstractmethod
     def update(self, dets: np.ndarray, frame: np.ndarray | None) -> np.ndarray: ...

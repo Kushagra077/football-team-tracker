@@ -1,4 +1,5 @@
-"""Wrappers that make Ultralytics' ByteTrack / BoT-SORT satisfy ``base.Tracker``.
+"""Wrappers that make Ultralytics' trackers (ByteTrack, BoT-SORT, OC-SORT, Deep OC-SORT,
+FastTracker) satisfy ``base.Tracker``.
 
 Built from configs/*.yaml. Ultralytics' trackers take a results-like object (``conf``, ``cls``,
 ``xywh``, boolean indexing) and return rows ``[x1, y1, x2, y2, id, conf, cls, det_idx]``; we hide

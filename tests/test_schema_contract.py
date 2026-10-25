@@ -1,4 +1,4 @@
-"""Step 7 gate: tracks.parquet follows A2's own schema contract.
+"""tracks.parquet follows A2's own schema contract.
 
 DD-003: A2 is standalone for now. The B1 contract (``ftm.schema.validate()``) is revisited at
 integration time, after A3 supplies pitch coordinates, so nothing here imports B1.

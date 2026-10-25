@@ -1,13 +1,10 @@
 # Sibling projects are referenced, never copied. Paths are relative to this repo root.
-a1_repo: ../football-detect-serve
 a1_weights: ../football-detect-serve/models/football_detection_v3.pt   # pinned: v3 (yolo26n, 20 epochs), A1's promoted nano
-b1_repo: ../football-tactical-metrics                                  # source of the schema contract (src/ftm/schema.py)
 
 # Original SoccerNet-Tracking text files (gt.txt, gameinfo.ini, seqinfo.ini, det.txt), copied from Drive.
 meta_root: data/raw_meta          # data/raw_meta/{train,test}/<clip>/...
 # Frames: A1's local YOLO copy, byte-identical to the originals (verified on 318 sampled frames).
 # Names are <clip>_<frame:06d>.jpg inside images/{train,val,test}/.
 a1_images: ../football-detect-serve/dataset/images
-data_root: data/samples           # tiny local samples for tests only
-cache_dir: cache                  # cache/detections/<clip>.parquet, cache/tracks/<clip>__<config>.parquet
+cache_dir: cache                  # cache/detections/<detector>/<clip>.parquet, cache/tracks/<detector>/<clip>__<config>__tuned.parquet
 reports_dir: reports

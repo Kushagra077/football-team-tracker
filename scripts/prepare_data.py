@@ -1,4 +1,4 @@
-"""Step 1: print, don't assume.
+"""Print, don't assume.
 
 Clip counts per split, frames per clip, GT tracklets per clip, role distribution, average
 track length, tracks that leave and re-enter, average simultaneous players, and the
