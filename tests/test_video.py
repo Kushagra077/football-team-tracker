@@ -72,3 +72,14 @@ def test_track_video_keeps_boxes_and_player_colours_only(tmp_path):
     # the settings that matter for parity with our cached-box pipeline are passed through
     assert model.kwargs["conf"] == 0.1 and model.kwargs["stream"] is True
     assert model.kwargs["classes"] == [c["goalkeeper"], c["player"], c["referee"]]
+
+
+def test_track_video_stops_at_max_frames(tmp_path):
+    video = tmp_path / "v.mp4"
+    _tiny_video(video, n=5)
+    white = np.full((200, 200, 3), 255, np.uint8)
+    box = [10.0, 20.0, 90.0, 120.0]
+    results = [_result(white, [box], [3], [CLASS_IDS["player"]]) for _ in range(5)]
+    model = _FakeModel(results)
+    out = track_video(model, video, tmp_path / "t.yaml", CFG, device="cpu", max_frames=2)
+    assert out.tracks["frame"].tolist() == [1, 2] and out.n_frames == 2

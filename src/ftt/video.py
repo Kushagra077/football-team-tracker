@@ -52,10 +52,12 @@ def track_video(
     imgsz: int = 640,
     max_det: int = 300,
     device: str = "mps",
+    max_frames: int | None = None,
 ) -> TrackedVideo:
     """Run ``model.track`` over a video file; keep boxes + player torso colours, not frames.
 
     ``conf`` must stay low (0.1): the tracker's second association pass needs weak boxes.
+    ``max_frames`` stops after that many frames (a demo cap).
     """
     fps, n_declared, size = video_info(source)
     stream = model.track(
@@ -72,6 +74,9 @@ def track_video(
     )
     rows, feats, n_seen = [], [], 0
     for n_seen, result in enumerate(stream, start=1):  # noqa: B007
+        if max_frames is not None and n_seen > max_frames:
+            n_seen = max_frames
+            break
         b = result.boxes
         if b is None or b.id is None:
             continue

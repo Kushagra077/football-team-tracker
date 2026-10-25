@@ -30,3 +30,14 @@ def test_render_writes_every_frame_and_draws_on_annotated_ones(tmp_path):
     assert cap.read()[0] is False  # exactly 4 frames
     assert frames[0].max() > 100  # frame 1 has drawings
     assert frames[1].max() < 30  # frame 2 has none (lossy codec: allow tiny noise)
+
+
+def test_render_video_stops_at_max_frames(tmp_path):
+    src = tmp_path / "in.mp4"
+    vw = cv2.VideoWriter(str(src), cv2.VideoWriter_fourcc(*"mp4v"), 25, (64, 64))
+    for _ in range(6):
+        vw.write(np.zeros((64, 64, 3), np.uint8))
+    vw.release()
+    out = render_video(src, _table(), tmp_path / "out.mp4", 25, max_frames=3)
+    cap = cv2.VideoCapture(str(out))
+    assert int(cap.get(cv2.CAP_PROP_FRAME_COUNT)) == 3

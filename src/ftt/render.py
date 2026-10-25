@@ -33,8 +33,11 @@ def draw_frame(img, rows: pd.DataFrame):
     return img
 
 
-def render_video(video: Path, table: pd.DataFrame, out_path: Path, fps: float) -> Path:
-    """Write ``out_path`` (mp4) with the table's boxes drawn on every frame of ``video``."""
+def render_video(
+    video: Path, table: pd.DataFrame, out_path: Path, fps: float, max_frames: int | None = None
+) -> Path:
+    """Write ``out_path`` (mp4) with the table's boxes drawn on every frame of ``video``
+    (the first ``max_frames`` frames when given)."""
     by_frame = dict(tuple(table.groupby("frame_id")))
     cap = cv2.VideoCapture(str(video))
     w, h = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH)), int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
@@ -43,6 +46,8 @@ def render_video(video: Path, table: pd.DataFrame, out_path: Path, fps: float) -
     writer = cv2.VideoWriter(str(out_path), cv2.VideoWriter_fourcc(*"mp4v"), fps, (w, h))
     try:
         for frame_no in range(1, 10**9):
+            if max_frames is not None and frame_no > max_frames:
+                break
             ok, img = cap.read()
             if not ok:
                 break
