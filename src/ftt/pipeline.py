@@ -19,6 +19,7 @@ from ftt.export import build_tracks, export_tracks, read_tracks
 from ftt.render import render_video
 from ftt.scale import scale_team_cfg, scale_tracker_cfg
 from ftt.team.assign import label_from_features, team_for_tracks
+from ftt.team.cluster import TooFewColoursError
 from ftt.team.gate import pitch_view_frames, small_boxes
 from ftt.video import track_video, video_info
 
@@ -86,12 +87,15 @@ def process_video(
     share = len(view) / tv.n_frames
     log(f"pitch-view frames (teams labelled only here): {len(view)} of {tv.n_frames} ({share:.0%})")
 
-    labelled = label_from_features(
-        players,
-        tv.feats.loc[players.index.intersection(tv.feats.index)],
-        cfg,
-        max_colour_ratio=pv["max_colour_ratio"],
-    )
+    try:
+        labelled = label_from_features(
+            players,
+            tv.feats.loc[players.index.intersection(tv.feats.index)],
+            cfg,
+            max_colour_ratio=pv["max_colour_ratio"],
+        )
+    except TooFewColoursError as e:  # players were found, but their crops were empty or all grass
+        raise NoPitchViewError(f"cannot tell two teams apart: {e}") from e
     table = build_tracks(tv.tracks, team_for_tracks(tv.tracks, labelled, cfg, view), fps=tv.fps)
     parquet = export_tracks(table, out_dir / "tracks.parquet", fps=tv.fps)
     back = read_tracks(parquet, fps=tv.fps)

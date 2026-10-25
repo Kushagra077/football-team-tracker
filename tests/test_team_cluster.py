@@ -1,6 +1,12 @@
 import numpy as np
+import pytest
 
-from ftt.team.cluster import choose_fit_frames, far_from_both_teams, fit_team_clusters
+from ftt.team.cluster import (
+    TooFewColoursError,
+    choose_fit_frames,
+    far_from_both_teams,
+    fit_team_clusters,
+)
 
 
 def test_two_separated_blobs_are_split_cleanly():
@@ -36,3 +42,13 @@ def test_far_from_both_teams_flags_a_third_colour():
     # nearest distances: 1, 1, 5, ~10.3 -> ratios 0.1, 0.1, 0.5, 1.03
     out = far_from_both_teams(feats, centres, max_ratio=0.7)
     assert out.tolist() == [False, False, False, True]
+
+
+@pytest.mark.parametrize("n", [0, 1])
+def test_fewer_colours_than_teams_is_a_clear_error_not_a_sklearn_one(n):
+    with pytest.raises(TooFewColoursError, match="need at least 2"):
+        fit_team_clusters(np.zeros((n, 3)))
+
+
+def test_two_colours_are_enough_to_fit():
+    assert len(fit_team_clusters(np.array([[0.0, 0, 0], [50, 10, 10]])).cluster_centers_) == 2

@@ -32,14 +32,15 @@ class _T:
 class _FakeModel:
     """Two red and two blue players in every frame, tracked with fixed ids 1..4."""
 
-    def __init__(self, n_players=4):
+    def __init__(self, n_players=4, shirts=None):
         self.n_players = n_players
+        self.shirts = shirts or [RED, RED, BLUE, BLUE]
 
     def track(self, **kwargs):
         def frames():
             for _ in range(N):
                 img = np.full((H, W, 3), 128, np.uint8)
-                for (x1, y1, x2, y2), colour in zip(BOXES, [RED, RED, BLUE, BLUE], strict=True):
+                for (x1, y1, x2, y2), colour in zip(BOXES, self.shirts, strict=True):
                     img[y1:y2, x1:x2] = colour
                 k = self.n_players
                 b = SimpleNamespace(
@@ -92,3 +93,34 @@ def test_process_video_respects_max_frames_and_no_render(tmp_path):
 def test_process_video_without_a_wide_view_raises(tmp_path):
     with pytest.raises(NoPitchViewError):
         _run(tmp_path, _FakeModel(n_players=2))  # fewer than 3 players in every frame
+
+
+@pytest.mark.parametrize("bad_fps", [0.0, float("nan"), -1.0])
+def test_unreadable_fps_falls_back_to_25_everywhere(tmp_path, monkeypatch, bad_fps):
+    """The container reports no usable fps: scaling, timestamps and the drawn video all use 25."""
+    real_capture = cv2.VideoCapture
+
+    class _NoFps:
+        def __init__(self, *args):
+            self._cap = real_capture(*args)
+
+        def get(self, prop):
+            return bad_fps if prop == cv2.CAP_PROP_FPS else self._cap.get(prop)
+
+        def __getattr__(self, name):
+            return getattr(self._cap, name)
+
+    monkeypatch.setattr(cv2, "VideoCapture", _NoFps)
+    out = _run(tmp_path, _FakeModel())
+    assert out.fps == 25.0
+    assert np.isfinite(out.table["timestamp"]).all()
+    assert np.allclose(out.table["timestamp"], out.table["frame_id"] / 25)
+    assert out.annotated.exists()
+
+
+def test_players_with_only_grass_coloured_torsos_raise_a_clear_error(tmp_path):
+    """Four players in every frame (a pitch view), but every torso crop is grass: no colours."""
+    hsv_grass = np.uint8([[[38, 200, 200]]])  # inside the grass_mask hue/saturation/value range
+    grass = tuple(int(v) for v in cv2.cvtColor(hsv_grass, cv2.COLOR_HSV2BGR)[0, 0])
+    with pytest.raises(NoPitchViewError, match="cannot tell two teams apart"):
+        _run(tmp_path, _FakeModel(shirts=[grass] * 4))

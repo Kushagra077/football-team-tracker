@@ -20,11 +20,22 @@ def choose_fit_frames(box_frames: np.ndarray, fit_n: int, min_players: int) -> n
     return frames[counts >= min_players][:fit_n]
 
 
+class TooFewColoursError(ValueError):
+    """Fewer usable shirt colours than teams: KMeans cannot split them."""
+
+
 def fit_team_clusters(features: np.ndarray, k: int = 2) -> KMeans:
-    """Fit KMeans on (n, 3) Lab colours. n_init restarts + fixed seed keep results repeatable.
+    """Fit KMeans on an (n, d) colour feature matrix (d=3 mean Lab, d=144 Lab histogram).
+
+    n_init restarts + fixed seed keep results repeatable.
 
     Cluster ids are arbitrary: cluster 0 is not 'team A'. Score with a permutation-invariant metric.
     """
+    if len(features) < k:
+        raise TooFewColoursError(
+            f"only {len(features)} usable shirt colour(s) in the frames used to learn the teams, "
+            f"need at least {k}"
+        )
     return KMeans(n_clusters=k, n_init=10, random_state=0).fit(features)
 
 

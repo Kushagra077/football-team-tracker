@@ -15,6 +15,7 @@ import cv2
 import pandas as pd
 
 from ftt.data.detections import CLASS_IDS
+from ftt.scale import clean_fps
 from ftt.team.features import FRAME_COLS, box_features, extra_names
 
 COLS = ["frame", "track_id", "x1", "y1", "x2", "y2", "conf", "cls"]
@@ -31,9 +32,11 @@ class TrackedVideo:
 
 
 def video_info(source: Path) -> tuple[float, int, tuple[int, int]]:
+    """(fps, declared frame count, (width, height)). The one place fps is read: a bad value
+    (0, nan, negative) becomes 25 here, so scaling, timestamps and rendering all agree."""
     cap = cv2.VideoCapture(str(source))
     try:
-        fps = cap.get(cv2.CAP_PROP_FPS)
+        fps = clean_fps(cap.get(cv2.CAP_PROP_FPS))
         n = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
         size = (int(cap.get(cv2.CAP_PROP_FRAME_WIDTH)), int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT)))
     finally:

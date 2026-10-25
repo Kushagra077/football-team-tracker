@@ -34,10 +34,14 @@ def mean_feature(px: np.ndarray) -> np.ndarray:
 
 
 def histogram_feature(px: np.ndarray) -> np.ndarray:
-    """Share of pixels per Lab colour bin, square-rooted so that the Euclidean distance between
-    two histograms is their Hellinger distance. A striped shirt keeps two peaks instead of
-    averaging into a colour neither stripe has; leftover grass sits in its own bins. NaNs if
-    there are no pixels."""
+    """Share of pixels per Lab colour bin, square-rooted. A striped shirt keeps two peaks instead
+    of averaging into a colour neither stripe has; leftover grass sits in its own bins. NaNs if
+    there are no pixels.
+
+    Counts are divided by ALL pixels, but ``np.histogramdd`` drops pixels outside ``HIST_RANGE``
+    (very saturated colours), so the shares can sum to a little under 1. On the demo clips that
+    is at most 0.2% of shirt pixels, so Euclidean distance here is only approximately the
+    Hellinger distance between true probability histograms."""
     n_bins = int(np.prod(HIST_BINS))
     if not len(px):
         return np.full(n_bins, np.nan)

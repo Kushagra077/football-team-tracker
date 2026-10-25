@@ -51,7 +51,7 @@ difference is the detector's cost.
 | HOTA (0-100) | The main tracking score: finds the players **and** keeps the same ID on each one. |
 | DetA | Detection part of HOTA: were the players found? |
 | AssA | Association part of HOTA: did each player keep his ID over time? |
-| IDF1 | Share of the time each player had the correct ID. |
+| IDF1 | Identity F1 score over the whole sequence: balances identity precision and recall, so it measures how well detections carry the correct ground-truth identity. Higher is better. |
 | IDSW | ID switches: times a player's number jumped to someone else. Lower is better. |
 | Detector cost | Oracle HOTA minus Real HOTA: how much the imperfect detector loses. |
 
