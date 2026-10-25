@@ -7,10 +7,11 @@ the two teams by shirt colour, with seven trackers benchmarked on SoccerNet-Trac
 
 <p align="center">
   <a href="https://youtu.be/YrP9KGjes4g">
-    <img src="https://img.youtube.com/vi/YrP9KGjes4g/hqdefault.jpg" alt="Demo video on YouTube" width="560">
+    <img src="reports/figures/demo.gif" alt="Five seconds of the demo: players tracked and coloured by team" width="720">
   </a>
   <br>
-  <sub><b>▶ Demo video</b> (YouTube, unlisted): a 2-minute broadcast highlights clip run through <code>scripts/process_video.py</code>.
+  <sub><b>▶ Click for the full 2-minute demo on YouTube</b> (unlisted). Five seconds of a broadcast highlights clip run
+  through <code>scripts/process_video.py</code>: orange and cyan are the two teams, white is "no team" (keepers, referees).
   Footage © its rights holder, shown as a non-commercial portfolio demo.<br>
   The numbers drawn on players are <b>tracker IDs, not jersey numbers</b>: the tracker numbers each new track it starts
   (so #122 is simply the 122nd track), and reading shirt numbers is a separate, later task.</sub>
@@ -312,6 +313,25 @@ table), so the numbers can be checked without the SoccerNet data.
 
 Layout: `src/ftt/` (data, detect, track, team, eval, schema, export, render, video, scale, pipeline), `scripts/` (one command per
 experiment), `configs/` (tracker YAMLs, `team.yaml`), `tests/` (CI runs ruff and pytest on every push).
+
+## Design decisions
+
+The choices that shaped the project, what each one bought, and what it cost.
+
+| Decision | Why | Cost / trade-off |
+|---|---|---|
+| **Score every tracker twice: true boxes (oracle) and my detector's boxes (real)** | Separates "the tracker is weak" from "the detector is weak". The gap (19-25 HOTA points) is the detector's cost, so the next improvement is obvious. | Every experiment runs twice. |
+| **Tune on val only, run the test split once** (`tune_tracker.py` refuses other splits); **one shared setting for all trackers** | Test numbers are not tuned on, and no tracker gets a private advantage. | A per-tracker setting might lift some of them a little. |
+| **Use Ultralytics' trackers instead of writing my own** | The question is how they compare on football with my detector, not who can re-implement ByteTrack. | The code is AGPL-3.0, so this repo is too. |
+| **BoT-SORT with camera-motion compensation (GMC)** | Broadcast cameras pan and zoom. On true boxes GMC cut ID switches from 3524 to 1251. | It still loses IDs at camera cuts: there is no re-identification across shots. |
+| **Team colour from the torso minus grass, KMeans with k=2, no labels** | No team labels are needed, so it works on any footage. A per-track rolling vote cut label flips by 77% on the test split. | Only two colours, and teams in similar kits are not handled. |
+| **Lab colour histogram instead of the mean colour** | A mean blends a striped shirt into a colour neither stripe has. Chosen on train clips, confirmed on val: better on SoccerNet and on two of my three amateur clips. | Worse on dark-blue shirts in shade or blur (Chelsea demo). It is one line in `configs/team.yaml` to switch back to `mean_lab`. |
+| **Abstain rather than guess** (pitch-view check, colour-outlier rule, goalkeeper rule) | A wrong team colour on screen looks worse than no colour. | Lower coverage on uploads (92.7-97.0% of boxes got a team), and the keeper rule abstains on about half the keepers. |
+| **One `process_video` function** for the command line, the Space and the tests | The live demo runs exactly the code that is tested here. | `src/ftt` is copied into the Space by a script, not installed as a package. |
+| **CPU-only Docker image** | Runs anywhere with one command. The lockfile's GPU libraries (about 4 GB) are skipped and the CPU build of the same PyTorch version is used. | About 12 fps instead of the GPU's speed. |
+
+What I would change next: a better detector (the biggest single lever, since the detector costs 25 points of HOTA for the best tracker),
+pitch coordinates so the goalkeeper rule stops depending on the camera, and re-identification across camera cuts.
 
 ## Limitations
 
