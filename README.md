@@ -237,6 +237,21 @@ uv run python scripts/process_video.py path/to/clip.mp4            # add --devic
 
 Wide broadcast views work best. Ids restart after camera cuts, and close-ups get no team (see limitations).
 
+### Or run it in Docker (no Python setup)
+
+```bash
+docker build -t football-team-tracker .
+docker run --rm football-team-tracker                      # runs the tests
+docker run --rm -v "$PWD/clips:/clips" -v "$PWD/out:/app/reports" football-team-tracker \
+    python scripts/process_video.py /clips/my_clip.mp4 --device cpu
+#   -> out/football_detection_v3/process_video/my_clip/tracks.parquet + annotated.mp4
+```
+
+- The image has the locked dependencies and the detector weights (downloaded from my detector repo at a pinned commit).
+- It is **CPU only** (about 12 fps on my MacBook, 150 frames of 720p in 12 s): the lockfile's GPU libraries are left out
+  and the CPU build of the same PyTorch version is installed instead.
+- The 16 tests that need SoccerNet files or local weights skip inside the container, the same as in CI.
+
 ### Or try it in the browser
 
 The [Hugging Face Space](https://huggingface.co/spaces/Kushagra77/football-detect-serve) has a **Track (video)** tab
