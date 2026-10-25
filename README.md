@@ -191,7 +191,7 @@ Wide broadcast views work best. Ids restart after camera cuts, and close-ups get
 The [Hugging Face Space](https://huggingface.co/spaces/Kushagra77/football-detect-serve) has a **Track (video)** tab
 that runs the same `process_video` function on a free ZeroGPU (`scripts/sync_space.py` copies `src/ftt` into the Space).
 Limits of the free demo: only the first 20 s of a clip are used, wider uploads are shrunk to 1280 px, and each visitor
-has a small daily GPU quota (a 20 s clip used roughly half a minute of it in my tests, so expect around ten runs a day when signed in). The
+has a small daily GPU quota (a 20 s, 25 fps clip is tracked in about 12 s on the GPU, and each run took roughly half a minute off the quota meter in my tests, probably including GPU start-up, so expect around ten runs a day when signed in). The
 Space runs Python 3.12 and PyTorch 2.8-2.13, while this repo is developed on Python 3.13 and PyTorch 2.14 (the two
 setups were not compared output by output). The Space's other tab, **Detect (image)**, is the detector on its own.
 
