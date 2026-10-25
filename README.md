@@ -104,15 +104,15 @@ checkpoint, so validation numbers may be slightly optimistic; the numbers below 
   <img src="reports/figures/tracker_benchmark.svg" alt="Oracle vs real HOTA for seven trackers" width="90%">
 </p>
 
-| Tracker | Oracle HOTA | Real HOTA | Real DetA | Real AssA | Real IDF1 | Detector cost |
-|---|---|---|---|---|---|---|
-| **BoT-SORT + GMC** | **84.2** | **59.0** | **70.9** | **49.4** | **68.5** | 25.2 |
-| BoT-SORT (no GMC) | 80.4 | 56.6 | 69.9 | 46.0 | 65.2 | 23.9 |
-| Deep OC-SORT + GMC | 76.6 | 56.0 | 69.0 | 45.6 | 65.4 | 20.6 |
-| OC-SORT (+ BYTE low-conf pass) | 75.2 | 55.4 | 68.0 | 45.3 | 65.5 | 19.8 |
-| ByteTrack | 74.1 | 55.3 | 68.1 | 45.1 | 65.2 | 18.8 |
-| OC-SORT | 75.2 | 55.2 | 68.1 | 44.9 | 65.2 | 20.1 |
-| FastTracker | 74.1 | 55.0 | 68.2 | 44.5 | 64.4 | 19.2 |
+| Tracker | Oracle HOTA | Oracle DetA / AssA | Real HOTA | Real DetA | Real AssA | Real IDF1 | ID switches (oracle / real) | Detector cost |
+|---|---|---|---|---|---|---|---|---|
+| **BoT-SORT + GMC** | **84.2** | 95.4 / 74.4 | **59.0** | **70.9** | **49.4** | **68.5** | 1251 / 2705 | 25.2 |
+| BoT-SORT (no GMC) | 80.4 | 93.2 / 69.5 | 56.6 | 69.9 | 46.0 | 65.2 | 3524 / 3338 | 23.9 |
+| Deep OC-SORT + GMC | 76.6 | 87.1 / 67.3 | 56.0 | 69.0 | 45.6 | 65.4 | 1544 / 3534 | 20.6 |
+| OC-SORT (+ BYTE low-conf pass) | 75.2 | 86.1 / 65.8 | 55.4 | 68.0 | 45.3 | 65.5 | 3062 / 3771 | 19.8 |
+| ByteTrack | 74.1 | 86.0 / 64.0 | 55.3 | 68.1 | 45.1 | 65.2 | 3650 / 3356 | 18.8 |
+| OC-SORT | 75.2 | 86.1 / 65.8 | 55.2 | 68.1 | 44.9 | 65.2 | 3062 / 3805 | 20.1 |
+| FastTracker | 74.1 | 86.0 / 64.0 | 55.0 | 68.2 | 44.5 | 64.4 | 3687 / 3271 | 19.2 |
 
 - **The detector costs about 19-25 HOTA points**, e.g. BoT-SORT+GMC 84.2 -> 59.0 and ByteTrack 74.1 -> 55.3.
   The split is approximate, not additive: a missed box hurts differently depending on the tracker's settings.
@@ -190,12 +190,19 @@ SoccerNet has few striped kits, so I also hand-labelled boxes from three amateur
 - I hand-labelled 56 player boxes: mean colour 100%, histogram 98.2% (one box).
 - Where the two versions disagree (3.2% of the clip), the mean colour was right on 23 and the histogram on 13 of the 36
   boxes I could judge by eye.
-- The histogram turns some dark-blue shirts in shade or motion blur orange, including one player in the 38 s close-up.
+- The histogram turns some dark-blue shirts in shade or motion blur orange, including the player in the picture below (at about 37 s).
   Different brightness bins (2, 3 or 6 instead of 4) did not change this.
 - The YouTube demo was rendered before the change, with the mean colour, and I kept it because it colours that close-up
   correctly.
 - The histogram is also worse for the referee rule: its distances separate a black-kit referee from players less well than
   mean-colour distances do. That rule therefore still uses the mean Lab colour on its own two-colour clustering.
+
+<p align="center">
+  <img src="reports/figures/failure_case.jpg" alt="Same frame twice: a dark-blue Chelsea player coloured cyan with the mean colour and orange with the histogram" width="100%">
+  <br>
+  <sub><b>Failure case, same frame at 37 s.</b> The Chelsea player (id 316) is in shade and motion blur. The mean colour puts him
+  on the right team (cyan); the histogram, the current default, calls him orange. Footage © its rights holder.</sub>
+</p>
 
 **How to read accuracy with coverage.** The accuracy is measured on boxes that received a label.
 
@@ -383,7 +390,10 @@ pitch coordinates so the goalkeeper rule stops depending on the camera, and re-i
   because the frame passed the pitch-view check while the colours learned on distant views did not fit. The two rules
   above now give him no team (white in the video) instead of a wrong one; the shot is still not labelled correctly.
 - **Pitch coordinates and the downstream contract are deferred.** Pitch and jersey columns are null until a planned
-  pitch-coordinates project fills them; a planned tactical-metrics project requires them non-null, so that contract test waits.
+  pitch-coordinates project fills them, and the tactical-metrics project's validator requires them non-null.
+  `tests/test_b1_contract.py` checks exactly that gap against the real validator: our output fails only on the null pitch
+  columns, and passes once they are filled with placeholder values. It is skipped when that project is not installed:
+  `uv run --with ../football-tactical-metrics python -m pytest tests/test_b1_contract.py`.
 - **Rendering uses plain OpenCV drawing** rather than `supervision`'s annotators (fewer API changes to track).
 
 ## Future work
