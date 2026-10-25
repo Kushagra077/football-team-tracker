@@ -146,7 +146,8 @@ The same one-command pipeline (`process_video.py`, settings unchanged) on 2 foot
 - **Tracking transfers about as well as on SoccerNet** (BoT-SORT+GMC real HOTA 59.0 on SoccerNet test), with only 2 clips,
   so this is a sanity check, not a benchmark. The two datasets also draw boxes slightly differently.
 - **Team colours:** SportsMOT has no team labels, so this is checked by eye only. Most players are coloured correctly; a few
-  red shirts flip on the 22 s clip. The referee in black is detected as a "player": the colour rule below now gives his
+  red shirts flip on the 22 s clip. On the 31 s clip the goalkeeper rule decides one keeper and gets him wrong (the camera
+  sits at his goal, where the other team's players are, so image position misleads). The referee in black is detected as a "player": the colour rule below now gives his
   boxes no team about a third of the time (22-34% of non-player boxes), at a cost of 0.2-1.0% of real players.
 - No SportsMOT frames are published here (its terms forbid redistribution without permission).
 
@@ -224,7 +225,12 @@ experiment), `configs/` (tracker YAMLs, `team.yaml`), `tests/` (CI runs ruff and
 - **Detector errors are only partly caught.** On uploaded video, a "player" whose shirt colour is far from both teams
   (distance to the nearest team colour > 1.0 x the distance between the two team colours) gets no team. That catches part
   of a black-kit referee or keeper, not all of it. A club crest in a logo card was detected as a player.
-- **Goalkeeper thresholds are in pixels of a 1920-wide frame**, so they are stricter than intended on 720p video.
+- **Other frame rates and sizes.** Settings were tuned on 25 fps, 1920 px SoccerNet video. For uploads, the frame counts
+  (vote window, tracker memory, colour-fit window) are scaled by the video's fps and the keeper thresholds by its width
+  (`src/ftt/scale.py`); a 25 fps, 1920 px video is unchanged. Checked only by simulation: dropping frames of 3 val clips
+  to 12.5 and 8.3 fps, scaling lifted team accuracy 97.2 -> 98.0 and 95.6 -> 97.6 (and label flips rose 46 -> 60 and
+  56 -> 75, because the vote window is shorter); tracking scores barely moved (HOTA 56.1 -> 56.0 and 49.7 -> 50.4). There
+  is no real 50/60 fps test.
 - **Failure case seen in the demo:** in a medium shot at 38 s, a red-shirted player was drawn in the other team's colour,
   because the frame passed the pitch-view check while the colours learned on distant views did not fit. The two rules
   above now give him no team (white in the video) instead of a wrong one; the shot is still not labelled correctly.

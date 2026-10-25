@@ -20,9 +20,10 @@ from ftt.data.detections import detector_name
 from ftt.detect.run_detector import load_detector
 from ftt.export import build_tracks, export_tracks, read_tracks
 from ftt.render import render_video
+from ftt.scale import scale_team_cfg, scale_tracker_cfg
 from ftt.team.assign import label_from_features, team_for_tracks
 from ftt.team.gate import pitch_view_frames, small_boxes
-from ftt.video import track_video
+from ftt.video import track_video, video_info
 
 ROOT = Path(__file__).parents[1]
 PLAYER_CLS = 2
@@ -45,7 +46,11 @@ def main() -> None:
     )
     out_dir.mkdir(parents=True, exist_ok=True)
 
+    # Settings are counted in frames / pixels of a 25 fps, 1920 px video: rescale for this one.
+    src_fps, _, (src_w, _) = video_info(args.video)
+    cfg = scale_team_cfg(cfg, src_fps, src_w)
     tcfg = {**yaml.safe_load((ROOT / "configs" / f"{args.tracker}.yaml").read_text()), **TUNED}
+    tcfg = scale_tracker_cfg(tcfg, src_fps)
     tcfg.pop("name", None)  # model.track reads a plain Ultralytics tracker yaml
     tracker_yaml = out_dir / f"{args.tracker}_tuned.yaml"
     tracker_yaml.write_text(yaml.safe_dump(tcfg))
