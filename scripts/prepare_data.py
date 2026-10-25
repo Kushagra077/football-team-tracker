@@ -35,7 +35,7 @@ def clip_dir_for(meta_root: Path, split: str, clip: str) -> Path:
 
 
 def clip_stats(clip_dir: Path) -> dict:
-    """One clip -> one row of facts, persons only (DD-002)."""
+    """One clip -> one row of facts, persons only."""
     frames = int(read_seqinfo(clip_dir)["seqLength"])
     persons = load_persons_gt(clip_dir)
 
@@ -129,7 +129,7 @@ def main() -> None:
     print(f"detector train ∩ evaluation (val+test): {sorted(overlap) or 'none'}")
     print(
         "note: our val = the detector's val, which it used to pick its checkpoint -> val numbers "
-        "may be slightly optimistic; final numbers come from test only (DD-007)."
+        "may be slightly optimistic; final numbers come from test only."
     )
 
     # --- gate ------------------------------------------------------------------------------

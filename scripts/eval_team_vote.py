@@ -1,6 +1,6 @@
 """Per-frame team labels vs voted labels, on REAL tracker output.
 
-Pipeline per clip: cached detector boxes -> tracker (BoT-SORT + GMC, tuned shared setting, DD-018)
+Pipeline per clip: cached detector boxes -> tracker (BoT-SORT + GMC, tuned shared setting)
 -> torso colour of every tracked player box -> KMeans (fit on frames 1..N, no labels) ->
 per-frame label -> rolling vote per tracker id. Tracked boxes are matched to GT players
 (IoU >= 0.5) only to get a true team for scoring; unmatched boxes are not scored.
@@ -21,17 +21,17 @@ import cv2
 import numpy as np
 import yaml
 
-from eval_team import match_to_gt  # noqa: E402  (sibling script)
 from ftt.data.detections import CLASS_IDS, detector_name, load_cached_detections
 from ftt.data.sn_tracking import frame_path, list_clips, load_persons_gt
+from ftt.eval.team_metrics import match_to_gt
 from ftt.team.assign import label_players
 from ftt.team.vote import vote_labels
 from ftt.track.adapters import UltralyticsTracker
+from ftt.track.config import load_tracker_cfg
 from ftt.track.runner import tracks_for_clip
 
 ROOT = Path(__file__).parents[1]
 PLAYER = CLASS_IDS["player"]
-TUNED = {"track_high_thresh": 0.25, "match_thresh": 0.9}  # the shared tuned setting (DD-018)
 
 
 def flips_per_track(track_ids: np.ndarray, frames: np.ndarray, labels: np.ndarray) -> int:
@@ -57,7 +57,7 @@ def main() -> None:
     folder = "test" if args.split == "test" else "train"
     detector = detector_name(paths["detector_weights"])
     window = cfg["vote"]["window"]
-    tcfg = {**yaml.safe_load((ROOT / "configs" / f"{args.tracker}.yaml").read_text()), **TUNED}
+    tcfg = load_tracker_cfg(ROOT / "configs", args.tracker)
     tracker = UltralyticsTracker(tcfg)
     track_dir = ROOT / paths["cache_dir"] / "tracks" / detector
     track_dir.mkdir(parents=True, exist_ok=True)

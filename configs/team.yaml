@@ -12,18 +12,18 @@ features:
 cluster:
   k: 2
   fit_frames: 50              # first N frames of the clip that look like a pitch view
-  fit_min_players: 3          # a frame counts only if it shows this many player boxes (DD-023)
+  fit_min_players: 3          # a frame counts only if it shows this many player boxes
   fit_on: player              # players only; keepers/referees would pull centroids apart
-pitch_view:                   # upload path only: trust team colours on wide pitch views (DD-025)
+pitch_view:                   # upload path only: trust team colours on wide pitch views
   min_players: 3
   max_box_height: 0.20        # median player height / frame height; SoccerNet val max is 0.166.
-                              # Also applied per box: a taller player box gets no team (DD-028)
-  max_colour_ratio: 1.0       # colour far from both teams -> no team (black-kit referee/keeper called "player"); 0.7 dropped 19% of white-kit players on SportsMOT (DD-028)
+                              # Also applied per box: a taller player box gets no team
+  max_colour_ratio: 1.0       # colour far from both teams -> no team (black-kit referee/keeper called "player"); 0.7 dropped 19% of white-kit players on SportsMOT
 goalkeeper:
   assign_by: nearest_centroid_x   # crude heuristic; pitch coordinates (a planned follow-up) fix it properly
   min_team_gap: 150           # px (of 1920): teams' average x closer than this -> unknown
   min_margin: 60              # px: keeper must be this much nearer one team, else unknown
 vote:
   window: 25                  # frames (1 s at 25 fps)
-  lock_min_agree: null        # null = never lock. A lock at 15 cost 6.4 acc points: tracker id swaps (DD-022)
+  lock_min_agree: null        # null = never lock. A lock at 15 cost 6.4 acc points: tracker id swaps
 fps: 25

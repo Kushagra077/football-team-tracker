@@ -57,7 +57,8 @@ def label_from_features(
         # "Fits neither team" is judged on mean Lab with its own two-colour clustering: the rule
         # was tuned on it, and histogram distances (or histogram clusters, whose mean colours
         # can nearly coincide when the kits differ by pattern) separate referees from players
-        # worse (DD-032). With mean_lab as the clustering feature this is the same clustering.
+        # worse (coverage fell from 98.6% to 36.5% on one Pexels clip). With mean_lab as the
+        # clustering feature this is the same clustering.
         lab = out[["L", "a", "b"]].to_numpy()
         gate = km if feature_kind(cfg) == "mean_lab" else fit_team_clusters(lab[fit])
         raw[far_from_both_teams(lab, gate.cluster_centers_, max_colour_ratio)] = -1

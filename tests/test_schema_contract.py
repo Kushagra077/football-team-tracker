@@ -1,6 +1,6 @@
 """tracks.parquet follows this project's own schema contract.
 
-DD-003: standalone for now. The metrics project's contract (``ftm.schema.validate()``) is
+Standalone for now. The metrics project's contract (``ftm.schema.validate()``) is
 revisited at integration time, after pitch coordinates exist, so nothing here imports it.
 The file is read back with plain pandas/pyarrow too, so the contract is checked on what is
 really stored, not only through our own reader.

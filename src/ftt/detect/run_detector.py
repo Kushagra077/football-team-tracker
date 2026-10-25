@@ -1,6 +1,6 @@
 """Run the detector ONCE per clip and cache to ``cache/detections/<detector>/<clip>.parquet``.
 
-Runs locally on the Apple GPU (``device="mps"``; DD-010: frames are already on this machine).
+Runs locally on the Apple GPU (``device="mps"``; the frames are already on this machine).
 Use a LOW confidence threshold (~0.1): ByteTrack's second association pass needs low-confidence
 boxes, and a detector thresholded at 0.5 silently disables it. Keep player/goalkeeper/referee;
 drop ball/other.

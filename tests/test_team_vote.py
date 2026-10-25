@@ -59,3 +59,10 @@ def test_frame_gaps_count_as_time_not_as_rows():
 def test_lock_larger_than_window_is_rejected():
     with pytest.raises(ValueError):
         vote_labels(np.array([0]), np.array([1]), np.array([0]), window=10, lock_min_agree=15)
+
+
+def test_default_never_locks_like_the_config():
+    ids = np.zeros(40, int)
+    fr = np.arange(1, 41)
+    lab = np.array([0] * 20 + [1] * 20)
+    assert vote_labels(ids, fr, lab)[-1] == 1  # a lock after 15 agreeing frames would keep it at 0

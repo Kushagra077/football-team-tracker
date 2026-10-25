@@ -3,7 +3,7 @@
 Frames stream one at a time; for each tracked player box the torso colour is computed right
 away from that frame and the frame is dropped, so a long video never sits in memory. Pass 2
 (``team.assign``) turns the colours into team labels once the whole video has been seen.
-Parity with our cached-box pipeline was measured in DD-024.
+On one val clip's frames it gives the same tracks as the cached-box evaluation pipeline.
 """
 
 from __future__ import annotations

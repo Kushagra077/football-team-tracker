@@ -113,7 +113,7 @@ def role_to_team(role: Role) -> str | None:
     return role.side
 
 
-# Class policy (DD-002): evaluate persons only. The ball is out of scope here; "other" is excluded.
+# Class policy: evaluate persons only. The ball is out of scope here; "other" is excluded.
 PERSON_CLS = ("player", "goalkeeper", "referee")
 
 

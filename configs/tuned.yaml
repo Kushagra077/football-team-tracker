@@ -1,0 +1,5 @@
+# The one shared tracker setting chosen on the val split (scripts/tune_tracker.py), applied on top of
+# every tracker's own config. Lower first-pass confidence than the Ultralytics default (0.5), so weaker
+# detector boxes are tracked; higher match threshold than the default (0.8). Log: results/tuning_val.jsonl.
+track_high_thresh: 0.25
+match_thresh: 0.9

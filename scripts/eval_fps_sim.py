@@ -1,4 +1,4 @@
-"""Does scaling the settings to the video's frame rate help? Simulate lower frame rates (DD-029).
+"""Does scaling the settings to the video's frame rate help? Simulate lower frame rates.
 
 Drops frames of real SoccerNet val clips (every 2nd frame = 12.5 fps, every 3rd = 8.3 fps), runs the
 upload-path pipeline with the settings unscaled and scaled (``ftt.scale``), and scores both against
@@ -19,17 +19,17 @@ import cv2
 import numpy as np
 import yaml
 
-from eval_team import match_to_gt  # noqa: E402  (sibling script)
 from ftt.data.detections import detector_name
 from ftt.data.sn_tracking import frame_path, load_persons_gt
 from ftt.detect.run_detector import load_detector
 from ftt.eval.mot_io import write_mot
-from ftt.eval.team_metrics import best_permutation_accuracy
+from ftt.eval.team_metrics import best_permutation_accuracy, match_to_gt
 from ftt.eval.trackeval_wrap import evaluate
 from ftt.export import build_tracks
 from ftt.scale import scale_team_cfg, scale_tracker_cfg
 from ftt.team.assign import label_from_features, team_for_tracks
 from ftt.team.gate import pitch_view_frames, small_boxes
+from ftt.track.config import load_tracker_cfg
 from ftt.video import track_video, video_info
 
 ROOT = Path(__file__).parents[1]
@@ -40,7 +40,6 @@ args = ap.parse_args()
 CLIPS, STEPS = args.clips, args.steps
 paths = yaml.safe_load((ROOT / "configs/paths.yaml").read_text())
 CFG0 = yaml.safe_load((ROOT / "configs/team.yaml").read_text())
-TUNED = {"track_high_thresh": 0.25, "match_thresh": 0.9}
 images = (ROOT / paths["detector_images"]).resolve()
 meta = ROOT / paths["meta_root"]
 OUT = ROOT / paths["reports_dir"] / detector_name(paths["detector_weights"]) / "fps_sim"
@@ -65,7 +64,7 @@ def make_video(clip, step):
 def run(video, scale):
     fps, _, (w, h) = video_info(video)
     cfg = scale_team_cfg(CFG0, fps, w) if scale else CFG0
-    tcfg = {**yaml.safe_load((ROOT / "configs/botsort_gmc.yaml").read_text()), **TUNED}
+    tcfg = load_tracker_cfg(ROOT / "configs", "botsort_gmc")
     if scale:
         tcfg = scale_tracker_cfg(tcfg, fps)
     tcfg.pop("name", None)

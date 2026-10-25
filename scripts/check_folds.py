@@ -25,6 +25,7 @@ from ftt.data.sn_tracking import frame_path, list_clips, load_persons_gt
 from ftt.eval.mot_io import write_mot
 from ftt.eval.trackeval_wrap import evaluate
 from ftt.track.adapters import UltralyticsTracker
+from ftt.track.config import load_tuned
 from ftt.track.runner import run_clip
 
 ROOT = Path(__file__).parents[1]
@@ -32,7 +33,6 @@ ALL_TRACKERS = [
     "bytetrack", "botsort_nogmc", "botsort_gmc", "ocsort_byte",
     "deepocsort_gmc", "fasttrack", "ocsort", "deepocsort",
 ]  # fmt: skip
-TUNED = {"track_high_thresh": 0.25, "match_thresh": 0.9}
 
 
 def parse_set(items: list[str]) -> dict:
@@ -47,7 +47,7 @@ def main() -> None:
     )
     args = ap.parse_args()
     trackers = ALL_TRACKERS if args.trackers == ["all"] else args.trackers
-    tuned = TUNED if args.set is None else parse_set(args.set)
+    tuned = load_tuned(ROOT / "configs") if args.set is None else parse_set(args.set)
 
     paths = yaml.safe_load((ROOT / "configs" / "paths.yaml").read_text())
     meta_root = ROOT / paths["meta_root"]

@@ -4,10 +4,9 @@ This project emits the shared columns plus image-space columns. ``x_pitch`` /
 ``y_pitch`` / ``jersey_number`` are explicitly NULL (never 0: 0 is the centre
 spot and a silent zero corrupts every downstream metric).
 
-DECIDED (design_decision.md DD-003): standalone for now. The metrics project's
-``ftm.schema.validate()`` requires non-null ``x_pitch``/``y_pitch`` and also needs
-``period``, ``is_gk``, ``ball_state`` and ``team`` in {home, away, ball}; that contract
-is revisited at integration time, so ``to_b1()`` stays a stub until then.
+Standalone for now. The tactical-metrics project's ``ftm.schema.validate()`` requires non-null
+``x_pitch``/``y_pitch`` and also needs ``period``, ``is_gk``, ``ball_state`` and ``team`` in
+{home, away, ball}. That contract is revisited at integration time, once pitch coordinates exist.
 """
 
 from __future__ import annotations
@@ -40,7 +39,7 @@ class SchemaError(ValueError):
 DTYPES: Final[dict[str, str]] = {
     "frame_id": "int64",
     "timestamp": "float64",
-    "track_id": "int64",      # tracker id; the metrics project wants a string (DD-003)
+    "track_id": "int64",      # tracker id; the metrics project wants a string
     "team": "Int8",           # KMeans cluster 0/1 (arbitrary per clip); null: referee, undecided GK
     "jersey_number": "Int16",  # nullable, always null here
     "x_pitch": "float64",     # NaN until pitch coordinates exist
@@ -78,7 +77,7 @@ def coerce(df: pd.DataFrame) -> pd.DataFrame:
 
 
 def validate(df: pd.DataFrame, fps: float = FPS) -> pd.DataFrame:
-    """Assert our own contract (DD-003: nothing external involved). Returns df, columns in order.
+    """Assert our own contract (nothing external involved). Returns df, columns in order.
 
     Columns and dtypes match; pitch/jersey columns are ALL null (a zero is the centre spot);
     only ``team`` may otherwise be null; no ball rows; one row per (frame_id, track_id);
@@ -118,11 +117,3 @@ def validate(df: pd.DataFrame, fps: float = FPS) -> pd.DataFrame:
     if not df["conf"].between(0, 1).all():
         raise SchemaError("conf must be within [0, 1]")
     return df
-
-
-def to_b1(df: pd.DataFrame) -> pd.DataFrame:
-    """Adapt an output frame to the tactical-metrics project's canonical frame.
-
-    Adds period, is_gk, ball_state; maps team to home/away; converts ids to strings.
-    """
-    raise NotImplementedError

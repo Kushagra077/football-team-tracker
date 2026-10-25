@@ -1,0 +1,104 @@
+{"tracker": "bytetrack", "overrides": {}, "seconds": 12.3, "HOTA": 58.25, "DetA": 71.61, "AssA": 47.49, "IDF1": 68.01, "IDSW": 516.0}
+{"tracker": "bytetrack", "overrides": {"track_high_thresh": 0.3}, "seconds": 12.2, "HOTA": 59.97, "DetA": 72.04, "AssA": 50.01, "IDF1": 70.52, "IDSW": 545.0}
+{"tracker": "bytetrack", "overrides": {"track_high_thresh": 0.7}, "seconds": 12.0, "HOTA": 55.16, "DetA": 68.63, "AssA": 44.43, "IDF1": 64.12, "IDSW": 505.0}
+{"tracker": "bytetrack", "overrides": {"new_track_thresh": 0.4}, "seconds": 12.2, "HOTA": 58.25, "DetA": 71.61, "AssA": 47.49, "IDF1": 68.01, "IDSW": 516.0}
+{"tracker": "bytetrack", "overrides": {"new_track_thresh": 0.7}, "seconds": 11.9, "HOTA": 57.96, "DetA": 70.82, "AssA": 47.52, "IDF1": 68.16, "IDSW": 414.0}
+{"tracker": "bytetrack", "overrides": {"track_buffer": 15}, "seconds": 12.0, "HOTA": 58.35, "DetA": 71.61, "AssA": 47.65, "IDF1": 68.2, "IDSW": 503.0}
+{"tracker": "bytetrack", "overrides": {"track_buffer": 60}, "seconds": 12.2, "HOTA": 58.34, "DetA": 71.65, "AssA": 47.61, "IDF1": 68.25, "IDSW": 522.0}
+{"tracker": "bytetrack", "overrides": {"match_thresh": 0.7}, "seconds": 12.5, "HOTA": 56.32, "DetA": 71.32, "AssA": 44.59, "IDF1": 64.51, "IDSW": 1034.0}
+{"tracker": "bytetrack", "overrides": {"match_thresh": 0.9}, "seconds": 12.1, "HOTA": 59.1, "DetA": 71.74, "AssA": 48.79, "IDF1": 69.76, "IDSW": 456.0}
+{"tracker": "botsort_nogmc", "overrides": {}, "seconds": 12.0, "HOTA": 59.67, "DetA": 72.98, "AssA": 48.9, "IDF1": 69.04, "IDSW": 509.0}
+{"tracker": "botsort_nogmc", "overrides": {"track_high_thresh": 0.3}, "seconds": 12.0, "HOTA": 60.87, "DetA": 73.34, "AssA": 50.63, "IDF1": 70.64, "IDSW": 554.0}
+{"tracker": "botsort_nogmc", "overrides": {"track_high_thresh": 0.7}, "seconds": 11.9, "HOTA": 56.28, "DetA": 69.77, "AssA": 45.5, "IDF1": 64.53, "IDSW": 516.0}
+{"tracker": "botsort_nogmc", "overrides": {"new_track_thresh": 0.4}, "seconds": 12.0, "HOTA": 59.67, "DetA": 72.98, "AssA": 48.9, "IDF1": 69.04, "IDSW": 509.0}
+{"tracker": "botsort_nogmc", "overrides": {"new_track_thresh": 0.7}, "seconds": 11.8, "HOTA": 59.31, "DetA": 71.84, "AssA": 49.06, "IDF1": 69.14, "IDSW": 407.0}
+{"tracker": "botsort_nogmc", "overrides": {"track_buffer": 15}, "seconds": 12.0, "HOTA": 59.61, "DetA": 72.95, "AssA": 48.83, "IDF1": 68.91, "IDSW": 499.0}
+{"tracker": "botsort_nogmc", "overrides": {"track_buffer": 60}, "seconds": 12.2, "HOTA": 59.57, "DetA": 73.02, "AssA": 48.72, "IDF1": 68.88, "IDSW": 515.0}
+{"tracker": "botsort_nogmc", "overrides": {"match_thresh": 0.7}, "seconds": 12.2, "HOTA": 57.33, "DetA": 72.47, "AssA": 45.48, "IDF1": 64.9, "IDSW": 972.0}
+{"tracker": "botsort_nogmc", "overrides": {"match_thresh": 0.9}, "seconds": 12.0, "HOTA": 60.61, "DetA": 73.09, "AssA": 50.36, "IDF1": 70.67, "IDSW": 446.0}
+{"tracker": "botsort_gmc", "overrides": {}, "seconds": 98.8, "HOTA": 62.24, "DetA": 74.18, "AssA": 52.32, "IDF1": 72.93, "IDSW": 401.0}
+{"tracker": "botsort_gmc", "overrides": {"track_high_thresh": 0.3}, "seconds": 99.0, "HOTA": 63.08, "DetA": 74.53, "AssA": 53.48, "IDF1": 73.66, "IDSW": 412.0}
+{"tracker": "botsort_gmc", "overrides": {"track_high_thresh": 0.7}, "seconds": 98.8, "HOTA": 61.06, "DetA": 72.13, "AssA": 51.76, "IDF1": 71.8, "IDSW": 354.0}
+{"tracker": "botsort_gmc", "overrides": {"new_track_thresh": 0.4}, "seconds": 98.7, "HOTA": 62.24, "DetA": 74.18, "AssA": 52.32, "IDF1": 72.93, "IDSW": 401.0}
+{"tracker": "botsort_gmc", "overrides": {"new_track_thresh": 0.7}, "seconds": 99.0, "HOTA": 61.58, "DetA": 72.94, "AssA": 52.07, "IDF1": 72.74, "IDSW": 342.0}
+{"tracker": "botsort_gmc", "overrides": {"track_buffer": 15}, "seconds": 98.9, "HOTA": 62.17, "DetA": 74.19, "AssA": 52.19, "IDF1": 72.83, "IDSW": 401.0}
+{"tracker": "botsort_gmc", "overrides": {"track_buffer": 60}, "seconds": 98.9, "HOTA": 62.29, "DetA": 74.17, "AssA": 52.41, "IDF1": 73.09, "IDSW": 400.0}
+{"tracker": "botsort_gmc", "overrides": {"match_thresh": 0.7}, "seconds": 98.6, "HOTA": 61.31, "DetA": 74.33, "AssA": 50.66, "IDF1": 70.96, "IDSW": 440.0}
+{"tracker": "botsort_gmc", "overrides": {"match_thresh": 0.9}, "seconds": 97.9, "HOTA": 62.64, "DetA": 74.18, "AssA": 52.99, "IDF1": 73.69, "IDSW": 372.0}
+{"tracker": "ocsort_byte", "overrides": {}, "seconds": 14.9, "HOTA": 58.07, "DetA": 71.45, "AssA": 47.3, "IDF1": 67.95, "IDSW": 528.0}
+{"tracker": "ocsort_byte", "overrides": {"track_high_thresh": 0.3}, "seconds": 15.0, "HOTA": 59.53, "DetA": 71.86, "AssA": 49.41, "IDF1": 70.29, "IDSW": 550.0}
+{"tracker": "ocsort_byte", "overrides": {"track_high_thresh": 0.7}, "seconds": 14.6, "HOTA": 55.1, "DetA": 68.67, "AssA": 44.3, "IDF1": 64.16, "IDSW": 488.0}
+{"tracker": "ocsort_byte", "overrides": {"new_track_thresh": 0.4}, "seconds": 14.9, "HOTA": 58.07, "DetA": 71.45, "AssA": 47.3, "IDF1": 67.95, "IDSW": 528.0}
+{"tracker": "ocsort_byte", "overrides": {"new_track_thresh": 0.7}, "seconds": 14.7, "HOTA": 57.82, "DetA": 70.63, "AssA": 47.42, "IDF1": 68.33, "IDSW": 429.0}
+{"tracker": "ocsort_byte", "overrides": {"track_buffer": 15}, "seconds": 14.7, "HOTA": 57.98, "DetA": 71.44, "AssA": 47.16, "IDF1": 67.74, "IDSW": 528.0}
+{"tracker": "ocsort_byte", "overrides": {"track_buffer": 60}, "seconds": 15.2, "HOTA": 58.67, "DetA": 71.45, "AssA": 48.26, "IDF1": 69.13, "IDSW": 531.0}
+{"tracker": "ocsort_byte", "overrides": {"match_thresh": 0.7}, "seconds": 15.2, "HOTA": 56.46, "DetA": 71.06, "AssA": 44.97, "IDF1": 65.03, "IDSW": 785.0}
+{"tracker": "ocsort_byte", "overrides": {"match_thresh": 0.9}, "seconds": 14.9, "HOTA": 59.01, "DetA": 71.63, "AssA": 48.71, "IDF1": 69.78, "IDSW": 475.0}
+{"tracker": "deepocsort_gmc", "overrides": {}, "seconds": 101.5, "HOTA": 59.07, "DetA": 71.54, "AssA": 48.86, "IDF1": 69.52, "IDSW": 523.0}
+{"tracker": "deepocsort_gmc", "overrides": {"track_high_thresh": 0.3}, "seconds": 101.5, "HOTA": 60.39, "DetA": 72.64, "AssA": 50.29, "IDF1": 71.14, "IDSW": 553.0}
+{"tracker": "deepocsort_gmc", "overrides": {"track_high_thresh": 0.7}, "seconds": 100.5, "HOTA": 52.45, "DetA": 63.29, "AssA": 43.53, "IDF1": 62.69, "IDSW": 547.0}
+{"tracker": "deepocsort_gmc", "overrides": {"new_track_thresh": 0.4}, "seconds": 101.3, "HOTA": 59.07, "DetA": 71.54, "AssA": 48.86, "IDF1": 69.52, "IDSW": 523.0}
+{"tracker": "deepocsort_gmc", "overrides": {"new_track_thresh": 0.7}, "seconds": 101.0, "HOTA": 59.1, "DetA": 70.36, "AssA": 49.7, "IDF1": 70.62, "IDSW": 413.0}
+{"tracker": "deepocsort_gmc", "overrides": {"track_buffer": 15}, "seconds": 101.5, "HOTA": 58.75, "DetA": 71.53, "AssA": 48.33, "IDF1": 68.9, "IDSW": 532.0}
+{"tracker": "deepocsort_gmc", "overrides": {"track_buffer": 60}, "seconds": 101.6, "HOTA": 59.07, "DetA": 71.55, "AssA": 48.86, "IDF1": 69.6, "IDSW": 522.0}
+{"tracker": "deepocsort_gmc", "overrides": {"match_thresh": 0.7}, "seconds": 101.6, "HOTA": 57.83, "DetA": 71.52, "AssA": 46.85, "IDF1": 67.04, "IDSW": 656.0}
+{"tracker": "deepocsort_gmc", "overrides": {"match_thresh": 0.9}, "seconds": 101.3, "HOTA": 59.82, "DetA": 71.7, "AssA": 49.98, "IDF1": 70.96, "IDSW": 467.0}
+{"tracker": "fasttrack", "overrides": {}, "seconds": 12.9, "HOTA": 58.33, "DetA": 71.71, "AssA": 47.54, "IDF1": 67.91, "IDSW": 549.0}
+{"tracker": "fasttrack", "overrides": {"track_high_thresh": 0.3}, "seconds": 12.9, "HOTA": 59.59, "DetA": 71.98, "AssA": 49.44, "IDF1": 69.81, "IDSW": 574.0}
+{"tracker": "fasttrack", "overrides": {"track_high_thresh": 0.7}, "seconds": 12.7, "HOTA": 55.22, "DetA": 68.92, "AssA": 44.34, "IDF1": 64.08, "IDSW": 539.0}
+{"tracker": "fasttrack", "overrides": {"new_track_thresh": 0.4}, "seconds": 12.9, "HOTA": 58.33, "DetA": 71.71, "AssA": 47.54, "IDF1": 67.91, "IDSW": 549.0}
+{"tracker": "fasttrack", "overrides": {"new_track_thresh": 0.7}, "seconds": 12.6, "HOTA": 58.08, "DetA": 70.84, "AssA": 47.71, "IDF1": 68.17, "IDSW": 436.0}
+{"tracker": "fasttrack", "overrides": {"track_buffer": 15}, "seconds": 12.8, "HOTA": 58.34, "DetA": 71.7, "AssA": 47.58, "IDF1": 67.92, "IDSW": 542.0}
+{"tracker": "fasttrack", "overrides": {"track_buffer": 60}, "seconds": 13.0, "HOTA": 58.3, "DetA": 71.77, "AssA": 47.46, "IDF1": 67.84, "IDSW": 556.0}
+{"tracker": "fasttrack", "overrides": {"match_thresh": 0.7}, "seconds": 13.2, "HOTA": 56.11, "DetA": 71.4, "AssA": 44.22, "IDF1": 63.96, "IDSW": 1077.0}
+{"tracker": "fasttrack", "overrides": {"match_thresh": 0.9}, "seconds": 12.9, "HOTA": 59.29, "DetA": 71.7, "AssA": 49.11, "IDF1": 69.83, "IDSW": 481.0}
+{"tracker": "ocsort", "overrides": {}, "seconds": 14.8, "HOTA": 56.92, "DetA": 70.76, "AssA": 45.88, "IDF1": 66.17, "IDSW": 579.0}
+{"tracker": "ocsort", "overrides": {"track_high_thresh": 0.3}, "seconds": 15.0, "HOTA": 58.74, "DetA": 71.75, "AssA": 48.18, "IDF1": 68.87, "IDSW": 573.0}
+{"tracker": "ocsort", "overrides": {"track_high_thresh": 0.7}, "seconds": 14.1, "HOTA": 51.06, "DetA": 63.03, "AssA": 41.44, "IDF1": 60.31, "IDSW": 694.0}
+{"tracker": "ocsort", "overrides": {"new_track_thresh": 0.4}, "seconds": 14.7, "HOTA": 56.92, "DetA": 70.76, "AssA": 45.88, "IDF1": 66.17, "IDSW": 579.0}
+{"tracker": "ocsort", "overrides": {"new_track_thresh": 0.7}, "seconds": 14.5, "HOTA": 56.69, "DetA": 69.92, "AssA": 46.05, "IDF1": 66.62, "IDSW": 463.0}
+{"tracker": "ocsort", "overrides": {"track_buffer": 15}, "seconds": 14.6, "HOTA": 56.82, "DetA": 70.7, "AssA": 45.77, "IDF1": 66.08, "IDSW": 565.0}
+{"tracker": "ocsort", "overrides": {"track_buffer": 60}, "seconds": 15.1, "HOTA": 57.33, "DetA": 70.78, "AssA": 46.53, "IDF1": 66.91, "IDSW": 578.0}
+{"tracker": "ocsort", "overrides": {"match_thresh": 0.7}, "seconds": 15.1, "HOTA": 55.77, "DetA": 70.57, "AssA": 44.18, "IDF1": 64.02, "IDSW": 856.0}
+{"tracker": "ocsort", "overrides": {"match_thresh": 0.9}, "seconds": 14.7, "HOTA": 58.22, "DetA": 71.04, "AssA": 47.79, "IDF1": 68.52, "IDSW": 524.0}
+{"tracker": "deepocsort", "overrides": {}, "seconds": 14.8, "HOTA": 56.92, "DetA": 70.76, "AssA": 45.88, "IDF1": 66.17, "IDSW": 579.0}
+{"tracker": "deepocsort", "overrides": {"track_high_thresh": 0.3}, "seconds": 16.1, "HOTA": 58.74, "DetA": 71.75, "AssA": 48.18, "IDF1": 68.87, "IDSW": 573.0}
+{"tracker": "deepocsort", "overrides": {"track_high_thresh": 0.7}, "seconds": 14.7, "HOTA": 51.06, "DetA": 63.03, "AssA": 41.44, "IDF1": 60.31, "IDSW": 694.0}
+{"tracker": "deepocsort", "overrides": {"new_track_thresh": 0.4}, "seconds": 15.3, "HOTA": 56.92, "DetA": 70.76, "AssA": 45.88, "IDF1": 66.17, "IDSW": 579.0}
+{"tracker": "deepocsort", "overrides": {"new_track_thresh": 0.7}, "seconds": 14.8, "HOTA": 56.69, "DetA": 69.92, "AssA": 46.05, "IDF1": 66.62, "IDSW": 463.0}
+{"tracker": "deepocsort", "overrides": {"track_buffer": 15}, "seconds": 14.8, "HOTA": 56.82, "DetA": 70.7, "AssA": 45.77, "IDF1": 66.08, "IDSW": 565.0}
+{"tracker": "deepocsort", "overrides": {"track_buffer": 60}, "seconds": 15.4, "HOTA": 57.33, "DetA": 70.78, "AssA": 46.53, "IDF1": 66.91, "IDSW": 578.0}
+{"tracker": "deepocsort", "overrides": {"match_thresh": 0.7}, "seconds": 15.4, "HOTA": 55.77, "DetA": 70.57, "AssA": 44.18, "IDF1": 64.02, "IDSW": 856.0}
+{"tracker": "deepocsort", "overrides": {"match_thresh": 0.9}, "seconds": 14.8, "HOTA": 58.22, "DetA": 71.04, "AssA": 47.79, "IDF1": 68.52, "IDSW": 524.0}
+{"tracker": "bytetrack", "overrides": {"track_high_thresh": 0.2}, "seconds": 12.3, "HOTA": 59.64, "DetA": 71.96, "AssA": 49.53, "IDF1": 69.94, "IDSW": 547.0}
+{"tracker": "bytetrack", "overrides": {"track_high_thresh": 0.25}, "seconds": 12.1, "HOTA": 59.77, "DetA": 72.05, "AssA": 49.68, "IDF1": 70.14, "IDSW": 554.0}
+{"tracker": "bytetrack", "overrides": {"match_thresh": 0.95}, "seconds": 12.0, "HOTA": 59.37, "DetA": 71.76, "AssA": 49.21, "IDF1": 70.32, "IDSW": 435.0}
+{"tracker": "botsort_nogmc", "overrides": {"track_high_thresh": 0.2}, "seconds": 12.1, "HOTA": 60.73, "DetA": 73.34, "AssA": 50.38, "IDF1": 70.31, "IDSW": 546.0}
+{"tracker": "botsort_nogmc", "overrides": {"track_high_thresh": 0.25}, "seconds": 12.0, "HOTA": 60.94, "DetA": 73.37, "AssA": 50.72, "IDF1": 70.73, "IDSW": 553.0}
+{"tracker": "botsort_nogmc", "overrides": {"match_thresh": 0.95}, "seconds": 12.0, "HOTA": 60.84, "DetA": 73.12, "AssA": 50.72, "IDF1": 71.33, "IDSW": 433.0}
+{"tracker": "botsort_gmc", "overrides": {"track_high_thresh": 0.2}, "seconds": 98.9, "HOTA": 62.81, "DetA": 74.52, "AssA": 53.02, "IDF1": 73.36, "IDSW": 412.0}
+{"tracker": "botsort_gmc", "overrides": {"track_high_thresh": 0.25}, "seconds": 98.8, "HOTA": 62.94, "DetA": 74.47, "AssA": 53.28, "IDF1": 73.46, "IDSW": 418.0}
+{"tracker": "botsort_gmc", "overrides": {"match_thresh": 0.95}, "seconds": 99.7, "HOTA": 62.63, "DetA": 74.15, "AssA": 52.99, "IDF1": 73.75, "IDSW": 369.0}
+{"tracker": "ocsort_byte", "overrides": {"track_high_thresh": 0.2}, "seconds": 15.2, "HOTA": 59.2, "DetA": 71.74, "AssA": 48.94, "IDF1": 69.82, "IDSW": 567.0}
+{"tracker": "ocsort_byte", "overrides": {"track_high_thresh": 0.25}, "seconds": 15.1, "HOTA": 59.37, "DetA": 71.78, "AssA": 49.2, "IDF1": 70.03, "IDSW": 554.0}
+{"tracker": "ocsort_byte", "overrides": {"match_thresh": 0.95}, "seconds": 14.9, "HOTA": 59.17, "DetA": 71.64, "AssA": 48.96, "IDF1": 70.24, "IDSW": 470.0}
+{"tracker": "deepocsort_gmc", "overrides": {"track_high_thresh": 0.2}, "seconds": 102.9, "HOTA": 60.39, "DetA": 72.67, "AssA": 50.28, "IDF1": 71.11, "IDSW": 559.0}
+{"tracker": "deepocsort_gmc", "overrides": {"track_high_thresh": 0.25}, "seconds": 107.1, "HOTA": 60.44, "DetA": 72.65, "AssA": 50.37, "IDF1": 71.18, "IDSW": 563.0}
+{"tracker": "deepocsort_gmc", "overrides": {"match_thresh": 0.95}, "seconds": 105.8, "HOTA": 60.01, "DetA": 71.59, "AssA": 50.37, "IDF1": 71.41, "IDSW": 463.0}
+{"tracker": "fasttrack", "overrides": {"track_high_thresh": 0.2}, "seconds": 13.1, "HOTA": 59.36, "DetA": 71.91, "AssA": 49.1, "IDF1": 69.47, "IDSW": 558.0}
+{"tracker": "fasttrack", "overrides": {"track_high_thresh": 0.25}, "seconds": 13.0, "HOTA": 59.31, "DetA": 71.96, "AssA": 48.99, "IDF1": 69.28, "IDSW": 573.0}
+{"tracker": "fasttrack", "overrides": {"match_thresh": 0.95}, "seconds": 13.1, "HOTA": 59.57, "DetA": 71.62, "AssA": 49.63, "IDF1": 70.55, "IDSW": 466.0}
+{"tracker": "ocsort", "overrides": {"track_high_thresh": 0.2}, "seconds": 15.3, "HOTA": 59.03, "DetA": 71.72, "AssA": 48.68, "IDF1": 69.41, "IDSW": 573.0}
+{"tracker": "ocsort", "overrides": {"track_high_thresh": 0.25}, "seconds": 15.1, "HOTA": 59.05, "DetA": 71.72, "AssA": 48.72, "IDF1": 69.45, "IDSW": 575.0}
+{"tracker": "ocsort", "overrides": {"match_thresh": 0.95}, "seconds": 14.7, "HOTA": 58.33, "DetA": 71.11, "AssA": 47.94, "IDF1": 68.97, "IDSW": 499.0}
+{"tracker": "deepocsort", "overrides": {"track_high_thresh": 0.2}, "seconds": 15.2, "HOTA": 59.03, "DetA": 71.72, "AssA": 48.68, "IDF1": 69.41, "IDSW": 573.0}
+{"tracker": "deepocsort", "overrides": {"track_high_thresh": 0.25}, "seconds": 15.3, "HOTA": 59.05, "DetA": 71.72, "AssA": 48.72, "IDF1": 69.45, "IDSW": 575.0}
+{"tracker": "deepocsort", "overrides": {"match_thresh": 0.95}, "seconds": 14.9, "HOTA": 58.33, "DetA": 71.11, "AssA": 47.94, "IDF1": 68.97, "IDSW": 499.0}
+{"tracker": "bytetrack", "overrides": {"track_high_thresh": 0.25, "match_thresh": 0.9}, "seconds": 12.5, "HOTA": 60.95, "DetA": 72.16, "AssA": 51.56, "IDF1": 72.52, "IDSW": 473.0}
+{"tracker": "botsort_nogmc", "overrides": {"track_high_thresh": 0.25, "match_thresh": 0.9}, "seconds": 12.1, "HOTA": 62.22, "DetA": 73.72, "AssA": 52.6, "IDF1": 73.05, "IDSW": 465.0}
+{"tracker": "botsort_gmc", "overrides": {"track_high_thresh": 0.25, "match_thresh": 0.9}, "seconds": 98.8, "HOTA": 63.32, "DetA": 74.54, "AssA": 53.88, "IDF1": 74.4, "IDSW": 414.0}
+{"tracker": "ocsort_byte", "overrides": {"track_high_thresh": 0.25, "match_thresh": 0.9}, "seconds": 15.2, "HOTA": 60.85, "DetA": 72.1, "AssA": 51.44, "IDF1": 72.4, "IDSW": 528.0}
+{"tracker": "deepocsort_gmc", "overrides": {"track_high_thresh": 0.25, "match_thresh": 0.9}, "seconds": 102.9, "HOTA": 61.28, "DetA": 72.65, "AssA": 51.77, "IDF1": 72.69, "IDSW": 490.0}
+{"tracker": "fasttrack", "overrides": {"track_high_thresh": 0.25, "match_thresh": 0.9}, "seconds": 14.6, "HOTA": 60.58, "DetA": 72.27, "AssA": 50.88, "IDF1": 71.51, "IDSW": 481.0}
+{"tracker": "ocsort", "overrides": {"track_high_thresh": 0.25, "match_thresh": 0.9}, "seconds": 15.5, "HOTA": 60.43, "DetA": 71.96, "AssA": 50.84, "IDF1": 72.04, "IDSW": 543.0}
+{"tracker": "deepocsort", "overrides": {"track_high_thresh": 0.25, "match_thresh": 0.9}, "seconds": 15.2, "HOTA": 60.43, "DetA": 71.96, "AssA": 50.84, "IDF1": 72.04, "IDSW": 543.0}

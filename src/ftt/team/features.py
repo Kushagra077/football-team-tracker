@@ -12,7 +12,7 @@ import pandas as pd
 from ftt.team.crops import grass_mask, torso_crop
 
 # Histogram bins: L in 4, a and b in 6 each, over ranges that cover shirt colours (a coarse
-# palette; 3x5x5 to 5x8x8 gave the same accuracy on the dev clips, see DD-032).
+# palette; 3x5x5 to 5x8x8 gave the same accuracy on the dev clips; see the README).
 HIST_RANGE = ((0, 100), (-60, 80), (-70, 80))
 HIST_BINS = (4, 6, 6)
 FRAME_COLS = ["frame", "x1", "y1", "x2", "y2"]

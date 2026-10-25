@@ -15,7 +15,7 @@ import shutil
 from pathlib import Path
 
 ROOT = Path(__file__).parents[1]
-CONFIGS = ["team.yaml", "botsort_gmc.yaml"]
+CONFIGS = ["team.yaml", "botsort_gmc.yaml", "tuned.yaml"]
 
 
 def sync(space: Path) -> list[str]:

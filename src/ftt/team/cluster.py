@@ -43,7 +43,7 @@ def far_from_both_teams(features: np.ndarray, centres: np.ndarray, max_ratio: fl
     """True where a colour fits neither team: a referee or keeper the detector called "player".
 
     Distance to the nearest of the two centroids, divided by the distance between them, so the
-    rule does not depend on how different the two kits are. On val GT (DD-028) players sit at a
+    rule does not depend on how different the two kits are. On val GT, players sit at a
     median ratio of 0.24, referees and keepers at about 1.1.
     """
     gap = np.linalg.norm(centres[0] - centres[1])

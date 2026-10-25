@@ -19,7 +19,6 @@ from pathlib import Path
 import cv2
 import numpy as np
 import yaml
-from scipy.optimize import linear_sum_assignment
 
 from ftt.data.detections import (
     CLASS_IDS,
@@ -28,34 +27,12 @@ from ftt.data.detections import (
     load_cached_detections,
 )
 from ftt.data.sn_tracking import frame_path, list_clips, load_persons_gt
-from ftt.eval.team_metrics import best_permutation_accuracy, per_track_accuracy
+from ftt.eval.team_metrics import best_permutation_accuracy, match_to_gt, per_track_accuracy
 from ftt.team.cluster import choose_fit_frames, fit_team_clusters
 from ftt.team.features import FRAME_COLS, box_features, feature_names
 
 ROOT = Path(__file__).parents[1]
 PLAYER = CLASS_IDS["player"]
-
-
-def iou_matrix(a: np.ndarray, b: np.ndarray) -> np.ndarray:
-    """(n, 4) x (m, 4) xyxy boxes -> (n, m) IoU."""
-    lt = np.maximum(a[:, None, :2], b[None, :, :2])
-    rb = np.minimum(a[:, None, 2:], b[None, :, 2:])
-    inter = np.clip(rb - lt, 0, None).prod(axis=2)
-    area = lambda x: (x[:, 2] - x[:, 0]) * (x[:, 3] - x[:, 1])  # noqa: E731
-    return inter / (area(a)[:, None] + area(b)[None, :] - inter)
-
-
-def match_to_gt(boxes: np.ndarray, gt_boxes: np.ndarray, min_iou: float) -> np.ndarray:
-    """For each detection, the index of its matched GT player (one-to-one) or -1."""
-    out = np.full(len(boxes), -1)
-    if len(boxes) == 0 or len(gt_boxes) == 0:
-        return out
-    iou = iou_matrix(boxes, gt_boxes)
-    rows, cols = linear_sum_assignment(-iou)
-    for r, c in zip(rows, cols, strict=True):
-        if iou[r, c] >= min_iou:
-            out[r] = c
-    return out
 
 
 def features_for(dets, frames, clip, split, cfg, images_root):

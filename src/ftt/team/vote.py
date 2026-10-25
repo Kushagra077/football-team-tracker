@@ -1,4 +1,4 @@
-"""Rolling per-track majority vote (window ~25 frames) with a lock once enough frames agree."""
+"""Rolling per-track majority vote (window ~25 frames); can lock once enough frames agree."""
 
 from __future__ import annotations
 
@@ -12,7 +12,7 @@ def vote_labels(
     frames: np.ndarray,
     labels: np.ndarray,
     window: int = 25,
-    lock_min_agree: int | None = 15,
+    lock_min_agree: int | None = None,
 ) -> np.ndarray:
     """Smooth per-frame team labels into per-track labels. Output is aligned with the input rows.
 

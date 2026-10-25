@@ -21,12 +21,12 @@ from ftt.data.sn_tracking import frame_path, load_persons_gt
 from ftt.export import build_tracks, export_tracks, read_tracks
 from ftt.team.assign import label_players, team_for_tracks
 from ftt.track.adapters import UltralyticsTracker
+from ftt.track.config import load_tracker_cfg
 from ftt.track.runner import tracks_for_clip
 
 ROOT = Path(__file__).parents[1]
 PLAYER_CLS = 2
 GK_CLS = 1
-TUNED = {"track_high_thresh": 0.25, "match_thresh": 0.9}  # the shared tuned setting (DD-018)
 
 
 def main() -> None:
@@ -46,7 +46,7 @@ def main() -> None:
     def loader(f):
         return cv2.imread(str(frame_path(images_root, args.split, args.clip, f)))
 
-    tcfg = {**yaml.safe_load((ROOT / "configs" / f"{args.tracker}.yaml").read_text()), **TUNED}
+    tcfg = load_tracker_cfg(ROOT / "configs", args.tracker)
     tracks = tracks_for_clip(
         ROOT
         / paths["cache_dir"]

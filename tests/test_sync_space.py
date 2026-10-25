@@ -19,6 +19,7 @@ def test_sync_copies_the_package_and_configs_and_drops_stale_files(tmp_path):
     assert not (tmp_path / "ftt" / "stale.py").exists()
     assert (tmp_path / "configs" / "team.yaml").exists()
     assert (tmp_path / "configs" / "botsort_gmc.yaml").exists()
+    assert (tmp_path / "configs" / "tuned.yaml").exists()
     assert not list((tmp_path / "ftt").rglob("__pycache__"))
 
 
