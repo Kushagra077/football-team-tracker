@@ -25,6 +25,13 @@ jobs:
       - name: Test
         run: uv run pytest -m "not integration" -q
 
+      # Our output against the tactical-metrics project's contract (the user's own public repo,
+      # pinned to a commit). It fits except for the pitch columns, which a later project fills in.
+      - name: Contract test against football-tactical-metrics
+        run: >
+          uv run --with "football-tactical-metrics @ git+https://github.com/Kushagra077/football-tactical-metrics@ec0b0cd2036d8f3a94e2b8b1a64d080fb52a80b3"
+          python -m pytest tests/test_b1_contract.py -q
+
   # The Dockerfile builds from scratch and its default command (the tests) passes inside the image.
   docker:
     runs-on: ubuntu-latest

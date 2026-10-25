@@ -66,3 +66,32 @@ def test_default_never_locks_like_the_config():
     fr = np.arange(1, 41)
     lab = np.array([0] * 20 + [1] * 20)
     assert vote_labels(ids, fr, lab)[-1] == 1  # a lock after 15 agreeing frames would keep it at 0
+
+
+def test_centred_vote_fixes_the_frames_after_a_jump_that_a_causal_vote_gets_wrong():
+    # One track whose true team switches at frame 31 (an id jump): 30 frames of 0, then 30 of 1.
+    ids, fr = np.zeros(60, int), np.arange(1, 61)
+    lab = np.array([0] * 30 + [1] * 30)
+    causal = vote_labels(ids, fr, lab, window=25)
+    centred = vote_labels(ids, fr, lab, window=25, centred=True)
+    assert (causal != lab).sum() >= 10  # the causal vote stays wrong for about half a window
+    assert (centred != lab).sum() <= 2  # the centred one switches within a frame or two of the jump
+
+
+def test_centred_vote_removes_a_single_stray_label_and_respects_gaps_in_frames():
+    ids = np.zeros(7, int)
+    fr = np.array([1, 2, 3, 4, 5, 6, 7])
+    lab = np.array([0, 0, 0, 1, 0, 0, 0])
+    assert vote_labels(ids, fr, lab, window=5, centred=True).tolist() == [0] * 7
+    # frames 1 and 100 are far apart: neither sees the other
+    far = vote_labels(np.zeros(2, int), np.array([1, 100]), np.array([0, 1]), 25, centred=True)
+    assert far.tolist() == [0, 1]
+
+
+def test_centred_vote_is_aligned_with_input_rows_and_cannot_lock():
+    ids = np.array([1, 0, 1, 0])
+    fr = np.array([2, 1, 1, 2])  # unsorted, two tracks interleaved
+    lab = np.array([1, 0, 1, 0])
+    assert vote_labels(ids, fr, lab, window=25, centred=True).tolist() == [1, 0, 1, 0]
+    with pytest.raises(ValueError, match="cannot lock"):
+        vote_labels(ids, fr, lab, window=25, lock_min_agree=5, centred=True)

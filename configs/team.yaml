@@ -26,4 +26,6 @@ goalkeeper:
 vote:
   window: 25                  # frames (1 s at 25 fps)
   lock_min_agree: null        # null = never lock. A lock at 15 cost 6.4 acc points: tracker id swaps
+  centred: true               # look window//2 frames back AND forward (the pipeline is offline). Chosen on val: the
+                              # causal vote cost 0.1-0.3 acc points vs no vote; the centred one gains 0.3 (val)
 fps: 25

@@ -9,7 +9,7 @@ home/away/ball team, and no row may lack a team. Two checks:
   rest of the output (ids, timestamps, teams, goalkeeper flag, dtypes) already fits.
 
 Skipped when ``ftm`` is not installed; CI installs it from a pinned commit of the public repo:
-    uv run --with ../football-tactical-metrics pytest tests/test_b1_contract.py
+    uv run --with ../football-tactical-metrics python -m pytest tests/test_b1_contract.py
 """
 
 import numpy as np

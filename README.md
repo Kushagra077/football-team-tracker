@@ -23,7 +23,7 @@ the two teams by shirt colour, with seven trackers benchmarked on SoccerNet-Trac
 |---|---|
 | Tracking score (HOTA) with a perfect detector (**oracle**) | **84.2** |
 | Tracking score (HOTA) with my own detector (**real**) | **59.0** |
-| Players given the correct team (tracked + voted, per detection; 98.5% without the vote, see below) | **98.2%** |
+| Players given the correct team (tracked + voted, per detection; 98.5% without the vote, see below) | **98.9%** |
 | Speed: detector + tracker + camera-motion compensation + colour features, 1080p, no rendering, MacBook Pro (Apple M2, 8 GB, PyTorch MPS) | **~35-45 fps** |
 
 ## What this project does
@@ -65,7 +65,7 @@ flowchart LR
     T --> C[torso crop<br/>minus grass pixels]
     C --> F[Lab colour histogram]
     F --> K[KMeans k=2<br/>fit on first 50 pitch frames]
-    K --> R[rolling vote<br/>per track, 25 frames]
+    K --> R[centred vote<br/>per track, 25 frames]
     R --> G[goalkeeper rule]
     G --> P[tracks.parquet<br/>+ annotated mp4]
 ```
@@ -81,8 +81,9 @@ flowchart LR
 4. **Cluster.** KMeans with k=2 on the players of the first 50 frames that show at least 3 players. No labels needed.
    On uploaded video, only wide pitch-view frames are used and labelled (close-ups get no team), and a box whose mean
    colour fits neither team (a black-kit referee) gets no team.
-5. **Vote.** Each track's label is the majority of its last 25 frames. There is no permanent lock: trackers sometimes move
-   an id onto another player, and a lock would keep the wrong team for the rest of the clip (lock cost 6-8 accuracy points).
+5. **Vote.** Each track's label is the majority of its labels 12 frames back and 12 frames forward (the pipeline reads the
+   whole video first, so it can look both ways). There is no permanent lock: trackers sometimes move an id onto another
+   player, and a lock would keep the wrong team for the rest of the clip (lock cost 6-8 accuracy points).
 6. **Goalkeepers.** A keeper's colour matches neither team, so a keeper joins the team whose players stand nearer in the
    image (median x). If the teams overlap or the keeper is in between, the answer is "unknown" (null), not a guess.
 7. **Export.** `tracks.parquet` (see [Output format](#output-format)) plus an annotated mp4.
@@ -130,6 +131,20 @@ checkpoint, so validation numbers may be slightly optimistic; the numbers below 
   at confidence 0.1 / 0.25 / 0.5 (no tracker), and BoT-SORT+GMC's tracked DetA is 74.2 (untuned): the tracker finds about
   as many players as the detector does.
 
+**Does appearance ReID help?** I expected little help, since ten teammates in identical kits look alike. To test it, I added
+Ultralytics' trained ReID model (`yolo26n-reid.onnx`) to BoT-SORT + GMC and changed nothing else (`configs/botsort_gmc_reid.yaml`,
+the same shared tuned setting; the ReID thresholds are the defaults, not tuned). Test split, run once:
+
+| | Oracle HOTA | Oracle ID switches | Real HOTA | Real AssA | Real ID switches |
+|---|---|---|---|---|---|
+| BoT-SORT + GMC | **84.2** | **1251** | **59.0** | **49.4** | **2705** |
+| + appearance ReID | 82.9 | 1355 | 58.2 | 48.3 | 3603 |
+
+- **ReID does not help, and slightly hurts**: -1.3 HOTA on true boxes and -0.8 on my detector's, with more ID switches
+  (+104 and +898). On val the two are tied (oracle 85.9 vs 86.0, real 63.2 vs 63.3).
+- This is one ReID model with untuned thresholds, so it shows ReID is not a free win here, not that no ReID could help.
+  Why it fails is my expectation (identical kits), not something I measured.
+
 ### Team assignment
 
 | What is scored | Val (11 clips) | Test (49 clips) |
@@ -137,20 +152,26 @@ checkpoint, so validation numbers may be slightly optimistic; the numbers below 
 | Ground-truth boxes, per detection / per player (A) | 97.5% / 100% | 97.6% / 99.9% |
 | Detector boxes (matched to GT players), per detection / per player (A) | 99.0% / 100% | 98.7% / 99.9% |
 | Tracked, colour per frame (no vote), per detection (B) | 98.7% | 98.5% |
-| Tracked + vote, per detection (B) | 98.6% | 98.2% |
+| Tracked + causal vote, last 25 frames only (B) | 98.6% | 98.2% |
+| **Tracked + centred vote, 12 frames back and forward (B, the default)** | **99.0%** | **98.9%** |
 | Coverage of the two tracked rows: tracked players matched to a GT player that got a label | 99.97% (111,576 of 111,606) | 99.99% (434,559 of 434,589) |
-| Label flips: raw -> vote | 733 -> 147 | 3693 -> 852 (-77%) |
+| Label flips: raw -> causal vote -> centred vote | 733 -> 147 -> 138 | 3693 -> 852 -> 759 (-79%) |
 | Goalkeepers: right / wrong / unknown (C) | 8 / 1 / 7 of 16 | 21 / 5 / 37 of 63 |
 
 How each group was measured: **(A)** detector confidence 0.5, every 25th frame, boxes matched to ground truth at IoU 0.5.
 **(B)** the pipeline's own settings: detector confidence 0.1, BoT-SORT+GMC, every frame. **(C)** team positions are taken
 from the ground-truth labels, so this scores the goalkeeper rule on its own, not the whole pipeline.
 
-**Does the vote help?** It trades a little accuracy for much less flicker: **-0.1 points on val and -0.3 on test, for 77%
-fewer label flips**. On test the vote is worse on 34 of 49 clips and better on 15. A likely reason: 21% of tracks (491 of
+**Does the vote help?** Yes, with a centred window. My first vote only looked back over the last 25 frames, and it cost
+accuracy (-0.1 points on val, -0.3 on test, worse than no vote on 34 of 49 test clips). A likely reason: 21% of tracks (491 of
 2,344 on test) contain boxes from both teams (the tracker's id jumped between players), and a vote that only looks back keeps
-the old label for a while after each jump. I measured the 21%, not the cause. A window centred on each frame (possible offline) might fix this; I have not
-tried it.
+the old label for a while after each jump. I measured the 21%, not the cause. The fix is to look both ways:
+
+- **Window and test run:** the window (25 frames, the same size as before) was fixed on val; the test split was run once with it.
+- **Result on test:** 98.9% against 98.5% with no vote and 98.2% with the backward-looking vote, and 79% fewer label flips.
+  It beats no vote on all 49 test clips (and on 10 of 11 val clips, with one tie), and beats the backward-looking vote on every clip.
+- **Window size:** on val, 13 frames gave 98.9% (228 flips) and 51 gave 99.1% (92 flips); I kept 25 rather than tune further.
+- **Limit:** a track that really contains two players still gets some wrong labels around the jump; the vote only softens it.
 
 The detector rows only score players the detector found, so they are not "better than GT". Cluster ids are arbitrary,
 so accuracy uses the better of the two cluster-to-side mappings.
@@ -172,7 +193,7 @@ What the table shows:
 
 - Dropping brightness is clearly worse (a white and a dark kit then look alike).
 - The histogram's bin size hardly matters (3x5x5 to 5x8x8 gave 97.3-97.5% on train).
-- On the full pipeline (real boxes, tracker, vote) the histogram also wins: val 98.2% -> 98.6%, test 97.8% -> 98.2%.
+- On the full pipeline (real boxes, tracker, vote) the histogram also wins: val 98.2% -> 98.6%, test 97.8% -> 98.2% (measured with the first, backward-looking vote).
 - The feature was chosen on train and val only. The test column is the final choice, and 97.8% was the earlier
   mean-colour result.
 - One team setting did change after a test result: the rule for which frames the two colours are learned from (one test
@@ -201,7 +222,8 @@ SoccerNet has few striped kits, so I also hand-labelled boxes from three amateur
   <img src="reports/figures/failure_case.jpg" alt="Same frame twice: a dark-blue Chelsea player coloured cyan with the mean colour and orange with the histogram" width="100%">
   <br>
   <sub><b>Failure case, same frame at 37 s.</b> The Chelsea player (id 316) is in shade and motion blur. The mean colour puts him
-  on the right team (cyan); the histogram, the current default, calls him orange. Footage © its rights holder.</sub>
+  on the right team (cyan); the histogram, the current default, calls him orange. Footage © its rights holder.
+  <a href="reports/figures/failure_case.gif">A 1.4 s clip of the same moment</a> (id 337 in its last frames).</sub>
 </p>
 
 **How to read accuracy with coverage.** The accuracy is measured on boxes that received a label.
@@ -215,6 +237,18 @@ SoccerNet has few striped kits, so I also hand-labelled boxes from three amateur
   clip one keeper got one, wrongly.
 - Accuracy on the uploaded clips was not measured (no team labels), so the coverage figures say how often a team is shown,
   not how often it is right.
+
+**Where team assignment is weakest (SoccerNet).** Of the 60 val and test clips, **none falls below 80%** and only one is under
+95% (pipeline accuracy with the centred vote, no frames shown because SoccerNet's terms forbid publishing them):
+
+| Clip | Accuracy | What goes wrong (from looking at its frames) |
+|---|---|---|
+| SNMOT-132 (test) | 92.4% | A floodlit night match that ends in fog: by the last third the colours wash out, and white and dark-red shirts drift towards the grey haze. The colours learned on the clear opening no longer fit. |
+| SNMOT-063 (train, true boxes) | 94.0% | White against green kits on a green pitch: a green shirt is close to the grass hue, so the grass mask and the shirt colour overlap. |
+| SNMOT-142 (test) | 97.0% | Not a colour problem: 27 of its 65 tracks contain boxes from both teams, so the tracker's id jumped between players and the vote can only soften it. |
+
+Each of these was a hard visual condition (fog, kit close to the pitch, id swaps), not a bug. The amateur and broadcast cases that
+do fail badly are under "Limitations" and in the Chelsea picture above.
 
 ### Out-of-domain check: SportsMOT
 
@@ -327,6 +361,9 @@ uv run python scripts/run_ablation.py --source real --split test \
     --configs botsort_gmc botsort_nogmc deepocsort_gmc ocsort_byte bytetrack ocsort fasttrack \
     --set track_high_thresh=0.25 match_thresh=0.9 --tag tuned
 uv run python scripts/eval_team_vote.py --split test
+# the ReID test (needs onnxruntime; downloads yolo26n-reid.onnx on first use):
+uv run --with onnxruntime python scripts/run_ablation.py --source oracle --split test --configs botsort_gmc_reid \
+    --set track_high_thresh=0.25 match_thresh=0.9 --tag tuned     # and again with --source real
 uv run python scripts/make_figures.py                                   # README charts from the result files
 ```
 
@@ -346,9 +383,9 @@ The choices that shaped the project, what each one bought, and what it cost.
 |---|---|---|
 | **Score every tracker twice: true boxes (oracle) and my detector's boxes (real)** | Separates "the tracker is weak" from "the detector is weak". The gap (19-25 HOTA points) is the detector's cost, so the next improvement is obvious. | Every experiment runs twice. |
 | **Tune on val only, run the test split once** (`tune_tracker.py` refuses other splits); **one shared setting for all trackers** | Test numbers are not tuned on, and no tracker gets a private advantage. | A per-tracker setting might lift some of them a little. |
-| **Use Ultralytics' trackers instead of writing my own** | The question is how they compare on football with my detector, not who can re-implement ByteTrack. | The code is AGPL-3.0, so this repo is too. |
+| **Use Ultralytics' trackers instead of writing my own** (and test appearance ReID, which did not help) | The question is how they compare on football with my detector, not who can re-implement ByteTrack. | The code is AGPL-3.0, so this repo is too. |
 | **BoT-SORT with camera-motion compensation (GMC)** | Broadcast cameras pan and zoom. On true boxes GMC cut ID switches from 3524 to 1251. | It still loses IDs at camera cuts: there is no re-identification across shots. |
-| **Team colour from the torso minus grass, KMeans with k=2, no labels** | No team labels are needed, so it works on any footage. A per-track rolling vote cut label flips by 77% on the test split. | Only two colours, and teams in similar kits are not handled. The vote costs 0.3 accuracy points on test (see "Does the vote help?"). |
+| **Team colour from the torso minus grass, KMeans with k=2, no labels** | No team labels are needed, so it works on any footage. A per-track vote that looks both ways cut label flips by 79% on the test split and gained 0.4 accuracy points over no vote. | Only two colours, and teams in similar kits are not handled. My first vote only looked back and cost 0.3 points, so I changed it (see "Does the vote help?"). |
 | **Lab colour histogram instead of the mean colour** | A mean blends a striped shirt into a colour neither stripe has. Chosen on train clips, confirmed on val: better on SoccerNet and on two of my three amateur clips. | Worse on dark-blue shirts in shade or blur (Chelsea demo). It is one line in `configs/team.yaml` to switch back to `mean_lab`. |
 | **Abstain rather than guess** (pitch-view check, colour-outlier rule, goalkeeper rule) | A wrong team colour on screen looks worse than no colour. | Lower coverage on uploads (92.7-97.0% of boxes got a team), and the keeper rule abstains on more than half the test keepers. |
 | **One `process_video` function** for the command line, the Space and the tests | The live demo runs exactly the code that is tested here. | `src/ftt` is copied into the Space by a script, not installed as a package. |
@@ -392,14 +429,13 @@ pitch coordinates so the goalkeeper rule stops depending on the camera, and re-i
 - **Pitch coordinates and the downstream contract are deferred.** Pitch and jersey columns are null until a planned
   pitch-coordinates project fills them, and the tactical-metrics project's validator requires them non-null.
   `tests/test_b1_contract.py` checks exactly that gap against the real validator: our output fails only on the null pitch
-  columns, and passes once they are filled with placeholder values. It is skipped when that project is not installed:
-  `uv run --with ../football-tactical-metrics python -m pytest tests/test_b1_contract.py`.
+  columns, and passes once they are filled with placeholder values. CI runs it against a pinned commit of that project; locally
+  it is skipped unless that project is installed: `uv run --with ../football-tactical-metrics python -m pytest tests/test_b1_contract.py`.
 - **Rendering uses plain OpenCV drawing** rather than `supervision`'s annotators (fewer API changes to track).
 
 ## Future work
 
 - Pitch coordinates (a planned follow-up project), which also fixes the goalkeeper rule's dependence on the camera.
-- A vote window centred on each frame instead of one that only looks back (see "Does the vote help?").
 - Re-identification across camera cuts, so a player keeps one id for the whole match.
 - A colour rule that scales with each team's own colour spread (a white kit varies more than a red one).
 - TrackTrack, the one Ultralytics tracker not yet benchmarked.

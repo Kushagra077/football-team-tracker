@@ -64,7 +64,12 @@ def label_from_features(
         raw[far_from_both_teams(lab, gate.cluster_centers_, max_colour_ratio)] = -1
     v = cfg["vote"]
     team = vote_labels(
-        out["track_id"].to_numpy(), out["frame"].to_numpy(), raw, v["window"], v["lock_min_agree"]
+        out["track_id"].to_numpy(),
+        out["frame"].to_numpy(),
+        raw,
+        v["window"],
+        v["lock_min_agree"],
+        centred=v.get("centred", False),
     )
     return out.assign(raw=raw, team=team)
 

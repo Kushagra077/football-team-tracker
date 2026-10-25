@@ -48,6 +48,10 @@ def main() -> None:
     ap.add_argument("--split", default="val", choices=["val", "test"])
     ap.add_argument("--tracker", default="botsort_gmc")
     ap.add_argument("--limit", type=int, default=None, help="only the first N clips (smoke test)")
+    ap.add_argument(
+        "--centred-windows", type=int, nargs="*", default=[],
+        help="also score a centred vote (looks both ways) with these extra window sizes",
+    )
     args = ap.parse_args()
 
     paths = yaml.safe_load((ROOT / "configs" / "paths.yaml").read_text())
@@ -98,9 +102,12 @@ def main() -> None:
         tid, fr = fcols["track_id"].to_numpy(), fcols["frame"].to_numpy()
         variants = {
             "raw": raw,
-            "vote": fcols["team"].to_numpy(),  # the config setting
+            "vote": fcols["team"].to_numpy(),  # the config setting (centred or causal)
+            "vote_causal": vote_labels(tid, fr, raw, window),  # looks back only
             "vote_lock15": vote_labels(tid, fr, raw, window, 15),  # reference: the lock we dropped
         }
+        for w in args.centred_windows:
+            variants[f"vote_centred_{w}"] = vote_labels(tid, fr, raw, w, centred=True)
         scored = true >= 0
         # One naming per clip, taken from the raw labels, so all variants are compared fairly.
         flip_names = (raw[scored] == true[scored]).mean() < 0.5

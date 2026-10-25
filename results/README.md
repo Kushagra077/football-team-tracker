@@ -16,7 +16,8 @@ taken after the final runs. Only derived numbers are here, no SoccerNet frames o
 | `team_vote_{val,test}.json` | `eval_team_vote.py` | Team assignment: tracked + vote row, label flips |
 | `team_features_{train,val}.json` | `eval_team_features.py` | "Which colour feature?" table |
 
-In `tracking_*.json`, keys ending in `__tuned` use the shared tuned setting
+In `tracking_*.json`, `botsort_gmc_reid__tuned` is BoT-SORT + GMC with appearance ReID (the "Does appearance ReID help?"
+table); keys ending in `__tuned` use the shared tuned setting
 (`track_high_thresh 0.25`, `match_thresh 0.9`); the keys without it are the untuned defaults.
 
 Not stored as JSON: the goalkeeper counts (right / wrong / unknown) are printed by
@@ -24,5 +25,6 @@ Not stored as JSON: the goalkeeper counts (right / wrong / unknown) are printed 
 `eval_team_vote.py`, and the frame-rate simulation, SportsMOT, hand-labelled and uploaded-clip numbers come
 from one-off checks, some on footage that cannot be redistributed.
 
-`team_vote_*.json` holds both the raw and the voted accuracy per clip (`raw`, `vote`), and `mixed_team_tracks`,
-the number of tracks that contain boxes from both teams.
+`team_vote_*.json` holds the accuracy and flips per clip for no vote (`raw`), the default centred vote (`vote`), the
+backward-looking vote (`vote_causal`) and a lock reference (`vote_lock15`), plus `mixed_team_tracks`, the number of
+tracks that contain boxes from both teams.
