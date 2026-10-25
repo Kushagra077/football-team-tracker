@@ -8,7 +8,7 @@ grass_mask:                   # OpenCV HSV ranges (H 0-179)
   s_min: 40
   v_min: 40
 features:
-  color_space: lab            # lab | rgb | hsv
+  kind: hist_lab              # mean_lab | hist_lab (colour histogram: keeps both stripes of a striped kit)
 cluster:
   k: 2
   fit_frames: 50              # first N frames of the clip that look like a pitch view

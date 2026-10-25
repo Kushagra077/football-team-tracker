@@ -60,18 +60,21 @@ def _video(path):
     vw.release()
 
 
-def _run(tmp_path, model, **kw):
+def _run(tmp_path, model, kind=None, **kw):
     video = tmp_path / "v.mp4"
     _video(video)
     cfg = yaml.safe_load((ROOT / "configs" / "team.yaml").read_text())
+    if kind:
+        cfg["features"]["kind"] = kind
     return process_video(
         video, tmp_path / "out", model=model, team_cfg=cfg, tracker_cfg={"track_buffer": 30},
         device="cpu", log=lambda _m: None, **kw,
     )  # fmt: skip
 
 
-def test_process_video_splits_two_colours_into_two_teams_and_writes_files(tmp_path):
-    out = _run(tmp_path, _FakeModel())
+@pytest.mark.parametrize("kind", ["mean_lab", "hist_lab"])
+def test_process_video_splits_two_colours_into_two_teams_and_writes_files(tmp_path, kind):
+    out = _run(tmp_path, _FakeModel(), kind=kind)
     by_track = out.table.groupby("track_id")["team"].agg(lambda s: set(s.dropna()))
     assert all(len(v) == 1 for v in by_track)  # one team per track
     assert by_track[1] == by_track[2] and by_track[3] == by_track[4]

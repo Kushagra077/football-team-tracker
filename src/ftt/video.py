@@ -15,7 +15,7 @@ import cv2
 import pandas as pd
 
 from ftt.data.detections import CLASS_IDS
-from ftt.team.features import box_features
+from ftt.team.features import FRAME_COLS, box_features, extra_names
 
 COLS = ["frame", "track_id", "x1", "y1", "x2", "y2", "conf", "cls"]
 PERSON_IDS = [CLASS_IDS["goalkeeper"], CLASS_IDS["player"], CLASS_IDS["referee"]]
@@ -95,11 +95,7 @@ def track_video(
             # The loader hands back the frame we are holding right now; it is not kept.
             feats.append(box_features(players, lambda _f, img=result.orig_img: img, cfg))
     tracks = pd.DataFrame(rows, columns=COLS)
-    feats = (
-        pd.concat(feats)
-        if feats
-        else pd.DataFrame(columns=["frame", "x1", "y1", "x2", "y2", "L", "a", "b"])
-    )
+    feats = pd.concat(feats) if feats else pd.DataFrame(columns=[*FRAME_COLS, *extra_names(cfg)])
     return TrackedVideo(
         tracks=tracks, feats=feats, fps=fps, n_frames=n_seen or n_declared, size=size
     )

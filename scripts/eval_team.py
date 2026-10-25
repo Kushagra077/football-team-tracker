@@ -30,7 +30,7 @@ from ftt.data.detections import (
 from ftt.data.sn_tracking import frame_path, list_clips, load_persons_gt
 from ftt.eval.team_metrics import best_permutation_accuracy, per_track_accuracy
 from ftt.team.cluster import choose_fit_frames, fit_team_clusters
-from ftt.team.features import box_features
+from ftt.team.features import FRAME_COLS, box_features, feature_names
 
 ROOT = Path(__file__).parents[1]
 PLAYER = CLASS_IDS["player"]
@@ -64,7 +64,7 @@ def features_for(dets, frames, clip, split, cfg, images_root):
     feats = box_features(
         sub, lambda f: cv2.imread(str(frame_path(images_root, split, clip, f))), cfg
     )
-    return feats.to_numpy(dtype="float64").reshape(-1, 8)
+    return feats[[*FRAME_COLS, *feature_names(cfg)]].to_numpy(dtype="float64")
 
 
 def main() -> None:
@@ -101,7 +101,7 @@ def main() -> None:
             dets["frame"].to_numpy(), fit_n, cfg["cluster"]["fit_min_players"]
         )
         fit = features_for(dets, fit_frames, clip, args.split, cfg, images_root)
-        km = fit_team_clusters(fit[:, 5:])
+        km = fit_team_clusters(fit[:, 5:])  # columns after frame, x1..y2 = the clustering feature
 
         ev = features_for(dets, range(1, 751, args.stride), clip, args.split, cfg, images_root)
         pred_all = km.predict(ev[:, 5:])

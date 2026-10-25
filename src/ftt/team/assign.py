@@ -13,7 +13,7 @@ from ftt.team.cluster import (
     far_from_both_teams,
     fit_team_clusters,
 )
-from ftt.team.features import box_features
+from ftt.team.features import box_features, feature_kind, feature_names
 from ftt.team.vote import vote_labels
 
 
@@ -44,15 +44,23 @@ def label_from_features(
     Output is sorted by (frame, track_id).
     """
     out = feats.join(tracks["track_id"]).sort_values(["frame", "track_id"]).reset_index(drop=True)
-    lab = out[["L", "a", "b"]].to_numpy()
+    out = out.copy()  # one block: a wide (histogram) frame warns when columns are added below
+    x = out[feature_names(cfg)].to_numpy()
     c = cfg["cluster"]
     fit_frames = choose_fit_frames(
         tracks["frame"].to_numpy(), c["fit_frames"], c["fit_min_players"]
     )
-    km = fit_team_clusters(lab[np.isin(out["frame"].to_numpy(), fit_frames)])
-    raw = km.predict(lab)
+    fit = np.isin(out["frame"].to_numpy(), fit_frames)
+    km = fit_team_clusters(x[fit])
+    raw = km.predict(x)
     if max_colour_ratio is not None:
-        raw[far_from_both_teams(lab, km.cluster_centers_, max_colour_ratio)] = -1
+        # "Fits neither team" is judged on mean Lab with its own two-colour clustering: the rule
+        # was tuned on it, and histogram distances (or histogram clusters, whose mean colours
+        # can nearly coincide when the kits differ by pattern) separate referees from players
+        # worse (DD-032). With mean_lab as the clustering feature this is the same clustering.
+        lab = out[["L", "a", "b"]].to_numpy()
+        gate = km if feature_kind(cfg) == "mean_lab" else fit_team_clusters(lab[fit])
+        raw[far_from_both_teams(lab, gate.cluster_centers_, max_colour_ratio)] = -1
     v = cfg["vote"]
     team = vote_labels(
         out["track_id"].to_numpy(), out["frame"].to_numpy(), raw, v["window"], v["lock_min_agree"]
