@@ -56,9 +56,9 @@ def test_load_gt_sorted_by_frame_then_track(gt):
     assert gt.equals(gt.sort_values(["frame", "track_id"]).reset_index(drop=True))
 
 
-def test_list_clips_val_matches_a1():
-    # Expected ids come from A1's own val image filenames (dataset/images/val in
-    # football-detect-serve), not from list_clips: A1 held out every 5th sorted train clip.
+def test_list_clips_val_matches_the_detector_val():
+    # Expected ids come from the detector's own val image filenames (dataset/images/val in
+    # football-detect-serve), not from list_clips: it held out every 5th sorted train clip.
     expected = [
         "SNMOT-064", "SNMOT-069", "SNMOT-074", "SNMOT-098", "SNMOT-103", "SNMOT-108",
         "SNMOT-113", "SNMOT-153", "SNMOT-158", "SNMOT-163", "SNMOT-168",

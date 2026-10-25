@@ -1,4 +1,4 @@
-"""Build A2's table from tracker output and write/read ``tracks.parquet`` (see ``schema.py``)."""
+"""Build the output table from tracker output; write/read ``tracks.parquet`` (see ``schema.py``)."""
 
 from __future__ import annotations
 
@@ -7,18 +7,18 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 
-from ftt.data.detections import A1_CLASS_NAMES
+from ftt.data.detections import DETECTOR_CLASS_NAMES
 from ftt.schema import FPS, ROLES, coerce, validate
 
 
 def build_tracks(tracked: pd.DataFrame, team, fps: float = FPS) -> pd.DataFrame:
-    """Tracker rows + one team label per row -> A2 table (not yet validated).
+    """Tracker rows + one team label per row -> output table (not yet validated).
 
-    ``tracked`` has frame, track_id, x1, y1, x2, y2, conf, cls (A1 class ids). ``team`` is
+    ``tracked`` has frame, track_id, x1, y1, x2, y2, conf, cls (detector class ids). ``team`` is
     aligned with it: 0 / 1, or NA where undecided. Referees never get a team. Pitch and jersey
     columns come out null (``coerce`` fills them with NaN, never 0).
     """
-    role = tracked["cls"].map(A1_CLASS_NAMES)
+    role = tracked["cls"].map(DETECTOR_CLASS_NAMES)
     bad = sorted(set(role.dropna()) - set(ROLES)) + (["unmapped"] if role.isna().any() else [])
     if bad:
         raise ValueError(f"tracked rows with classes outside {ROLES}: {bad}")

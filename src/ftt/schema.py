@@ -1,10 +1,10 @@
-"""A2's output schema (``tracks.parquet``) and its adapter to B1's contract.
+"""The output schema (``tracks.parquet``) and its adapter to the metrics project's contract.
 
-A2 emits the shared program columns plus image-space columns. ``x_pitch`` /
+This project emits the shared columns plus image-space columns. ``x_pitch`` /
 ``y_pitch`` / ``jersey_number`` are explicitly NULL (never 0: 0 is the centre
 spot and a silent zero corrupts every downstream metric).
 
-DECIDED (design_decision.md DD-003): A2 is standalone for now. B1's
+DECIDED (design_decision.md DD-003): standalone for now. The metrics project's
 ``ftm.schema.validate()`` requires non-null ``x_pitch``/``y_pitch`` and also needs
 ``period``, ``is_gk``, ``ball_state`` and ``team`` in {home, away, ball}; that contract
 is revisited at integration time, so ``to_b1()`` stays a stub until then.
@@ -24,11 +24,11 @@ SHARED_COLUMNS: Final[list[str]] = [
     "frame_id", "timestamp", "track_id", "team", "jersey_number",
     "x_pitch", "y_pitch", "is_ball",
 ]  # fmt: skip
-# A2-specific image-space columns.
+# Image-space columns.
 IMAGE_COLUMNS: Final[list[str]] = ["x1", "y1", "x2", "y2", "role", "conf"]
 COLUMNS: Final[list[str]] = SHARED_COLUMNS + IMAGE_COLUMNS
-ROLES: Final[tuple[str, ...]] = ("player", "goalkeeper", "referee")  # ball is A4's job
-ALWAYS_NULL: Final[tuple[str, ...]] = ("jersey_number", "x_pitch", "y_pitch")  # until A3 / never
+ROLES: Final[tuple[str, ...]] = ("player", "goalkeeper", "referee")  # the ball is out of scope here
+ALWAYS_NULL: Final[tuple[str, ...]] = ("jersey_number", "x_pitch", "y_pitch")  # until pitch coords
 # Only `team` may be null among the rest: referees and undecided goalkeepers have no team.
 NULLABLE: Final[tuple[str, ...]] = ("team", *ALWAYS_NULL)
 
@@ -40,11 +40,11 @@ class SchemaError(ValueError):
 DTYPES: Final[dict[str, str]] = {
     "frame_id": "int64",
     "timestamp": "float64",
-    "track_id": "int64",      # tracker id; B1 wants a string, converted at integration (DD-003)
+    "track_id": "int64",      # tracker id; the metrics project wants a string (DD-003)
     "team": "Int8",           # KMeans cluster 0/1 (arbitrary per clip); null: referee, undecided GK
-    "jersey_number": "Int16",  # nullable, always null in A2
-    "x_pitch": "float64",     # NaN until A3
-    "y_pitch": "float64",     # NaN until A3
+    "jersey_number": "Int16",  # nullable, always null here
+    "x_pitch": "float64",     # NaN until pitch coordinates exist
+    "y_pitch": "float64",     # NaN until pitch coordinates exist
     "is_ball": "bool",
     "x1": "float32", "y1": "float32", "x2": "float32", "y2": "float32",
     "role": "category",
@@ -57,7 +57,7 @@ def _role_dtype() -> pd.CategoricalDtype:
 
 
 def empty_frame() -> pd.DataFrame:
-    """Zero-row frame with the exact A2 columns and dtypes."""
+    """Zero-row frame with the exact output columns and dtypes."""
     cols = {c: pd.Series(dtype=DTYPES[c]) for c in COLUMNS if c != "role"}
     cols["role"] = pd.Series(dtype=_role_dtype())
     return pd.DataFrame(cols)[COLUMNS]
@@ -78,7 +78,7 @@ def coerce(df: pd.DataFrame) -> pd.DataFrame:
 
 
 def validate(df: pd.DataFrame, fps: float = FPS) -> pd.DataFrame:
-    """Assert A2's own contract (DD-003: no B1 involved). Returns df with columns in order.
+    """Assert our own contract (DD-003: nothing external involved). Returns df, columns in order.
 
     Columns and dtypes match; pitch/jersey columns are ALL null (a zero is the centre spot);
     only ``team`` may otherwise be null; no ball rows; one row per (frame_id, track_id);
@@ -98,13 +98,15 @@ def validate(df: pd.DataFrame, fps: float = FPS) -> pd.DataFrame:
 
     for c in ALWAYS_NULL:
         if df[c].notna().any():
-            raise SchemaError(f"{c} must be null until A3 fills it (never 0), found values")
+            raise SchemaError(f"{c} must be null until pitch coordinates exist (never 0)")
     for c in COLUMNS:
         if c not in NULLABLE and df[c].isna().any():
             raise SchemaError(f"column {c} has nulls but must be fully populated")
 
+    if not df["team"].dropna().isin([0, 1]).all():
+        raise SchemaError("team must be 0, 1 or null (cluster ids), found other values")
     if df["is_ball"].any():
-        raise SchemaError("A2 does not track the ball (A4): is_ball must be all False")
+        raise SchemaError("The ball is not tracked here: is_ball must be all False")
     if df.duplicated(["frame_id", "track_id"]).any():
         raise SchemaError("duplicate (frame_id, track_id) rows")
     if not np.allclose(df["timestamp"], df["frame_id"] / fps):
@@ -119,7 +121,7 @@ def validate(df: pd.DataFrame, fps: float = FPS) -> pd.DataFrame:
 
 
 def to_b1(df: pd.DataFrame) -> pd.DataFrame:
-    """Adapt an A2 frame to B1's canonical frame.
+    """Adapt an output frame to the tactical-metrics project's canonical frame.
 
     Adds period, is_gk, ball_state; maps team to home/away; converts ids to strings.
     """

@@ -62,9 +62,9 @@ def main() -> None:
 
     paths = yaml.safe_load((ROOT / "configs" / "paths.yaml").read_text())
     meta_root = ROOT / paths["meta_root"]
-    images_root = (ROOT / paths["a1_images"]).resolve()
+    images_root = (ROOT / paths["detector_images"]).resolve()
     clips = list_clips(meta_root, args.split)
-    detector = detector_name(paths["a1_weights"])
+    detector = detector_name(paths["detector_weights"])
     base = ROOT / paths["reports_dir"] / detector
     work = base / "tuning" / args.split
     log_path = base / "tuning" / f"{args.split}.jsonl"

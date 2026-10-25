@@ -1,6 +1,6 @@
-"""One clip, end to end, to ``tracks.parquet`` in A2's schema.
+"""One clip, end to end, to ``tracks.parquet`` in this project's schema.
 
-cached A1 boxes -> tracker (BoT-SORT + GMC, tuned shared setting) -> team labels for the
+cached detector boxes -> tracker (BoT-SORT + GMC, tuned shared setting) -> team labels for the
 tracked players (torso colour, KMeans, rolling vote) -> ``build_tracks`` -> validated parquet.
 Referees get no team; goalkeepers get the keeper rule's team or null when it cannot tell; pitch and
 jersey columns are null. The file goes under ``reports/<detector>/exports/`` (gitignored).
@@ -38,9 +38,9 @@ def main() -> None:
 
     paths = yaml.safe_load((ROOT / "configs" / "paths.yaml").read_text())
     cfg = yaml.safe_load((ROOT / "configs" / "team.yaml").read_text())
-    images_root = (ROOT / paths["a1_images"]).resolve()
+    images_root = (ROOT / paths["detector_images"]).resolve()
     folder = "test" if args.split == "test" else "train"
-    detector = detector_name(paths["a1_weights"])
+    detector = detector_name(paths["detector_weights"])
     n_frames = int(load_persons_gt(ROOT / paths["meta_root"] / folder / args.clip)["frame"].max())
 
     def loader(f):

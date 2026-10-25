@@ -1,4 +1,4 @@
-"""Run A1's detector once per clip and cache the boxes (cache/detections/<detector>/<clip>.parquet).
+"""Run the detector once per clip and cache the boxes (cache/detections/<detector>/<clip>.parquet).
 
 uv run python scripts/cache_detections.py --split val
 """
@@ -37,8 +37,8 @@ def main() -> None:
     args = ap.parse_args()
 
     paths = yaml.safe_load((ROOT / "configs" / "paths.yaml").read_text())
-    weights = (ROOT / paths["a1_weights"]).resolve()
-    images_root = (ROOT / paths["a1_images"]).resolve()
+    weights = (ROOT / paths["detector_weights"]).resolve()
+    images_root = (ROOT / paths["detector_images"]).resolve()
     cache_dir = ROOT / paths["cache_dir"]
     detector = detector_name(weights)
     clips = list_clips(ROOT / paths["meta_root"], args.split)[: args.limit]

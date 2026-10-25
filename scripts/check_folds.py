@@ -51,13 +51,13 @@ def main() -> None:
 
     paths = yaml.safe_load((ROOT / "configs" / "paths.yaml").read_text())
     meta_root = ROOT / paths["meta_root"]
-    images_root = (ROOT / paths["a1_images"]).resolve()
+    images_root = (ROOT / paths["detector_images"]).resolve()
     clips = list_clips(meta_root, "val")
     folds = {"all": clips, "A": clips[0::2], "B": clips[1::2]}
     print(f"fold A ({len(folds['A'])}): {' '.join(c[-3:] for c in folds['A'])}")
     print(f"fold B ({len(folds['B'])}): {' '.join(c[-3:] for c in folds['B'])}")
 
-    detector = detector_name(paths["a1_weights"])
+    detector = detector_name(paths["detector_weights"])
     base = ROOT / paths["reports_dir"] / detector
     work = base / "folds"
     gt = {c: load_persons_gt(meta_root / "train" / c) for c in clips}

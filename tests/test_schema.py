@@ -35,6 +35,13 @@ def test_valid_frame_passes_and_pitch_is_null_not_zero():
     assert out[["jersey_number", "x_pitch", "y_pitch"]].isna().all().all()
 
 
+@pytest.mark.parametrize("bad", [2, -1, 127])
+def test_team_labels_must_be_zero_one_or_null(bad):
+    with pytest.raises(SchemaError, match="team"):
+        validate(_frame(team=pd.array([0, bad], dtype="Int8")))
+    validate(_frame(team=pd.array([0, 1], dtype="Int8")))  # both clusters are fine
+
+
 def test_team_may_be_null_for_referees():
     validate(_frame(team=pd.array([None, None], dtype="Int8"), role=["referee", "referee"]))
 

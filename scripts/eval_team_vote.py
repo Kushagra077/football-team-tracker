@@ -1,6 +1,6 @@
 """Per-frame team labels vs voted labels, on REAL tracker output.
 
-Pipeline per clip: cached A1 boxes -> tracker (BoT-SORT + GMC, tuned shared setting, DD-018)
+Pipeline per clip: cached detector boxes -> tracker (BoT-SORT + GMC, tuned shared setting, DD-018)
 -> torso colour of every tracked player box -> KMeans (fit on frames 1..N, no labels) ->
 per-frame label -> rolling vote per tracker id. Tracked boxes are matched to GT players
 (IoU >= 0.5) only to get a true team for scoring; unmatched boxes are not scored.
@@ -53,9 +53,9 @@ def main() -> None:
     paths = yaml.safe_load((ROOT / "configs" / "paths.yaml").read_text())
     cfg = yaml.safe_load((ROOT / "configs" / "team.yaml").read_text())
     meta_root = ROOT / paths["meta_root"]
-    images_root = (ROOT / paths["a1_images"]).resolve()
+    images_root = (ROOT / paths["detector_images"]).resolve()
     folder = "test" if args.split == "test" else "train"
-    detector = detector_name(paths["a1_weights"])
+    detector = detector_name(paths["detector_weights"])
     window = cfg["vote"]["window"]
     tcfg = {**yaml.safe_load((ROOT / "configs" / f"{args.tracker}.yaml").read_text()), **TUNED}
     tracker = UltralyticsTracker(tcfg)

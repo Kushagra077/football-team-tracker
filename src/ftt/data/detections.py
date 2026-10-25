@@ -1,11 +1,11 @@
-"""GT-as-detections and cached A1 detections in ONE identical format.
+"""GT-as-detections and cached detector detections in ONE identical format.
 
 This module is the reason the oracle-vs-real comparison is valid. Both sources
 return a DataFrame with exactly ``DET_COLUMNS``; trackers never know which they got.
 
 Class policy (written down before any number is computed): evaluate PERSONS only
-(player, goalkeeper, referee). Ball is A4's job; ``other``/staff are excluded.
-A1 has 5 classes (see ``A1_CLASS_NAMES``); the id mapping must be explicit here.
+(player, goalkeeper, referee). The ball is out of scope here; ``other``/staff are excluded.
+The detector has 5 classes (see ``DETECTOR_CLASS_NAMES``); the id mapping must be explicit here.
 """
 
 from __future__ import annotations
@@ -21,12 +21,12 @@ DET_COLUMNS: Final[list[str]] = ["frame", "x1", "y1", "x2", "y2", "conf", "cls"]
 # frame is 1-indexed (MOT convention) everywhere in this package.
 
 # From football-detect-serve/configs/train.yaml expected_classes.
-A1_CLASS_NAMES: Final[dict[int, str]] = {
+DETECTOR_CLASS_NAMES: Final[dict[int, str]] = {
     0: "ball", 1: "goalkeeper", 2: "player", 3: "referee", 4: "other",
 }  # fmt: skip
 KEEP_CLASSES: Final[tuple[str, ...]] = ("player", "goalkeeper", "referee")
-# The `cls` column holds A1's class ids, the same numbers YOLO outputs, for both sources.
-CLASS_IDS: Final[dict[str, int]] = {name: i for i, name in A1_CLASS_NAMES.items()}
+# The `cls` column holds the detector's class ids, the same numbers YOLO outputs, for both sources.
+CLASS_IDS: Final[dict[str, int]] = {name: i for i, name in DETECTOR_CLASS_NAMES.items()}
 KEEP_IDS: Final[frozenset[int]] = frozenset(CLASS_IDS[name] for name in KEEP_CLASSES)
 
 
@@ -93,7 +93,7 @@ def cached_path(cache_dir: Path, detector: str, clip_id: str) -> Path:
 
 
 def load_cached_detections(cache_dir: Path, detector: str, clip_id: str) -> pd.DataFrame:
-    """A1 detections cached by ``detect/run_detector.py`` (conf threshold ~0.1), same format."""
+    """Detections cached by ``detect/run_detector.py`` (conf threshold ~0.1), same format."""
     path = cached_path(cache_dir, detector, clip_id)
     if not path.exists():
         raise FileNotFoundError(f"no cached detections from {detector} for {clip_id} at {path}")

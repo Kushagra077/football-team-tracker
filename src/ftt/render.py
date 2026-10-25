@@ -1,4 +1,4 @@
-"""Draw A2's tracks onto the source video: an ellipse at each person's feet plus a small label.
+"""Draw the tracks onto the source video: an ellipse at each person's feet plus a small label.
 
 Team 0 / team 1 get two colours chosen NOT to look like common kits (orange, cyan); people
 without a team (referees, undecided keepers, players with no usable crop) are drawn white.
@@ -18,7 +18,7 @@ ROLE_TAG = {"goalkeeper": "GK ", "referee": "REF ", "player": ""}
 
 
 def draw_frame(img, rows: pd.DataFrame):
-    """Annotate one BGR frame in place with that frame's rows of the A2 table."""
+    """Annotate one BGR frame in place with that frame's rows of the output table."""
     for r in rows.itertuples():
         colour = TEAM_BGR.get(int(r.team), NO_TEAM_BGR) if pd.notna(r.team) else NO_TEAM_BGR
         cx, foot = int((r.x1 + r.x2) / 2), int(r.y2)

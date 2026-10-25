@@ -40,7 +40,7 @@ def main() -> None:
 
     paths = yaml.safe_load((ROOT / "configs" / "paths.yaml").read_text())
     cfg = yaml.safe_load((ROOT / "configs" / "team.yaml").read_text())
-    weights = (ROOT / paths["a1_weights"]).resolve()
+    weights = (ROOT / paths["detector_weights"]).resolve()
     out_dir = (
         ROOT / paths["reports_dir"] / detector_name(weights) / "process_video" / args.video.stem
     )

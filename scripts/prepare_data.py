@@ -2,7 +2,7 @@
 
 Clip counts per split, frames per clip, GT tracklets per clip, role distribution, average
 track length, tracks that leave and re-enter, average simultaneous players, and the
-OVERLAP between A1's training clips and A2's eval clips.
+OVERLAP between the detector's training clips and our evaluation clips.
 
 Run from anywhere: ``uv run python scripts/prepare_data.py``.
 """
@@ -61,29 +61,29 @@ def clip_stats(clip_dir: Path) -> dict:
     }
 
 
-def a1_frames_per_clip(a1_images: Path, split: str) -> Counter:
-    """{clip: number of A1 images} for one A1 split. Names are <clip>_<frame:06d>.jpg."""
-    return Counter(p.name.split("_")[0] for p in (a1_images / split).glob("SNMOT-*.jpg"))
+def frames_per_clip(detector_images: Path, split: str) -> Counter:
+    """{clip: number of detector-project images} for one split. Names are <clip>_<frame:06d>.jpg."""
+    return Counter(p.name.split("_")[0] for p in (detector_images / split).glob("SNMOT-*.jpg"))
 
 
 def main() -> None:
     paths = yaml.safe_load((ROOT / "configs" / "paths.yaml").read_text())
     meta_root = ROOT / paths["meta_root"]
-    a1_images = (ROOT / paths["a1_images"]).resolve()
+    detector_images = (ROOT / paths["detector_images"]).resolve()
 
     pd.set_option("display.width", 120)
-    a2 = {s: list_clips(meta_root, s) for s in SPLITS}
+    clips_by_split = {s: list_clips(meta_root, s) for s in SPLITS}
 
     # --- per-split statistics -------------------------------------------------------------
     all_rows = []
     for split in SPLITS:
-        rows = [clip_stats(clip_dir_for(meta_root, split, c)) for c in a2[split]]
+        rows = [clip_stats(clip_dir_for(meta_root, split, c)) for c in clips_by_split[split]]
         df = pd.DataFrame(rows).assign(split=split)
         all_rows.append(df)
 
         roles = Counter(
             role.cls
-            for c in a2[split]
+            for c in clips_by_split[split]
             for role in load_roles(clip_dir_for(meta_root, split, c)).values()
         )
         print(f"\n=== {split}: {len(df)} clips ===")
@@ -107,28 +107,29 @@ def main() -> None:
     bad = stats[stats["max_gt_frame"] > stats["frames"]]
     print(f"\nclips with GT beyond seqLength: {list(bad['clip']) or 'none'}")
 
-    # --- frames on disk (A1's copy is our frame source) -----------------------------------
-    a1 = {s: a1_frames_per_clip(a1_images, s) for s in SPLITS}
-    on_disk = sum(a1.values(), Counter())
+    # --- frames on disk (the detector project's copy is our frame source) ------------------
+    frames_on_disk = {s: frames_per_clip(detector_images, s) for s in SPLITS}
+    on_disk = sum(frames_on_disk.values(), Counter())
     expected = dict(zip(stats["clip"], stats["frames"], strict=True))
     short = {c: (on_disk.get(c, 0), n) for c, n in expected.items() if on_disk.get(c, 0) != n}
-    print(f"clips whose A1 frame count != seqLength: {short or 'none'}")
+    print(f"clips whose frame count != seqLength: {short or 'none'}")
 
     # --- leakage check ---------------------------------------------------------------------
-    a1_clips = {s: set(a1[s]) for s in SPLITS}
-    a2_eval = set(a2["val"]) | set(a2["test"])
-    overlap = a1_clips["train"] & a2_eval
+    detector_clips = {s: set(frames_on_disk[s]) for s in SPLITS}
+    eval_clips = set(clips_by_split["val"]) | set(clips_by_split["test"])
+    overlap = detector_clips["train"] & eval_clips
 
     print("\n=== leakage check ===")
     for s in SPLITS:
         print(
-            f"A1 {s:5}: {len(a1_clips[s])} clips   A2 {s:5}: {len(a2[s])} clips   "
-            f"identical: {a1_clips[s] == set(a2[s])}"
+            f"detector {s:5}: {len(detector_clips[s])} clips   "
+            f"evaluation {s:5}: {len(clips_by_split[s])} clips   "
+            f"identical: {detector_clips[s] == set(clips_by_split[s])}"
         )
-    print(f"A1 train ∩ A2 eval (val+test): {sorted(overlap) or 'none'}")
+    print(f"detector train ∩ evaluation (val+test): {sorted(overlap) or 'none'}")
     print(
-        "note: A2 dev = A1 val, which A1 used to pick its checkpoint -> dev numbers may be "
-        "slightly optimistic; final numbers come from test only (DD-007)."
+        "note: our val = the detector's val, which it used to pick its checkpoint -> val numbers "
+        "may be slightly optimistic; final numbers come from test only (DD-007)."
     )
 
     # --- gate ------------------------------------------------------------------------------

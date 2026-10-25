@@ -46,7 +46,7 @@ def assign_goalkeepers(
     min_team_gap: float,
     min_margin: float,
 ) -> np.ndarray:
-    """Keeper goes to the team whose players' mean image-x is nearest. Crude; A3 fixes it.
+    """Keeper goes to the team whose players' mean image-x is nearest. Crude: pitch coords fix it.
 
     Returns 0/1 per keeper, or -1 (unknown) when the evidence is weak: the two teams' average
     positions are closer than ``min_team_gap`` (everyone bunched up), or the keeper is less than

@@ -1,4 +1,4 @@
-"""Detector runner: frame-name parsing, plus a 3-frame smoke run (needs A1 weights + frames)."""
+"""Detector runner: frame-name parsing, plus a 3-frame smoke run (needs weights + frames)."""
 
 from pathlib import Path
 
@@ -25,7 +25,7 @@ def test_frame_number_rejects_other_names():
 
 @pytest.mark.skipif(
     not (WEIGHTS.exists() and (FRAMES / f"{CLIP}_000001.jpg").exists()),
-    reason="A1 weights / frames not available (outside this repo)",
+    reason="detector weights / frames not available (outside this repo)",
 )
 def test_smoke_three_frames(tmp_path):
     paths = [FRAMES / f"{CLIP}_{i:06d}.jpg" for i in (1, 2, 3)]

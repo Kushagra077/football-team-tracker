@@ -123,7 +123,7 @@ def main() -> None:
     args = ap.parse_args()
     paths = yaml.safe_load((ROOT / "configs" / "paths.yaml").read_text())
     OUT.mkdir(parents=True, exist_ok=True)
-    print("wrote", benchmark(detector_name(paths["a1_weights"])))
+    print("wrote", benchmark(detector_name(paths["detector_weights"])))
     if args.trails:
         print("wrote", trails(args.trails, args.start, args.frames))
 

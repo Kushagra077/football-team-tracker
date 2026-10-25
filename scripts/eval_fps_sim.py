@@ -41,11 +41,11 @@ CLIPS, STEPS = args.clips, args.steps
 paths = yaml.safe_load((ROOT / "configs/paths.yaml").read_text())
 CFG0 = yaml.safe_load((ROOT / "configs/team.yaml").read_text())
 TUNED = {"track_high_thresh": 0.25, "match_thresh": 0.9}
-images = (ROOT / paths["a1_images"]).resolve()
+images = (ROOT / paths["detector_images"]).resolve()
 meta = ROOT / paths["meta_root"]
-OUT = ROOT / paths["reports_dir"] / detector_name(paths["a1_weights"]) / "fps_sim"
+OUT = ROOT / paths["reports_dir"] / detector_name(paths["detector_weights"]) / "fps_sim"
 OUT.mkdir(parents=True, exist_ok=True)
-model = load_detector((ROOT / paths["a1_weights"]).resolve())
+model = load_detector((ROOT / paths["detector_weights"]).resolve())
 
 
 def make_video(clip, step):

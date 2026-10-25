@@ -82,7 +82,7 @@ def label_goalkeepers(keepers: pd.DataFrame, players: pd.DataFrame, cfg: dict) -
     return pd.DataFrame({"track_id": keeper_x.index.to_numpy(), "team": team})
 
 
-PLAYER_CLS, KEEPER_CLS = 2, 1  # A1 class ids
+PLAYER_CLS, KEEPER_CLS = 2, 1  # detector class ids
 
 
 def team_for_tracks(

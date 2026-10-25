@@ -1,4 +1,4 @@
-"""Detection-only DetA of the cached A1 boxes vs GT persons, at several confidence cut-offs.
+"""Detection-only DetA of the cached detector boxes vs GT persons, at several confidence cut-offs.
 
 Association is meaningless here, so each box just gets its index within its frame as an id (unique
 ids per box would make TrackEval's IDF1 allocate a matrix with thousands of rows). Only DetA is
@@ -42,7 +42,7 @@ def main() -> None:
     meta_root = ROOT / paths["meta_root"]
     folder = "test" if args.split == "test" else "train"
     clips = list_clips(meta_root, args.split)
-    detector = detector_name(paths["a1_weights"])
+    detector = detector_name(paths["detector_weights"])
     base = ROOT / paths["reports_dir"] / detector
     out_dir = base / "det_only" / args.split
 

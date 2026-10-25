@@ -79,9 +79,9 @@ def main() -> None:
     paths = yaml.safe_load((ROOT / "configs" / "paths.yaml").read_text())
     cfg = yaml.safe_load((ROOT / "configs" / "team.yaml").read_text())
     meta_root = ROOT / paths["meta_root"]
-    images_root = ROOT / paths["a1_images"]
+    images_root = ROOT / paths["detector_images"]
     folder = "test" if args.split == "test" else "train"
-    detector = detector_name(paths["a1_weights"])
+    detector = detector_name(paths["detector_weights"])
     fit_n = cfg["cluster"]["fit_frames"]
 
     results = {}

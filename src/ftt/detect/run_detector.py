@@ -1,4 +1,4 @@
-"""Run the A1 detector ONCE per clip and cache to ``cache/detections/<detector>/<clip>.parquet``.
+"""Run the detector ONCE per clip and cache to ``cache/detections/<detector>/<clip>.parquet``.
 
 Runs locally on the Apple GPU (``device="mps"``; DD-010: frames are already on this machine).
 Use a LOW confidence threshold (~0.1): ByteTrack's second association pass needs low-confidence
@@ -6,7 +6,8 @@ boxes, and a detector thresholded at 0.5 silently disables it. Keep player/goalk
 drop ball/other.
 Weights path comes from ``configs/paths.yaml``; never copy weights into this repo.
 
-Defaults mirror how A1 itself evaluates (imgsz 640, NMS IoU 0.7, max 300 detections per image).
+Defaults mirror how the detector itself is evaluated (imgsz 640, NMS IoU 0.7, max 300 detections
+per image).
 Ultralytics resizes each frame for the network and maps boxes back to original pixel coordinates.
 """
 
@@ -19,7 +20,7 @@ from pathlib import Path
 import pandas as pd
 from ultralytics import YOLO
 
-from ftt.data.detections import A1_CLASS_NAMES, DET_COLUMNS, KEEP_IDS, validate_detections
+from ftt.data.detections import DET_COLUMNS, DETECTOR_CLASS_NAMES, KEEP_IDS, validate_detections
 
 FRAME_RE = re.compile(r"_(\d+)\.jpg$")
 
@@ -33,11 +34,11 @@ def frame_number(path: Path) -> int:
 
 
 def load_detector(weights: Path) -> YOLO:
-    """Load the weights once and check the class ids match A1's, so ids can't silently shift."""
+    """Load the weights once and check the class ids are the expected ones, so ids can't shift."""
     model = YOLO(str(weights))
     names = {int(k): v for k, v in dict(model.names).items()}
-    if names != A1_CLASS_NAMES:
-        raise ValueError(f"{Path(weights).name} classes {names} differ from A1's {A1_CLASS_NAMES}")
+    if names != DETECTOR_CLASS_NAMES:
+        raise ValueError(f"{Path(weights).name} classes {names} != expected {DETECTOR_CLASS_NAMES}")
     return model
 
 

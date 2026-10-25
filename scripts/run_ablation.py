@@ -3,7 +3,7 @@
 Results go to reports/tracking_<source>_<split>.json.
 
 --source oracle : GT person boxes, conf = 1.0, so every point lost is the tracker's fault.
---source real   : A1's cached detections (scripts/cache_detections.py), conf >= 0.1.
+--source real   : the detector's cached detections (scripts/cache_detections.py), conf >= 0.1.
 Both come through the same table format (ftt.data.detections), so the tracker cannot tell which
 it got. Both are scored against the same GT persons.
 
@@ -46,11 +46,11 @@ def main() -> None:
 
     paths = yaml.safe_load((ROOT / "configs" / "paths.yaml").read_text())
     meta_root = ROOT / paths["meta_root"]
-    images_root = (ROOT / paths["a1_images"]).resolve()
+    images_root = (ROOT / paths["detector_images"]).resolve()
     folder = "test" if args.split == "test" else "train"
     clips = list_clips(meta_root, args.split)[: args.limit]
 
-    detector = detector_name(paths["a1_weights"])
+    detector = detector_name(paths["detector_weights"])
     # Oracle results do not depend on the detector; real ones live under reports/<detector>/.
     base = ROOT / paths["reports_dir"]
     if args.source == "real":

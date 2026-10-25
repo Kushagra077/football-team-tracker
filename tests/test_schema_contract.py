@@ -1,7 +1,7 @@
-"""tracks.parquet follows A2's own schema contract.
+"""tracks.parquet follows this project's own schema contract.
 
-DD-003: A2 is standalone for now. The B1 contract (``ftm.schema.validate()``) is revisited at
-integration time, after A3 supplies pitch coordinates, so nothing here imports B1.
+DD-003: standalone for now. The metrics project's contract (``ftm.schema.validate()``) is
+revisited at integration time, after pitch coordinates exist, so nothing here imports it.
 The file is read back with plain pandas/pyarrow too, so the contract is checked on what is
 really stored, not only through our own reader.
 """
@@ -29,7 +29,7 @@ def _export(tmp_path):
     return export_tracks(build_tracks(tracked, team=[0, np.nan, 0, np.nan]), tmp_path / "t.parquet")
 
 
-def test_tracks_parquet_matches_a2_schema(tmp_path):
+def test_tracks_parquet_matches_schema(tmp_path):
     path = _export(tmp_path)
     df = pd.read_parquet(path)
     assert list(df.columns) == COLUMNS

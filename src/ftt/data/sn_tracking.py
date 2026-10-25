@@ -53,7 +53,7 @@ SPLITS = ("train", "val", "test")
 
 
 def list_clips(data_root: Path, split: str) -> list[str]:
-    """Clip ids for a split, sorted. 'val' = every 5th sorted train clip (A1's rule)."""
+    """Clip ids for a split, sorted. 'val' = every 5th sorted train clip (as in the detector)."""
     if split not in SPLITS:
         raise ValueError(f"split must be one of {SPLITS}, got {split!r}")
 
@@ -113,7 +113,7 @@ def role_to_team(role: Role) -> str | None:
     return role.side
 
 
-# Class policy (DD-002): evaluate persons only. Ball is A4's job; "other" is excluded.
+# Class policy (DD-002): evaluate persons only. The ball is out of scope here; "other" is excluded.
 PERSON_CLS = ("player", "goalkeeper", "referee")
 
 
@@ -134,5 +134,5 @@ def load_persons_gt(clip_dir: Path) -> pd.DataFrame:
 
 
 def frame_path(images_root: Path, split: str, clip: str, frame: int) -> Path:
-    """A1's YOLO copy of the frames: ``<root>/<split>/<clip>_<frame:06d>.jpg`` (frame 1-indexed)."""
+    """The detector's copy of the frames: ``<root>/<split>/<clip>_<frame:06d>.jpg`` (1-indexed)."""
     return Path(images_root) / split / f"{clip}_{frame:06d}.jpg"

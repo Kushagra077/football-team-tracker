@@ -6,9 +6,9 @@ Nothing large lives here, and no SoccerNet data is committed. SoccerNet-Tracking
 Where the code looks for it (paths are set in `configs/paths.yaml`):
 
     data/raw_meta/{train,test}/<clip>/gt/gt.txt, gameinfo.ini, seqinfo.ini   # SoccerNet text files
-    ../football-detect-serve/dataset/images/{train,val,test}/<clip>_<frame:06d>.jpg   # frames (A1's layout)
+    ../football-detect-serve/dataset/images/{train,val,test}/<clip>_<frame:06d>.jpg   # frames (football-detect-serve layout)
 
-`val` is not a SoccerNet folder: it is every 5th sorted train clip (the same rule A1 used), so the detector
+`val` is not a SoccerNet folder: it is every 5th sorted train clip (the same rule the detector project used), so the detector
 never trained on it. `data/samples/` is for tiny local test clips and is gitignored.
 
 Cached detector output goes in `cache/` (gitignored), not here.
