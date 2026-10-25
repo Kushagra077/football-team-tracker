@@ -15,6 +15,7 @@ import cv2
 import pandas as pd
 
 from ftt.data.detections import CLASS_IDS
+from ftt.device import default_device
 from ftt.scale import clean_fps
 from ftt.team.features import FRAME_COLS, box_features, extra_names
 
@@ -54,7 +55,7 @@ def track_video(
     iou: float = 0.7,
     imgsz: int = 640,
     max_det: int = 300,
-    device: str = "mps",
+    device: str = default_device(),
     max_frames: int | None = None,
 ) -> TrackedVideo:
     """Run ``model.track`` over a video file; keep boxes + player torso colours, not frames.

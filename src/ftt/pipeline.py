@@ -15,6 +15,7 @@ from pathlib import Path
 import pandas as pd
 import yaml
 
+from ftt.device import default_device
 from ftt.export import build_tracks, export_tracks, read_tracks
 from ftt.render import render_video
 from ftt.scale import scale_team_cfg, scale_tracker_cfg
@@ -48,7 +49,7 @@ def process_video(
     model,
     team_cfg: dict,
     tracker_cfg: dict,
-    device: str = "mps",
+    device: str = default_device(),
     render: bool = True,
     max_frames: int | None = None,
     log: Callable[[str], None] = print,

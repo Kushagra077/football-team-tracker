@@ -1,6 +1,6 @@
 """Run the detector ONCE per clip and cache to ``cache/detections/<detector>/<clip>.parquet``.
 
-Runs locally on the Apple GPU (``device="mps"``; the frames are already on this machine).
+Runs on the best local device (``ftt.device.default_device``: cuda, mps or cpu).
 Use a LOW confidence threshold (~0.1): ByteTrack's second association pass needs low-confidence
 boxes, and a detector thresholded at 0.5 silently disables it. Keep player/goalkeeper/referee;
 drop ball/other.
@@ -21,6 +21,7 @@ import pandas as pd
 from ultralytics import YOLO
 
 from ftt.data.detections import DET_COLUMNS, DETECTOR_CLASS_NAMES, KEEP_IDS, validate_detections
+from ftt.device import default_device
 
 FRAME_RE = re.compile(r"_(\d+)\.jpg$")
 
@@ -50,7 +51,7 @@ def run_detector(
     iou: float = 0.7,
     imgsz: int = 640,
     max_det: int = 300,
-    device: str = "mps",
+    device: str = default_device(),
     batch: int = 16,
 ) -> Path:
     """Detect persons in ``frame_paths`` with a loaded ``model``; save a validated parquet."""

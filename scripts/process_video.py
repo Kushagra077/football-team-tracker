@@ -18,6 +18,7 @@ import yaml
 
 from ftt.data.detections import detector_name
 from ftt.detect.run_detector import load_detector
+from ftt.device import default_device
 from ftt.pipeline import NoPitchViewError, process_video
 from ftt.track.config import load_tracker_cfg
 
@@ -28,7 +29,9 @@ def main() -> None:
     ap = argparse.ArgumentParser()
     ap.add_argument("video", type=Path)
     ap.add_argument("--tracker", default="botsort_gmc")
-    ap.add_argument("--device", default="mps")
+    ap.add_argument(
+        "--device", default=default_device(), help="default: cuda, mps or cpu, whichever exists"
+    )
     ap.add_argument("--no-render", action="store_true", help="skip the annotated video")
     args = ap.parse_args()
 

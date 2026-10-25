@@ -27,4 +27,4 @@ from one-off checks, some on footage that cannot be redistributed.
 
 `team_vote_*.json` holds the accuracy and flips per clip for no vote (`raw`), the default centred vote (`vote`), the
 backward-looking vote (`vote_causal`) and a lock reference (`vote_lock15`), plus `mixed_team_tracks`, the number of
-tracks that contain boxes from both teams.
+tracks that contain boxes from both teams. The val file also has `vote_centred_13` and `vote_centred_51` (the window-size check).

@@ -22,6 +22,7 @@ import yaml
 from ftt.data.detections import detector_name
 from ftt.data.sn_tracking import frame_path, load_persons_gt
 from ftt.detect.run_detector import load_detector
+from ftt.device import default_device
 from ftt.eval.mot_io import write_mot
 from ftt.eval.team_metrics import best_permutation_accuracy, match_to_gt
 from ftt.eval.trackeval_wrap import evaluate
@@ -70,7 +71,7 @@ def run(video, scale):
     tcfg.pop("name", None)
     ty = OUT / f"trk_{scale}_{int(fps * 100)}.yaml"
     ty.write_text(yaml.safe_dump(tcfg))
-    tv = track_video(model, video, ty, cfg, device="mps")
+    tv = track_video(model, video, ty, cfg, device=default_device())
     pv = cfg["pitch_view"]
     view = pitch_view_frames(tv.tracks, h, pv["min_players"], pv["max_box_height"])
     players = tv.tracks[

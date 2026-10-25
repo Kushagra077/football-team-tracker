@@ -1,4 +1,6 @@
-"""Rolling per-track majority vote (window ~25 frames); can lock once enough frames agree."""
+"""Per-track majority vote (window ~25 frames): backward-looking, or centred (both ways).
+
+The backward-looking vote can also lock once enough frames agree."""
 
 from __future__ import annotations
 

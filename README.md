@@ -167,10 +167,10 @@ accuracy (-0.1 points on val, -0.3 on test, worse than no vote on 34 of 49 test 
 2,344 on test) contain boxes from both teams (the tracker's id jumped between players), and a vote that only looks back keeps
 the old label for a while after each jump. I measured the 21%, not the cause. The fix is to look both ways:
 
-- **Window and test run:** the window (25 frames, the same size as before) was fixed on val; the test split was run once with it.
+- **Window and test run:** I tried the centred vote because the test diagnosis above showed the backward-looking vote hurting, so it was prompted by a test result. The window (25 frames, the same size as before) was fixed on val, and the test split was run once with it.
 - **Result on test:** 98.9% against 98.5% with no vote and 98.2% with the backward-looking vote, and 79% fewer label flips.
   It beats no vote on all 49 test clips (and on 10 of 11 val clips, with one tie), and beats the backward-looking vote on every clip.
-- **Window size:** on val, 13 frames gave 98.9% (228 flips) and 51 gave 99.1% (92 flips); I kept 25 rather than tune further.
+- **Window size:** on val, 13 frames gave 98.9% (228 flips) and 51 gave 99.1% (92 flips); I kept 25 rather than tune further (`results/team_vote_val.json`, keys `vote_centred_13` and `vote_centred_51`).
 - **Limit:** a track that really contains two players still gets some wrong labels around the jump; the vote only softens it.
 
 The detector rows only score players the detector found, so they are not "better than GT". Cluster ids are arbitrary,
@@ -231,7 +231,8 @@ SoccerNet has few striped kits, so I also hand-labelled boxes from three amateur
 - **SoccerNet:** nearly all boxes get one (99.97-99.99%; the rest had an empty or all-grass torso crop), because the
   abstention rules below belong to the upload path and are not applied in these numbers.
 - **Uploaded video:** the system abstains on purpose, so coverage is lower. Of the player boxes it tracked, **92.7% got a
-  team on the Chelsea demo, 97.0% on the 22 s SportsMOT clip and 94.1% on the 31 s clip**; the rest were close-ups, colours
+  team on the Chelsea demo, 97.0% on the 22 s SportsMOT clip and 94.1% on the 31 s clip** (measured with the
+  first, backward-looking vote, not re-run with the centred one); the rest were close-ups, colours
   that fit neither team, or unusable crops.
 - **Goalkeepers** are separate: on the demo none of the 702 keeper boxes got a team (the rule abstained), and on the 31 s
   clip one keeper got one, wrongly.
@@ -244,7 +245,7 @@ SoccerNet has few striped kits, so I also hand-labelled boxes from three amateur
 | Clip | Accuracy | What goes wrong (from looking at its frames) |
 |---|---|---|
 | SNMOT-132 (test) | 92.4% | A floodlit night match that ends in fog: by the last third the colours wash out, and white and dark-red shirts drift towards the grey haze. The colours learned on the clear opening no longer fit. |
-| SNMOT-063 (train, true boxes) | 94.0% | White against green kits on a green pitch: a green shirt is close to the grass hue, so the grass mask and the shirt colour overlap. |
+| SNMOT-063 (train clip, true boxes; outside the 60 above) | 94.0% | White against green kits on a green pitch: a green shirt is close to the grass hue, so the grass mask and the shirt colour overlap. |
 | SNMOT-142 (test) | 97.0% | Not a colour problem: 27 of its 65 tracks contain boxes from both teams, so the tracker's id jumped between players and the vote can only soften it. |
 
 Each of these was a hard visual condition (fog, kit close to the pitch, id swaps), not a bug. The amateur and broadcast cases that
@@ -265,7 +266,7 @@ The same one-command pipeline (`process_video.py`, settings unchanged) on 2 foot
 - **Tracking transfers about as well as on SoccerNet** (BoT-SORT+GMC real HOTA 59.0 on SoccerNet test), with only 2 clips,
   so this is a sanity check, not a benchmark. The two datasets also draw boxes slightly differently.
 - **Team colours:** SportsMOT has no team labels, so this is checked by eye only (with the first, mean-colour version).
-  - The histogram then cut label flips from 13 to 7 and from 50 to 28 on the two clips (not re-inspected by eye).
+  - The histogram then cut label flips from 13 to 7 and from 50 to 28 on the two clips (backward-looking vote; not re-inspected by eye).
   - Most players are coloured correctly; a few red shirts flip on the 22 s clip.
   - On the 31 s clip the goalkeeper rule decides one keeper and gets him wrong (the camera sits at his goal, where the other
     team's players are, so image position misleads).
@@ -387,7 +388,7 @@ The choices that shaped the project, what each one bought, and what it cost.
 | **BoT-SORT with camera-motion compensation (GMC)** | Broadcast cameras pan and zoom. On true boxes GMC cut ID switches from 3524 to 1251. | It still loses IDs at camera cuts: there is no re-identification across shots. |
 | **Team colour from the torso minus grass, KMeans with k=2, no labels** | No team labels are needed, so it works on any footage. A per-track vote that looks both ways cut label flips by 79% on the test split and gained 0.4 accuracy points over no vote. | Only two colours, and teams in similar kits are not handled. My first vote only looked back and cost 0.3 points, so I changed it (see "Does the vote help?"). |
 | **Lab colour histogram instead of the mean colour** | A mean blends a striped shirt into a colour neither stripe has. Chosen on train clips, confirmed on val: better on SoccerNet and on two of my three amateur clips. | Worse on dark-blue shirts in shade or blur (Chelsea demo). It is one line in `configs/team.yaml` to switch back to `mean_lab`. |
-| **Abstain rather than guess** (pitch-view check, colour-outlier rule, goalkeeper rule) | A wrong team colour on screen looks worse than no colour. | Lower coverage on uploads (92.7-97.0% of boxes got a team), and the keeper rule abstains on more than half the test keepers. |
+| **Abstain rather than guess** (pitch-view check, colour-outlier rule, goalkeeper rule) | A wrong team colour on screen looks worse than no colour. | Lower coverage on uploads (92.7-97.0% of boxes got a team, measured before the centred vote), and the keeper rule abstains on more than half the test keepers. |
 | **One `process_video` function** for the command line, the Space and the tests | The live demo runs exactly the code that is tested here. | `src/ftt` is copied into the Space by a script, not installed as a package. |
 | **CPU-only Docker image** | Runs anywhere with one command. The lockfile's GPU libraries (about 4 GB) are skipped and the CPU build of the same PyTorch version is used. | About 12 fps instead of the GPU's speed. |
 
@@ -411,7 +412,7 @@ pitch coordinates so the goalkeeper rule stops depending on the camera, and re-i
 - **Other frame rates and sizes.** Settings were tuned on 25 fps, 1920 px SoccerNet video. For uploads, the frame counts
   (vote window, tracker memory, colour-fit window) are scaled by the video's fps and the keeper thresholds by its width
   (`src/ftt/scale.py`); a 25 fps, 1920 px video is unchanged. Checked only in two ways:
-  - *Simulation:* dropping frames of 3 val clips to 12.5 and 8.3 fps, scaling lifted team accuracy 97.2 -> 98.0 and
+  - *Simulation (backward-looking vote, not re-run with the centred one):* dropping frames of 3 val clips to 12.5 and 8.3 fps, scaling lifted team accuracy 97.2 -> 98.0 and
     95.6 -> 97.6 (label flips rose 46 -> 60 and 56 -> 75, because the vote window is shorter). Tracking scores barely moved
     (HOTA 56.1 -> 56.0 and 49.7 -> 50.4).
   - *One real 60 fps clip* (720p amateur match, no labels to score): scaling cut team-label flips 97 -> 73 and tracker ids

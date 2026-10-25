@@ -3,19 +3,26 @@
     "split": "val",
     "tracker": "botsort_gmc",
     "limit": null,
-    "centred_windows": []
+    "centred_windows": [
+      13,
+      51
+    ]
   },
   "mean_acc": {
     "raw": 0.9866756134765052,
     "vote": 0.99043334770109,
     "vote_causal": 0.9857724412511394,
-    "vote_lock15": 0.919534519338955
+    "vote_lock15": 0.919534519338955,
+    "vote_centred_13": 0.989339470143375,
+    "vote_centred_51": 0.9909697428116933
   },
   "total_flips": {
     "raw": 733,
     "vote": 138,
     "vote_causal": 147,
-    "vote_lock15": 25
+    "vote_lock15": 25,
+    "vote_centred_13": 228,
+    "vote_centred_51": 92
   },
   "clips": {
     "SNMOT-064": {
@@ -36,6 +43,14 @@
       "vote_lock15": {
         "acc": 0.7976208516441885,
         "flips": 3
+      },
+      "vote_centred_13": {
+        "acc": 0.9815881194120322,
+        "flips": 50
+      },
+      "vote_centred_51": {
+        "acc": 0.9849219578724049,
+        "flips": 20
       },
       "mixed_team_tracks": 19
     },
@@ -58,6 +73,14 @@
         "acc": 0.9312062853310338,
         "flips": 0
       },
+      "vote_centred_13": {
+        "acc": 0.993101465938488,
+        "flips": 13
+      },
+      "vote_centred_51": {
+        "acc": 0.9940595956692536,
+        "flips": 8
+      },
       "mixed_team_tracks": 5
     },
     "SNMOT-074": {
@@ -78,6 +101,14 @@
       "vote_lock15": {
         "acc": 0.9391989096691149,
         "flips": 2
+      },
+      "vote_centred_13": {
+        "acc": 0.9922011054743697,
+        "flips": 26
+      },
+      "vote_centred_51": {
+        "acc": 0.9940183236162641,
+        "flips": 8
       },
       "mixed_team_tracks": 8
     },
@@ -100,6 +131,14 @@
         "acc": 0.9847000402630519,
         "flips": 1
       },
+      "vote_centred_13": {
+        "acc": 0.9714132331230707,
+        "flips": 10
+      },
+      "vote_centred_51": {
+        "acc": 0.9698027110454972,
+        "flips": 6
+      },
       "mixed_team_tracks": 3
     },
     "SNMOT-103": {
@@ -120,6 +159,14 @@
       "vote_lock15": {
         "acc": 0.8267774248717322,
         "flips": 2
+      },
+      "vote_centred_13": {
+        "acc": 0.9863181040801369,
+        "flips": 42
+      },
+      "vote_centred_51": {
+        "acc": 0.9853408258001466,
+        "flips": 21
       },
       "mixed_team_tracks": 16
     },
@@ -142,6 +189,14 @@
         "acc": 0.9522784355938285,
         "flips": 3
       },
+      "vote_centred_13": {
+        "acc": 0.9911493840449707,
+        "flips": 18
+      },
+      "vote_centred_51": {
+        "acc": 0.9937806482478172,
+        "flips": 4
+      },
       "mixed_team_tracks": 8
     },
     "SNMOT-113": {
@@ -162,6 +217,14 @@
       "vote_lock15": {
         "acc": 0.9439391433768811,
         "flips": 3
+      },
+      "vote_centred_13": {
+        "acc": 0.9963618323135439,
+        "flips": 11
+      },
+      "vote_centred_51": {
+        "acc": 0.9985116586737225,
+        "flips": 2
       },
       "mixed_team_tracks": 4
     },
@@ -184,6 +247,14 @@
         "acc": 0.9726676893041417,
         "flips": 0
       },
+      "vote_centred_13": {
+        "acc": 0.9960953841863059,
+        "flips": 8
+      },
+      "vote_centred_51": {
+        "acc": 0.9955375819272068,
+        "flips": 4
+      },
       "mixed_team_tracks": 11
     },
     "SNMOT-158": {
@@ -204,6 +275,14 @@
       "vote_lock15": {
         "acc": 0.9499565379361729,
         "flips": 4
+      },
+      "vote_centred_13": {
+        "acc": 0.989817459331926,
+        "flips": 16
+      },
+      "vote_centred_51": {
+        "acc": 0.9923010058363343,
+        "flips": 5
       },
       "mixed_team_tracks": 9
     },
@@ -226,6 +305,14 @@
         "acc": 0.9115010730968313,
         "flips": 5
       },
+      "vote_centred_13": {
+        "acc": 0.9897740184320162,
+        "flips": 21
+      },
+      "vote_centred_51": {
+        "acc": 0.9963388461052898,
+        "flips": 8
+      },
       "mixed_team_tracks": 9
     },
     "SNMOT-168": {
@@ -246,6 +333,14 @@
       "vote_lock15": {
         "acc": 0.9050333216415293,
         "flips": 2
+      },
+      "vote_centred_13": {
+        "acc": 0.9949140652402666,
+        "flips": 13
+      },
+      "vote_centred_51": {
+        "acc": 0.9960540161346896,
+        "flips": 6
       },
       "mixed_team_tracks": 8
     }

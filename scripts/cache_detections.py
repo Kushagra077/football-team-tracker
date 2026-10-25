@@ -14,6 +14,7 @@ import yaml
 from ftt.data.detections import cached_path, detector_name
 from ftt.data.sn_tracking import list_clips
 from ftt.detect.run_detector import frame_number, load_detector, run_detector
+from ftt.device import default_device
 
 ROOT = Path(__file__).parents[1]
 
@@ -32,7 +33,9 @@ def main() -> None:
     ap.add_argument("--split", default="val", choices=["train", "val", "test"])
     ap.add_argument("--limit", type=int, default=None, help="only the first N clips")
     ap.add_argument("--conf", type=float, default=0.1)
-    ap.add_argument("--device", default="mps")
+    ap.add_argument(
+        "--device", default=default_device(), help="default: cuda, mps or cpu, whichever exists"
+    )
     ap.add_argument("--force", action="store_true", help="re-run clips that are already cached")
     args = ap.parse_args()
 

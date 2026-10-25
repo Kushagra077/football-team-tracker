@@ -2,8 +2,9 @@
 
 Pipeline per clip: cached detector boxes -> tracker (BoT-SORT + GMC, tuned shared setting)
 -> torso colour of every tracked player box -> KMeans (fit on frames 1..N, no labels) ->
-per-frame label -> rolling vote per tracker id. Tracked boxes are matched to GT players
-(IoU >= 0.5) only to get a true team for scoring; unmatched boxes are not scored.
+per-frame label -> per-track vote per tracker id (backward-looking, plus centred windows if
+--centred-windows is given). Tracked boxes are matched to GT players (IoU >= 0.5) only to get
+a true team for scoring; unmatched boxes are not scored.
 Gate: voted labels flip less than raw labels without lowering accuracy.
 
 Tracks are cached under cache/tracks/<detector>/ (delete the file to re-track).
@@ -49,7 +50,10 @@ def main() -> None:
     ap.add_argument("--tracker", default="botsort_gmc")
     ap.add_argument("--limit", type=int, default=None, help="only the first N clips (smoke test)")
     ap.add_argument(
-        "--centred-windows", type=int, nargs="*", default=[],
+        "--centred-windows",
+        type=int,
+        nargs="*",
+        default=[],
         help="also score a centred vote (looks both ways) with these extra window sizes",
     )
     args = ap.parse_args()
