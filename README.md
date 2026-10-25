@@ -1,16 +1,95 @@
-# football-team-tracker (A2)
+<p align="center">
+  <img src="reports/figures/banner.svg" alt="Football Team Tracker: player tracking and team assignment from broadcast video" width="100%">
+</p>
 
-Persistent player IDs and team labels from football broadcast video. Every tracker is measured with
-HOTA / DetA / AssA / IDF1 on SoccerNet-Tracking twice: on ground-truth boxes (**oracle**, the tracker's
-ceiling) and on the boxes of my own detector, A1 (**real**). The gap between the two is what the detector costs.
+A computer-vision pipeline that follows every player in a football broadcast with a fixed ID and splits them into
+the two teams by shirt colour, with seven trackers benchmarked on SoccerNet-Tracking.
 
-**Demo video:** [YouTube (unlisted)](https://youtu.be/YrP9KGjes4g). A broadcast highlights clip run through
-`scripts/process_video.py`, ids and team colours drawn on. Footage © its rights holder, shown as a non-commercial
-portfolio demo. No SoccerNet footage is published anywhere in this repo.
+<p align="center">
+  <a href="https://youtu.be/YrP9KGjes4g">
+    <img src="https://img.youtube.com/vi/YrP9KGjes4g/hqdefault.jpg" alt="Demo video on YouTube" width="560">
+  </a>
+  <br>
+  <sub><b>▶ Demo video</b> (YouTube, unlisted): a 2-minute broadcast highlights clip run through <code>scripts/process_video.py</code>.
+  Footage © its rights holder, shown as a non-commercial portfolio demo.<br>
+  The numbers drawn on players are <b>tracker IDs, not jersey numbers</b>: the tracker numbers each new track it starts
+  (so #122 is simply the 122nd track), and reading shirt numbers is a separate, later task.</sub>
+</p>
 
-## Results (SoccerNet-Tracking test split, 49 clips, run once)
+| Headline result (SoccerNet-Tracking test split, 49 clips, best tracker BoT-SORT + GMC) | |
+|---|---|
+| Tracking score (HOTA) with a perfect detector (**oracle**) | **84.2** |
+| Tracking score (HOTA) with my own detector, A1 (**real**) | **59.0** |
+| Players given the correct team (tracked + voted, per detection) | **97.8%** |
+| Speed: detector + tracker on an Apple-silicon Mac (MPS) | **~35-45 fps** |
+
+## What this project does
+
+Give it a football broadcast video. It finds every player, follows each one with a fixed ID number as they move,
+and splits them into the two teams by shirt colour. The output is an annotated video and a table (one row per player
+per frame) that later projects can use for tactics.
+
+It also answers a measurement question: **how much tracking quality is lost because the detector is imperfect?**
+Every tracker is run twice, once on the true player boxes (oracle) and once on my detector's boxes (real), and the
+difference is the detector's cost.
+
+<p align="center">
+  <img src="reports/figures/tracking_trails.svg" alt="Two seconds of tracked players drawn as trails coloured by team" width="90%">
+  <br>
+  <sub>Two seconds of the demo, drawn from the pipeline's output table only (feet positions, no video pixels):
+  orange and cyan are the two teams, white is "no team", numbers are tracker IDs (not jersey numbers).</sub>
+</p>
+
+## How to read the numbers
+
+| Term | Meaning |
+|---|---|
+| Oracle | The tracker gets the true player boxes (a perfect detector): the best it could possibly do. |
+| Real | The tracker gets my own detector's boxes: what you get in practice. |
+| HOTA (0-100) | The main tracking score: finds the players **and** keeps the same ID on each one. |
+| DetA | Detection part of HOTA: were the players found? |
+| AssA | Association part of HOTA: did each player keep his ID over time? |
+| IDF1 | Share of the time each player had the correct ID. |
+| IDSW | ID switches: times a player's number jumped to someone else. Lower is better. |
+| Detector cost | Oracle HOTA minus Real HOTA: how much the imperfect detector loses. |
+
+## How it works
+
+```mermaid
+flowchart LR
+    V[video frames] --> D[A1 detector<br/>YOLO, conf 0.1]
+    D --> T[tracker<br/>BoT-SORT + GMC]
+    T --> C[torso crop<br/>minus grass pixels]
+    C --> F[mean Lab colour]
+    F --> K[KMeans k=2<br/>fit on first 50 pitch frames]
+    K --> R[rolling vote<br/>per track, 25 frames]
+    R --> G[goalkeeper rule]
+    G --> P[tracks.parquet<br/>+ annotated mp4]
+```
+
+1. **Detect.** A1's YOLO (v3, yolo26n) finds players, goalkeepers and referees. Confidence is kept low (0.1) so the
+   tracker's second pass can use weak boxes.
+2. **Track.** Ultralytics' tracker classes give each box an id. Evaluation feeds cached boxes to the tracker; uploaded
+   video goes through `model.track(stream=True)`, and both give identical output on one val clip's frames.
+3. **Colour.** For each player box: take the torso band (15-50% of the height, 20% trimmed off each side), drop grass
+   pixels (HSV hue 34-42), and take the mean colour in Lab space, where distances match how different colours look.
+4. **Cluster.** KMeans with k=2 on the players of the first 50 frames that show at least 3 players. No labels needed.
+   On uploaded video, only wide pitch-view frames are used and labelled (close-ups get no team).
+5. **Vote.** Each track's label is the majority of its last 25 frames. There is no permanent lock: trackers sometimes move
+   an id onto another player, and a lock would keep the wrong team for the rest of the clip (lock cost 6-8 accuracy points).
+6. **Goalkeepers.** A keeper's colour matches neither team, so a keeper joins the team whose players stand nearer in the
+   image (median x). If the teams overlap or the keeper is in between, the answer is "unknown" (null), not a guess.
+7. **Export.** `tracks.parquet` (see [Output format](#output-format)) plus an annotated mp4.
+
+## Results
+
+### Trackers (SoccerNet-Tracking test split, 49 clips, run once)
 
 Settings were chosen on the 11 validation clips only; the test split was run once at the end with them fixed.
+
+<p align="center">
+  <img src="reports/figures/tracker_benchmark.svg" alt="Oracle vs real HOTA for seven trackers" width="90%">
+</p>
 
 | Tracker | Oracle HOTA | Real HOTA | Real DetA | Real AssA | Real IDF1 | Detector cost |
 |---|---|---|---|---|---|---|
@@ -64,57 +143,67 @@ The same one-command pipeline (`process_video.py`, settings unchanged) on 2 foot
   boxes no team about a third of the time (22-34% of non-player boxes), at a cost of 0.2-1.0% of real players.
 - No SportsMOT frames are published here (its terms forbid redistribution without permission).
 
-## How it works
+## Setup
 
-```mermaid
-flowchart LR
-    V[video frames] --> D[A1 detector<br/>YOLO, conf 0.1]
-    D --> T[tracker<br/>BoT-SORT + GMC]
-    T --> C[torso crop<br/>minus grass pixels]
-    C --> F[mean Lab colour]
-    F --> K[KMeans k=2<br/>fit on first 50 pitch frames]
-    K --> R[rolling vote<br/>per track, 25 frames]
-    R --> G[goalkeeper rule]
-    G --> P[tracks.parquet<br/>+ annotated mp4]
-```
-
-1. **Detect.** A1's YOLO (v3, yolo26n) finds players, goalkeepers and referees. Confidence is kept low (0.1) so the
-   tracker's second pass can use weak boxes.
-2. **Track.** Ultralytics' tracker classes give each box an id. Evaluation feeds cached boxes to the tracker; uploaded
-   video goes through `model.track(stream=True)`, and both give identical output on one val clip's frames.
-3. **Colour.** For each player box: take the torso band (15-50% of the height, 20% trimmed off each side), drop grass
-   pixels (HSV hue 34-42), and take the mean colour in Lab space, where distances match how different colours look.
-4. **Cluster.** KMeans with k=2 on the players of the first 50 frames that show at least 3 players. No labels needed.
-   On uploaded video, only wide pitch-view frames are used and labelled (close-ups get no team).
-5. **Vote.** Each track's label is the majority of its last 25 frames. There is no permanent lock: trackers sometimes move
-   an id onto another player, and a lock would keep the wrong team for the rest of the clip (lock cost 6-8 accuracy points).
-6. **Goalkeepers.** A keeper's colour matches neither team, so a keeper joins the team whose players stand nearer in the
-   image (median x). If the teams overlap or the keeper is in between, the answer is "unknown" (null), not a guess.
-7. **Export.** `tracks.parquet` in A2's schema (frame, track id, box, role, team; pitch coordinates and jersey numbers
-   are null, not zero, until later projects fill them), plus an annotated mp4.
-
-## Run it
+Python 3.13 and [uv](https://docs.astral.sh/uv/). The detector weights come from the sibling project A1, which is
+public and must be cloned next to this repo (`configs/paths.yaml` points there):
 
 ```bash
+git clone https://github.com/Kushagra077/football-team-tracker
+git clone https://github.com/Kushagra077/football-detect-serve   # A1: provides models/football_detection_v3.pt
+cd football-team-tracker
 uv sync --extra dev
 uv run ruff check .
 uv run pytest -m "not integration"            # no data needed; data-dependent tests skip
-
-# Any football video (needs A1's weights at the path in configs/paths.yaml)
-uv run python scripts/process_video.py path/to/clip.mp4
-#   -> reports/<detector>/process_video/<clip>/tracks.parquet + annotated.mp4
-
-# SoccerNet evaluation (needs SoccerNet-Tracking locally, see configs/paths.yaml)
-uv run python scripts/cache_detections.py --split val
-uv run python scripts/run_ablation.py --source real --split val
-uv run python scripts/eval_team_vote.py --split val
 ```
 
-Speed (Apple-silicon Mac, MPS): detector + tracker + GMC run at about 35-45 fps; the 2-minute 1080p demo took 1 min 50 s
-end to end, including rendering.
+## Run it on a video
+
+```bash
+uv run python scripts/process_video.py path/to/clip.mp4            # add --device cpu without an Apple GPU
+#   -> reports/<detector>/process_video/<clip>/tracks.parquet + annotated.mp4
+```
+
+Wide broadcast views work best. Ids restart after camera cuts, and close-ups get no team (see limitations).
+
+## Output format
+
+`tracks.parquet`, one row per tracked box per frame, validated against the schema in `src/ftt/schema.py` on write:
+
+| Column | Type | Meaning |
+|---|---|---|
+| `frame_id` | int | Frame number, starting at 1 |
+| `timestamp` | float | Seconds (`frame_id / fps`) |
+| `track_id` | int | Tracker ID (not the jersey number), stable while the player stays in shot |
+| `team` | Int8, nullable | 0 or 1 (cluster ids, arbitrary per clip); null for referees, undecided keepers, close-ups |
+| `role` | category | `player`, `goalkeeper` or `referee` (from the detector) |
+| `x1`, `y1`, `x2`, `y2` | float | Box in image pixels |
+| `conf` | float | Detector confidence |
+| `jersey_number`, `x_pitch`, `y_pitch` | nullable | Always null here (null, never 0); later projects fill them |
+| `is_ball` | bool | Always false (the ball is a separate project) |
+
+## Reproducing the benchmarks
+
+SoccerNet-Tracking is available from [soccer-net.org](https://www.soccer-net.org/) after signing its NDA; it is not
+redistributed here. `configs/paths.yaml` expects the original text files under `data/raw_meta/{train,test}/<clip>/`
+and the frames in A1's layout (`../football-detect-serve/dataset/images/{train,val,test}/<clip>_<frame>.jpg`).
+
+```bash
+uv run python scripts/cache_detections.py --split test                  # A1 boxes, cached once
+uv run python scripts/run_ablation.py --source oracle --split test \
+    --configs botsort_gmc botsort_nogmc deepocsort_gmc ocsort_byte bytetrack ocsort fasttrack \
+    --set track_high_thresh=0.25 match_thresh=0.9 --tag tuned
+uv run python scripts/run_ablation.py --source real --split test \
+    --configs botsort_gmc botsort_nogmc deepocsort_gmc ocsort_byte bytetrack ocsort fasttrack \
+    --set track_high_thresh=0.25 match_thresh=0.9 --tag tuned
+uv run python scripts/eval_team_vote.py --split test
+uv run python scripts/make_figures.py                                   # README charts from the result files
+```
+
+Tuning happens on val only (`scripts/tune_tracker.py` refuses other splits).
 
 Layout: `src/ftt/` (data, detect, track, team, eval, schema, export, render, video), `scripts/` (one command per
-experiment), `configs/` (tracker YAMLs, `team.yaml`), `tests/`.
+experiment), `configs/` (tracker YAMLs, `team.yaml`), `tests/` (CI runs ruff and pytest on every push).
 
 ## Limitations
 
@@ -135,12 +224,21 @@ experiment), `configs/` (tracker YAMLs, `team.yaml`), `tests/`.
 - **The schema contract with B1 is deferred** until A3 supplies pitch coordinates (B1 requires them non-null).
 - **Rendering uses plain OpenCV drawing** rather than `supervision`'s annotators (fewer API changes to track).
 
+## Future work
+
+- Pitch coordinates (next project, A3), which also fixes the goalkeeper rule's dependence on the camera.
+- Re-identification across camera cuts, so a player keeps one id for the whole match.
+- A colour rule that scales with each team's own colour spread (a white kit varies more than a red one).
+- TrackTrack, the one Ultralytics tracker not yet benchmarked.
+- A live demo on Hugging Face Spaces.
+
 ## Data and attribution
 
 - **SoccerNet-Tracking** (Cioppa et al., "SoccerNet-Tracking: Multiple Object Tracking Dataset and Benchmark in Soccer
   Videos", CVPR Workshops 2022). Used under SoccerNet's terms for non-commercial research. No frames, clips or labels
   are redistributed here; only derived numbers are reported.
-- **Detector:** A1 (football-detect-serve, sibling project). Weights are referenced by path, not copied.
+- **Detector:** [A1, football-detect-serve](https://github.com/Kushagra077/football-detect-serve) (sibling project).
+  Weights are referenced by path, not copied.
 - **Trackers:** [Ultralytics](https://github.com/ultralytics/ultralytics) (AGPL-3.0). Metrics:
   [TrackEval](https://github.com/JonathonLuiten/TrackEval).
 

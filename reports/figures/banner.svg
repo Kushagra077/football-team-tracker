@@ -1,0 +1,49 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="300" viewBox="0 0 1200 300" role="img" aria-label="Football Team Tracker: player tracking and team assignment from broadcast video">
+  <title>Football Team Tracker</title>
+  <rect width="1200" height="300" rx="14" fill="#0f1b2d"/>
+  <!-- pitch markings, right half of the banner -->
+  <g fill="none" stroke="#3ddc84" stroke-opacity="0.22" stroke-width="2">
+    <rect x="560" y="24" width="616" height="252" rx="2"/>
+    <line x1="868" y1="24" x2="868" y2="276"/>
+    <circle cx="868" cy="150" r="46"/>
+    <rect x="560" y="78" width="70" height="144"/>
+    <rect x="1106" y="78" width="70" height="144"/>
+    <rect x="560" y="116" width="24" height="68"/>
+    <rect x="1152" y="116" width="24" height="68"/>
+  </g>
+  <circle cx="868" cy="150" r="3" fill="#3ddc84" fill-opacity="0.35"/>
+  <!-- tracked players: trail, ellipse at the feet, id tag (team A orange, team B cyan) -->
+  <g stroke-linecap="round" fill="none" stroke-width="3">
+    <path d="M640 210 C 680 200, 700 180, 742 176" stroke="#ff9f1c" stroke-opacity="0.55"/>
+    <path d="M700 92 C 730 100, 760 96, 792 108" stroke="#ff9f1c" stroke-opacity="0.55"/>
+    <path d="M820 236 C 850 220, 880 222, 912 206" stroke="#ff9f1c" stroke-opacity="0.55"/>
+    <path d="M1010 60 C 990 80, 975 90, 948 98" stroke="#2ec4e6" stroke-opacity="0.55"/>
+    <path d="M1090 170 C 1060 160, 1030 166, 1000 156" stroke="#2ec4e6" stroke-opacity="0.55"/>
+    <path d="M1010 262 C 995 250, 990 236, 968 238" stroke="#2ec4e6" stroke-opacity="0.55"/>
+  </g>
+  <g stroke-width="3" fill="none">
+    <ellipse cx="742" cy="176" rx="17" ry="6" stroke="#ff9f1c"/>
+    <ellipse cx="792" cy="108" rx="17" ry="6" stroke="#ff9f1c"/>
+    <ellipse cx="912" cy="206" rx="17" ry="6" stroke="#ff9f1c"/>
+    <ellipse cx="948" cy="98" rx="17" ry="6" stroke="#2ec4e6"/>
+    <ellipse cx="1000" cy="156" rx="17" ry="6" stroke="#2ec4e6"/>
+    <ellipse cx="968" cy="238" rx="17" ry="6" stroke="#2ec4e6"/>
+    <ellipse cx="1128" cy="150" rx="17" ry="6" stroke="#e8edf3"/>
+  </g>
+  <g font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="13" font-weight="700" text-anchor="middle">
+    <rect x="728" y="186" width="28" height="18" rx="3" fill="#ff9f1c"/><text x="742" y="199" fill="#0f1b2d">7</text>
+    <rect x="778" y="118" width="28" height="18" rx="3" fill="#ff9f1c"/><text x="792" y="131" fill="#0f1b2d">12</text>
+    <rect x="898" y="216" width="28" height="18" rx="3" fill="#ff9f1c"/><text x="912" y="229" fill="#0f1b2d">31</text>
+    <rect x="934" y="108" width="28" height="18" rx="3" fill="#2ec4e6"/><text x="948" y="121" fill="#0f1b2d">4</text>
+    <rect x="986" y="166" width="28" height="18" rx="3" fill="#2ec4e6"/><text x="1000" y="179" fill="#0f1b2d">19</text>
+    <rect x="954" y="248" width="28" height="18" rx="3" fill="#2ec4e6"/><text x="968" y="261" fill="#0f1b2d">23</text>
+    <rect x="1104" y="160" width="48" height="18" rx="3" fill="#e8edf3"/><text x="1128" y="173" fill="#0f1b2d">GK 1</text>
+  </g>
+  <!-- title -->
+  <g font-family="-apple-system, 'Segoe UI', Helvetica, Arial, sans-serif">
+    <text x="48" y="122" font-size="44" font-weight="700" fill="#e8edf3">Football Team</text>
+    <text x="48" y="172" font-size="44" font-weight="700" fill="#e8edf3">Tracker</text>
+    <text x="48" y="214" font-size="17" fill="#8a9bb0">Player tracking + team assignment from broadcast video</text>
+    <text x="48" y="240" font-size="17" fill="#8a9bb0">7 trackers benchmarked on SoccerNet: oracle vs real detections</text>
+  </g>
+</svg>

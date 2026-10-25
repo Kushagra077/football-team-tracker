@@ -5,11 +5,8 @@ description = "Multi-object tracking + team assignment for football broadcast vi
 readme = "README.md"
 requires-python = ">=3.13"
 
-# Runtime dependencies that every step needs. Deliberately NOT listed yet:
-#   * the tracker library (boxmot AGPL-3.0 vs supervision MIT) -> decided at step 3
-#   * TrackEval / SoccerNet devkit                              -> step 2
-#   * torch / ultralytics (detector runs on Kaggle, not here)   -> step 4, Kaggle only
-# Add each when its step starts, pinned: tracker APIs drift between releases.
+# Trackers come from Ultralytics (AGPL-3.0, so this repo is AGPL-3.0 too); metrics from TrackEval.
+# Pinned where APIs drift between releases. `lap` is required by Ultralytics' trackers.
 dependencies = [
     "numpy",
     "pandas",
@@ -18,7 +15,6 @@ dependencies = [
     "scipy",
     "scikit-learn",
     "opencv-python",
-    "supervision",
     "trackeval==1.3.0",
     "ultralytics>=8.4.183",
     "lap>=0.5.13",
