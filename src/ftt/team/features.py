@@ -95,6 +95,11 @@ def box_features(boxes: pd.DataFrame, frame_loader: Callable[[int], np.ndarray],
             if not np.isnan(f).any():
                 rows.append((int(fr), *box, *f))
                 index.append(i)
-    return pd.DataFrame(rows, columns=[*FRAME_COLS, *extra_names(cfg)], index=index).astype(
-        {"frame": "int64"}
+    cols = [*FRAME_COLS, *extra_names(cfg)]
+    # One float array, one block: building the wide histogram table from tuples and converting
+    # its dtype every frame cost ~3x the whole colour step.
+    out = pd.DataFrame(
+        np.array(rows, dtype="float64").reshape(-1, len(cols)), columns=cols, index=index
     )
+    out["frame"] = out["frame"].astype("int64")
+    return out

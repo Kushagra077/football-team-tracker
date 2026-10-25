@@ -11,7 +11,7 @@ the two teams by shirt colour, with seven trackers benchmarked on SoccerNet-Trac
   </a>
   <br>
   <sub><b>▶ Demo video</b> (YouTube, unlisted): a 2-minute broadcast highlights clip run through <code>scripts/process_video.py</code>.
-  Footage © its rights holder, shown as a non-commercial portfolio demo; made with the earlier mean-colour feature.<br>
+  Footage © its rights holder, shown as a non-commercial portfolio demo.<br>
   The numbers drawn on players are <b>tracker IDs, not jersey numbers</b>: the tracker numbers each new track it starts
   (so #122 is simply the 122nd track), and reading shirt numbers is a separate, later task.</sub>
 </p>
@@ -152,13 +152,22 @@ are neither val nor test, then confirming on val:
 
 Dropping brightness is clearly worse (a white and a dark kit then look alike), and the histogram's bin size hardly matters
 (3x5x5 to 5x8x8 gave 97.3-97.5% on train). The histogram also does better on the full pipeline (real boxes, tracker, vote):
-val 98.2% -> 98.6%, test 97.8% -> 98.2%. **The test split was therefore used a second time, for team accuracy only** (tracker
-scores are untouched), after the feature was fixed on train and val.
+val 98.2% -> 98.6%, test 97.8% -> 98.2%. The feature was chosen on train and val only; the test column above is the final
+choice, and 97.8% was the earlier mean-colour result. (The one team setting changed after a test result was the rule for
+which frames the two colours are learned from: one test clip opens on a non-pitch shot and crashed the first run. It changes
+no val clip. Tracker scores are untouched.)
 
 SoccerNet has few striped kits, so I also hand-labelled 98 boxes (kit A or B; keepers, referees and unclear boxes skipped)
 from three amateur clips with striped and similar-blue kits, using the same clustering: mean Lab 68% (58 / 80 / 66% per
 clip) vs histogram 79% (77 / 74 / 84%). That is one labeller and about 30 boxes per clip, so treat it as a direction
-(the histogram helps on two clips and loses on one), not a benchmark. One thing the histogram does worse is the referee
+(the histogram helps on two clips and loses on one), not a benchmark.
+
+**It is not better everywhere.** On the Chelsea demo (a floodlit broadcast with close-ups) I hand-labelled 56 player boxes:
+mean colour 100%, histogram 98.2% (one box). Among the boxes where the two versions disagree (3.2% of the clip), the mean
+colour was right on 23 and the histogram on 13 of the 36 I could judge by eye; the histogram turns some dark-blue shirts in
+shade or motion blur orange, including one player in the 38 s close-up. Different brightness bins (2, 3 or 6 instead of 4)
+did not change this. The YouTube demo was rendered before the change, with the mean colour, and I kept it because it
+colours that close-up correctly. One thing the histogram does worse is the referee
 rule: histogram distances separate a black-kit referee from players less well than mean-colour distances, so that rule
 still uses the mean Lab colour on its own two-colour clustering.
 
