@@ -16,6 +16,8 @@ the two teams by shirt colour, with seven trackers benchmarked on SoccerNet-Trac
   (so #122 is simply the 122nd track), and reading shirt numbers is a separate, later task.</sub>
 </p>
 
+<p align="center"><b>Try it live:</b> <a href="https://huggingface.co/spaces/Kushagra77/football-detect-serve">Hugging Face Space</a> (upload a short football clip on the <i>Track (video)</i> tab; runs on a free ZeroGPU, so a visitor gets a few minutes of GPU per day, and only the first 20 s of a clip are used).</p>
+
 | Headline result (SoccerNet-Tracking test split, 49 clips, best tracker BoT-SORT + GMC) | |
 |---|---|
 | Tracking score (HOTA) with a perfect detector (**oracle**) | **84.2** |
