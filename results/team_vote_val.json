@@ -1,0 +1,206 @@
+{
+  "args": {
+    "split": "val",
+    "tracker": "botsort_gmc",
+    "limit": null
+  },
+  "mean_acc": {
+    "raw": 0.9866756134765052,
+    "vote": 0.9857724412511394,
+    "vote_lock15": 0.919534519338955
+  },
+  "total_flips": {
+    "raw": 733,
+    "vote": 147,
+    "vote_lock15": 25
+  },
+  "clips": {
+    "SNMOT-064": {
+      "scored": 13198,
+      "tracks": 51,
+      "raw": {
+        "acc": 0.9777238975602364,
+        "flips": 138
+      },
+      "vote": {
+        "acc": 0.9742385209880285,
+        "flips": 34
+      },
+      "vote_lock15": {
+        "acc": 0.7976208516441885,
+        "flips": 3
+      },
+      "mixed_team_tracks": 19
+    },
+    "SNMOT-069": {
+      "scored": 10437,
+      "tracks": 29,
+      "raw": {
+        "acc": 0.9910893935038805,
+        "flips": 51
+      },
+      "vote": {
+        "acc": 0.9896521989077322,
+        "flips": 8
+      },
+      "vote_lock15": {
+        "acc": 0.9312062853310338,
+        "flips": 0
+      },
+      "mixed_team_tracks": 5
+    },
+    "SNMOT-074": {
+      "scored": 13207,
+      "tracks": 34,
+      "raw": {
+        "acc": 0.9898538653744227,
+        "flips": 81
+      },
+      "vote": {
+        "acc": 0.9922011054743697,
+        "flips": 12
+      },
+      "vote_lock15": {
+        "acc": 0.9391989096691149,
+        "flips": 2
+      },
+      "mixed_team_tracks": 8
+    },
+    "SNMOT-098": {
+      "scored": 7451,
+      "tracks": 36,
+      "raw": {
+        "acc": 0.9691316601798416,
+        "flips": 37
+      },
+      "vote": {
+        "acc": 0.9672527177560059,
+        "flips": 7
+      },
+      "vote_lock15": {
+        "acc": 0.9847000402630519,
+        "flips": 1
+      },
+      "mixed_team_tracks": 3
+    },
+    "SNMOT-103": {
+      "scored": 12279,
+      "tracks": 42,
+      "raw": {
+        "acc": 0.9842821076634906,
+        "flips": 116
+      },
+      "vote": {
+        "acc": 0.9776040394168907,
+        "flips": 27
+      },
+      "vote_lock15": {
+        "acc": 0.8267774248717322,
+        "flips": 2
+      },
+      "mixed_team_tracks": 16
+    },
+    "SNMOT-108": {
+      "scored": 8361,
+      "tracks": 46,
+      "raw": {
+        "acc": 0.9863652673125224,
+        "flips": 57
+      },
+      "vote": {
+        "acc": 0.9866044731491448,
+        "flips": 13
+      },
+      "vote_lock15": {
+        "acc": 0.9522784355938285,
+        "flips": 3
+      },
+      "mixed_team_tracks": 8
+    },
+    "SNMOT-113": {
+      "scored": 12094,
+      "tracks": 54,
+      "raw": {
+        "acc": 0.9953696047626922,
+        "flips": 33
+      },
+      "vote": {
+        "acc": 0.9965272035720192,
+        "flips": 7
+      },
+      "vote_lock15": {
+        "acc": 0.9439391433768811,
+        "flips": 3
+      },
+      "mixed_team_tracks": 4
+    },
+    "SNMOT-153": {
+      "scored": 7171,
+      "tracks": 39,
+      "raw": {
+        "acc": 0.994700878538558,
+        "flips": 38
+      },
+      "vote": {
+        "acc": 0.9909357132896388,
+        "flips": 6
+      },
+      "vote_lock15": {
+        "acc": 0.9726676893041417,
+        "flips": 0
+      },
+      "mixed_team_tracks": 11
+    },
+    "SNMOT-158": {
+      "scored": 8053,
+      "tracks": 43,
+      "raw": {
+        "acc": 0.9872097355022973,
+        "flips": 49
+      },
+      "vote": {
+        "acc": 0.9877064448031789,
+        "flips": 11
+      },
+      "vote_lock15": {
+        "acc": 0.9499565379361729,
+        "flips": 4
+      },
+      "mixed_team_tracks": 9
+    },
+    "SNMOT-163": {
+      "scored": 7921,
+      "tracks": 46,
+      "raw": {
+        "acc": 0.9858603711652569,
+        "flips": 78
+      },
+      "vote": {
+        "acc": 0.9858603711652569,
+        "flips": 15
+      },
+      "vote_lock15": {
+        "acc": 0.9115010730968313,
+        "flips": 5
+      },
+      "mixed_team_tracks": 9
+    },
+    "SNMOT-168": {
+      "scored": 11404,
+      "tracks": 28,
+      "raw": {
+        "acc": 0.9918449666783584,
+        "flips": 55
+      },
+      "vote": {
+        "acc": 0.9949140652402666,
+        "flips": 7
+      },
+      "vote_lock15": {
+        "acc": 0.9050333216415293,
+        "flips": 2
+      },
+      "mixed_team_tracks": 8
+    }
+  }
+}

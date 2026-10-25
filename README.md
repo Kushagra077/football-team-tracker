@@ -150,35 +150,46 @@ are neither val nor test, then confirming on val:
 | **Lab colour histogram, 4 x 6 x 6 bins (used now)** | **97.5%** (better on 21 clips, worse on 3) | **97.5%** (better on 4, worse on 0) |
 | histogram of a and b only | 96.3% | 95.6% |
 
-Dropping brightness is clearly worse (a white and a dark kit then look alike), and the histogram's bin size hardly matters
-(3x5x5 to 5x8x8 gave 97.3-97.5% on train). The histogram also does better on the full pipeline (real boxes, tracker, vote):
-val 98.2% -> 98.6%, test 97.8% -> 98.2%. The feature was chosen on train and val only; the test column above is the final
-choice, and 97.8% was the earlier mean-colour result. (The one team setting changed after a test result was the rule for
-which frames the two colours are learned from: one test clip opens on a non-pitch shot and crashed the first run. It changes
-no val clip. Tracker scores are untouched.)
+What the table shows:
 
-SoccerNet has few striped kits, so I also hand-labelled 98 boxes (kit A or B; keepers, referees and unclear boxes skipped)
-from three amateur clips with striped and similar-blue kits, using the same clustering: mean Lab 68% (58 / 80 / 66% per
-clip) vs histogram 79% (77 / 74 / 84%). That is one labeller and about 30 boxes per clip, so treat it as a direction
-(the histogram helps on two clips and loses on one), not a benchmark.
+- Dropping brightness is clearly worse (a white and a dark kit then look alike).
+- The histogram's bin size hardly matters (3x5x5 to 5x8x8 gave 97.3-97.5% on train).
+- On the full pipeline (real boxes, tracker, vote) the histogram also wins: val 98.2% -> 98.6%, test 97.8% -> 98.2%.
+- The feature was chosen on train and val only. The test column is the final choice, and 97.8% was the earlier
+  mean-colour result.
+- One team setting did change after a test result: the rule for which frames the two colours are learned from (one test
+  clip opens on a non-pitch shot and crashed the first run). It changes no val clip, and tracker scores are untouched.
 
-**It is not better everywhere.** On the Chelsea demo (a floodlit broadcast with close-ups) I hand-labelled 56 player boxes:
-mean colour 100%, histogram 98.2% (one box). Among the boxes where the two versions disagree (3.2% of the clip), the mean
-colour was right on 23 and the histogram on 13 of the 36 I could judge by eye; the histogram turns some dark-blue shirts in
-shade or motion blur orange, including one player in the 38 s close-up. Different brightness bins (2, 3 or 6 instead of 4)
-did not change this. The YouTube demo was rendered before the change, with the mean colour, and I kept it because it
-colours that close-up correctly. One thing the histogram does worse is the referee
-rule: histogram distances separate a black-kit referee from players less well than mean-colour distances, so that rule
-still uses the mean Lab colour on its own two-colour clustering.
+SoccerNet has few striped kits, so I also hand-labelled boxes from three amateur clips with striped and similar-blue kits:
 
-**How to read accuracy with coverage.** The accuracy is measured on boxes that received a label. On SoccerNet nearly all
-of them do (99.97-99.99%, the rest had an empty or all-grass torso crop), because the abstention rules below belong to
-the upload path and are not applied in these numbers. On uploaded video the system abstains on purpose, so coverage is
-lower: of the player boxes it tracked, **92.7% got a team on the Chelsea demo, 97.0% on the 22 s SportsMOT clip and
-94.1% on the 31 s clip**; the rest were close-ups, colours that fit neither team, or unusable crops. Goalkeepers are
-separate: on the demo, none of the 702 keeper boxes got a team (the rule abstained), and on the 31 s clip one keeper got
-one, wrongly. Accuracy on the uploaded clips was not measured (no team labels), so the coverage figures say how often a
-team is shown, not how often it is right.
+- 98 boxes in total, labelled kit A or B (keepers, referees and unclear boxes skipped), scored with the same clustering.
+- Mean Lab 68% (58 / 80 / 66% per clip) vs histogram 79% (77 / 74 / 84%).
+- One labeller and about 30 boxes per clip, so treat it as a direction (the histogram helps on two clips and loses on
+  one), not a benchmark.
+
+**It is not better everywhere.** On the Chelsea demo (a floodlit broadcast with close-ups):
+
+- I hand-labelled 56 player boxes: mean colour 100%, histogram 98.2% (one box).
+- Where the two versions disagree (3.2% of the clip), the mean colour was right on 23 and the histogram on 13 of the 36
+  boxes I could judge by eye.
+- The histogram turns some dark-blue shirts in shade or motion blur orange, including one player in the 38 s close-up.
+  Different brightness bins (2, 3 or 6 instead of 4) did not change this.
+- The YouTube demo was rendered before the change, with the mean colour, and I kept it because it colours that close-up
+  correctly.
+- The histogram is also worse for the referee rule: its distances separate a black-kit referee from players less well than
+  mean-colour distances do. That rule therefore still uses the mean Lab colour on its own two-colour clustering.
+
+**How to read accuracy with coverage.** The accuracy is measured on boxes that received a label.
+
+- **SoccerNet:** nearly all boxes get one (99.97-99.99%; the rest had an empty or all-grass torso crop), because the
+  abstention rules below belong to the upload path and are not applied in these numbers.
+- **Uploaded video:** the system abstains on purpose, so coverage is lower. Of the player boxes it tracked, **92.7% got a
+  team on the Chelsea demo, 97.0% on the 22 s SportsMOT clip and 94.1% on the 31 s clip**; the rest were close-ups, colours
+  that fit neither team, or unusable crops.
+- **Goalkeepers** are separate: on the demo none of the 702 keeper boxes got a team (the rule abstained), and on the 31 s
+  clip one keeper got one, wrongly.
+- Accuracy on the uploaded clips was not measured (no team labels), so the coverage figures say how often a team is shown,
+  not how often it is right.
 
 ### Out-of-domain check: SportsMOT
 
@@ -194,11 +205,13 @@ The same one-command pipeline (`process_video.py`, settings unchanged) on 2 foot
 
 - **Tracking transfers about as well as on SoccerNet** (BoT-SORT+GMC real HOTA 59.0 on SoccerNet test), with only 2 clips,
   so this is a sanity check, not a benchmark. The two datasets also draw boxes slightly differently.
-- **Team colours:** SportsMOT has no team labels, so this is checked by eye only (with the first, mean-colour version; the
-  histogram then cut label flips from 13 to 7 and from 50 to 28 on the two clips, not re-inspected by eye). Most players are coloured correctly; a few
-  red shirts flip on the 22 s clip. On the 31 s clip the goalkeeper rule decides one keeper and gets him wrong (the camera
-  sits at his goal, where the other team's players are, so image position misleads). The referee in black is detected as a "player": the colour rule below now gives his
-  boxes no team about a third of the time (22-34% of non-player boxes), at a cost of 0.2-1.0% of real players.
+- **Team colours:** SportsMOT has no team labels, so this is checked by eye only (with the first, mean-colour version).
+  - The histogram then cut label flips from 13 to 7 and from 50 to 28 on the two clips (not re-inspected by eye).
+  - Most players are coloured correctly; a few red shirts flip on the 22 s clip.
+  - On the 31 s clip the goalkeeper rule decides one keeper and gets him wrong (the camera sits at his goal, where the other
+    team's players are, so image position misleads).
+  - The referee in black is detected as a "player". The colour rule below now gives his boxes no team about a third of the
+    time (22-34% of non-player boxes), at a cost of 0.2-1.0% of real players.
 - No SportsMOT frames are published here (its terms forbid redistribution without permission).
 
 ## Setup
@@ -228,10 +241,16 @@ Wide broadcast views work best. Ids restart after camera cuts, and close-ups get
 
 The [Hugging Face Space](https://huggingface.co/spaces/Kushagra77/football-detect-serve) has a **Track (video)** tab
 that runs the same `process_video` function on a free ZeroGPU (`scripts/sync_space.py` copies `src/ftt` into the Space).
-Limits of the free demo: only the first 20 s of a clip are used, wider uploads are shrunk to 1280 px, and each visitor
-has a small daily GPU quota (a 20 s, 25 fps clip is tracked in about 12-20 s on the GPU (12 s before the colour histogram, 19 s right after it; the speed fix since then is not timed on the Space), and each run took roughly half a minute off the quota meter in my tests, probably including GPU start-up, so expect around ten runs a day when signed in). The
-Space runs Python 3.12 and PyTorch 2.8-2.13, while this repo is developed on Python 3.13 and PyTorch 2.14 (the two
-setups were not compared output by output). The Space's other tab, **Detect (image)**, is the detector on its own.
+Limits of the free demo:
+
+- Only the first 20 s of a clip are used, and wider uploads are shrunk to 1280 px.
+- Each visitor has a small daily GPU quota. A 20 s, 25 fps clip is tracked in about 12-20 s on the GPU (12 s before the
+  colour histogram, 19 s right after it; the speed fix since then is not timed on the Space).
+- In my tests each run took roughly half a minute off the quota meter (probably including GPU start-up), so expect around
+  ten runs a day when signed in.
+- The Space runs Python 3.12 and PyTorch 2.8-2.13; this repo is developed on Python 3.13 and PyTorch 2.14. The two setups
+  were not compared output by output.
+- The Space's other tab, **Detect (image)**, is the detector on its own.
 
 Timing on a MacBook Pro (Apple M2, 8 GB, PyTorch MPS, Ultralytics 8.4.183, image size 640, one frame at a time): the
 2-minute 1080p demo (3000 frames) took 75 s for detection, tracking, camera-motion compensation and colour features
@@ -273,6 +292,9 @@ uv run python scripts/make_figures.py                                   # README
 
 Tuning happens on val only (`scripts/tune_tracker.py` refuses other splits).
 
+The result files behind the README tables are committed in [`results/`](results/) (see its README for which file backs which
+table), so the numbers can be checked without the SoccerNet data.
+
 Layout: `src/ftt/` (data, detect, track, team, eval, schema, export, render, video, scale, pipeline), `scripts/` (one command per
 experiment), `configs/` (tracker YAMLs, `team.yaml`), `tests/` (CI runs ruff and pytest on every push).
 
@@ -287,19 +309,24 @@ experiment), `configs/` (tracker YAMLs, `team.yaml`), `tests/` (CI runs ruff and
   height <= 20% of the frame) and on player boxes that are themselves <= 20% of the frame height. A medium shot whose
   players sit just under that height can still slip through.
 - **Detector errors are only partly caught.** On uploaded video, a "player" whose shirt colour is far from both teams
-  (distance to the nearest team colour > 1.0 x the distance between the two team colours) gets no team. That catches part
-  of a black-kit referee or keeper, not all of it. A club crest in a logo card was detected as a player.
+  (distance to the nearest team colour > 1.0 x the distance between the two team colours) gets no team.
+  - That catches part of a black-kit referee or keeper, not all of it.
+  - A club crest in a logo card was detected as a player.
 - **Other frame rates and sizes.** Settings were tuned on 25 fps, 1920 px SoccerNet video. For uploads, the frame counts
   (vote window, tracker memory, colour-fit window) are scaled by the video's fps and the keeper thresholds by its width
-  (`src/ftt/scale.py`); a 25 fps, 1920 px video is unchanged. Checked only by simulation: dropping frames of 3 val clips
-  to 12.5 and 8.3 fps, scaling lifted team accuracy 97.2 -> 98.0 and 95.6 -> 97.6 (and label flips rose 46 -> 60 and
-  56 -> 75, because the vote window is shorter); tracking scores barely moved (HOTA 56.1 -> 56.0 and 49.7 -> 50.4). One real
-  60 fps clip (720p amateur match, no labels to score) pointed the same way: scaling cut team-label flips 97 -> 73 and
-  tracker ids 81 -> 76. One clip, no ground truth, so only a direction.
-- **Amateur footage and unusual kits.** On three amateur-match clips (stands view at 60 fps, an indoor dome in 4K, a drone
-  view in 4K) tracking held up, but team colours were unreliable: striped and similar-blue kits with hard shadows left
-  most players in one team with the mean colour (74% / 26% on the 60 fps clip; 61% / 39% with the histogram, against about
-  42% / 58% in my hand-labelled boxes of that clip), so the colour feature is the weak part, not the tracker.
+  (`src/ftt/scale.py`); a 25 fps, 1920 px video is unchanged. Checked only in two ways:
+  - *Simulation:* dropping frames of 3 val clips to 12.5 and 8.3 fps, scaling lifted team accuracy 97.2 -> 98.0 and
+    95.6 -> 97.6 (label flips rose 46 -> 60 and 56 -> 75, because the vote window is shorter). Tracking scores barely moved
+    (HOTA 56.1 -> 56.0 and 49.7 -> 50.4).
+  - *One real 60 fps clip* (720p amateur match, no labels to score): scaling cut team-label flips 97 -> 73 and tracker ids
+    81 -> 76. One clip, no ground truth, so only a direction.
+- **Amateur footage and unusual kits.** Three amateur-match clips (stands view at 60 fps, an indoor dome in 4K, a drone
+  view in 4K):
+  - Tracking held up.
+  - Team colours were unreliable: striped and similar-blue kits with hard shadows left most players in one team.
+  - On the 60 fps clip the split was 74% / 26% with the mean colour and 61% / 39% with the histogram, against about
+    42% / 58% in my hand-labelled boxes.
+  - So the colour feature is the weak part, not the tracker.
 - **Failure case seen in the demo:** in a medium shot at 38 s, a red-shirted player was drawn in the other team's colour,
   because the frame passed the pitch-view check while the colours learned on distant views did not fit. The two rules
   above now give him no team (white in the video) instead of a wrong one; the shot is still not labelled correctly.

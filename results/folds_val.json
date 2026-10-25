@@ -1,0 +1,46 @@
+{
+  "tuned": {
+    "track_high_thresh": 0.25,
+    "match_thresh": 0.9
+  },
+  "folds": {
+    "all": [
+      "SNMOT-064",
+      "SNMOT-069",
+      "SNMOT-074",
+      "SNMOT-098",
+      "SNMOT-103",
+      "SNMOT-108",
+      "SNMOT-113",
+      "SNMOT-153",
+      "SNMOT-158",
+      "SNMOT-163",
+      "SNMOT-168"
+    ],
+    "A": [
+      "SNMOT-064",
+      "SNMOT-074",
+      "SNMOT-103",
+      "SNMOT-113",
+      "SNMOT-158",
+      "SNMOT-168"
+    ],
+    "B": [
+      "SNMOT-069",
+      "SNMOT-098",
+      "SNMOT-108",
+      "SNMOT-153",
+      "SNMOT-163"
+    ]
+  },
+  "summary": {
+    "bytetrack": {
+      "gain": {
+        "all": 2.69,
+        "A": 3.15,
+        "B": 1.95
+      },
+      "pass": true
+    }
+  }
+}

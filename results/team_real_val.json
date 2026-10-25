@@ -1,0 +1,81 @@
+{
+  "args": {
+    "split": "val",
+    "source": "real",
+    "conf": 0.5,
+    "stride": 25,
+    "min_iou": 0.5
+  },
+  "mean": [
+    0.9897887168856784,
+    1.0
+  ],
+  "clips": {
+    "SNMOT-064": {
+      "scored": 510,
+      "unmatched": 7,
+      "per_detection": 0.9803921568627451,
+      "per_track": 1.0
+    },
+    "SNMOT-069": {
+      "scored": 416,
+      "unmatched": 4,
+      "per_detection": 0.9879807692307693,
+      "per_track": 1.0
+    },
+    "SNMOT-074": {
+      "scored": 522,
+      "unmatched": 15,
+      "per_detection": 0.9942528735632183,
+      "per_track": 1.0
+    },
+    "SNMOT-098": {
+      "scored": 290,
+      "unmatched": 4,
+      "per_detection": 0.9793103448275862,
+      "per_track": 1.0
+    },
+    "SNMOT-103": {
+      "scored": 486,
+      "unmatched": 12,
+      "per_detection": 0.9938271604938271,
+      "per_track": 1.0
+    },
+    "SNMOT-108": {
+      "scored": 321,
+      "unmatched": 1,
+      "per_detection": 0.9937694704049844,
+      "per_track": 1.0
+    },
+    "SNMOT-113": {
+      "scored": 473,
+      "unmatched": 12,
+      "per_detection": 0.9936575052854123,
+      "per_track": 1.0
+    },
+    "SNMOT-153": {
+      "scored": 263,
+      "unmatched": 16,
+      "per_detection": 0.9961977186311787,
+      "per_track": 1.0
+    },
+    "SNMOT-158": {
+      "scored": 294,
+      "unmatched": 17,
+      "per_detection": 0.9931972789115646,
+      "per_track": 1.0
+    },
+    "SNMOT-163": {
+      "scored": 292,
+      "unmatched": 10,
+      "per_detection": 0.9863013698630136,
+      "per_track": 1.0
+    },
+    "SNMOT-168": {
+      "scored": 446,
+      "unmatched": 8,
+      "per_detection": 0.9887892376681614,
+      "per_track": 1.0
+    }
+  }
+}
