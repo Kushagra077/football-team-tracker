@@ -55,7 +55,7 @@ def track_video(
     iou: float = 0.7,
     imgsz: int = 640,
     max_det: int = 300,
-    device: str = default_device(),
+    device: str | None = None,
     max_frames: int | None = None,
 ) -> TrackedVideo:
     """Run ``model.track`` over a video file; keep boxes + player torso colours, not frames.
@@ -63,6 +63,7 @@ def track_video(
     ``conf`` must stay low (0.1): the tracker's second association pass needs weak boxes.
     ``max_frames`` stops after that many frames (a demo cap).
     """
+    device = device or default_device()  # at call time: CUDA may only exist inside the call
     fps, n_declared, size = video_info(source)
     stream = model.track(
         source=str(source),

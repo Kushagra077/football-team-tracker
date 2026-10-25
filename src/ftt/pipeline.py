@@ -49,7 +49,7 @@ def process_video(
     model,
     team_cfg: dict,
     tracker_cfg: dict,
-    device: str = default_device(),
+    device: str | None = None,
     render: bool = True,
     max_frames: int | None = None,
     log: Callable[[str], None] = print,
@@ -60,6 +60,7 @@ def process_video(
     ``configs/team.yaml`` and ``tracker_cfg`` a tracker config with the tuned thresholds applied,
     both unscaled. ``max_frames`` stops after that many frames (a demo cap).
     """
+    device = device or default_device()  # at call time: CUDA may only exist inside the call
     video, out_dir = Path(video), Path(out_dir)
     out_dir.mkdir(parents=True, exist_ok=True)
 

@@ -16,3 +16,15 @@ def test_cuda_wins_then_mps_then_cpu(monkeypatch):
     assert default_device() == "mps"
     monkeypatch.setattr(torch.backends.mps, "is_available", lambda: False)
     assert default_device() == "cpu"
+
+
+def test_device_default_is_looked_up_per_call_not_at_import():
+    # On ZeroGPU, CUDA only exists inside the GPU call: a default frozen at import would be "cpu".
+    import inspect
+
+    from ftt.detect.run_detector import run_detector
+    from ftt.pipeline import process_video
+    from ftt.video import track_video
+
+    for fn in (process_video, track_video, run_detector):
+        assert inspect.signature(fn).parameters["device"].default is None

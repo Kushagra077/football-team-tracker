@@ -51,10 +51,11 @@ def run_detector(
     iou: float = 0.7,
     imgsz: int = 640,
     max_det: int = 300,
-    device: str = default_device(),
+    device: str | None = None,
     batch: int = 16,
 ) -> Path:
     """Detect persons in ``frame_paths`` with a loaded ``model``; save a validated parquet."""
+    device = device or default_device()  # at call time: CUDA may only exist inside the call
     rows = []
     for start in range(0, len(frame_paths), batch):
         chunk = [Path(p) for p in frame_paths[start : start + batch]]
