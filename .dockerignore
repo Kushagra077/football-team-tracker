@@ -1,0 +1,25 @@
+# Keep the build context small: none of this is needed to install or test the code.
+.git
+.venv
+.claude
+.github
+__pycache__
+*.pyc
+.pytest_cache
+.ruff_cache
+
+# Local-only data and outputs (see .gitignore): SoccerNet, caches, reports, demo videos
+data/*
+!data/README.md
+cache
+reports
+demo
+notebooks
+*.mp4
+*.pt
+
+# Working notes
+*-build-spec.md
+PROGRESS.md
+design_decision.md
+INTERVIEW_NOTES.md
