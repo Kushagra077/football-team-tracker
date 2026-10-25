@@ -186,6 +186,15 @@ uv run python scripts/process_video.py path/to/clip.mp4            # add --devic
 
 Wide broadcast views work best. Ids restart after camera cuts, and close-ups get no team (see limitations).
 
+### Or try it in the browser
+
+The [Hugging Face Space](https://huggingface.co/spaces/Kushagra77/football-detect-serve) has a **Track (video)** tab
+that runs the same `process_video` function on a free ZeroGPU (`scripts/sync_space.py` copies `src/ftt` into the Space).
+Limits of the free demo: only the first 20 s of a clip are used, wider uploads are shrunk to 1280 px, and each visitor
+has a small daily GPU quota (a 20 s clip used roughly half a minute of it in my tests, so expect around ten runs a day when signed in). The
+Space runs Python 3.12 and PyTorch 2.8-2.13, while this repo is developed on Python 3.13 and PyTorch 2.14 (the two
+setups were not compared output by output). The Space's other tab, **Detect (image)**, is the detector on its own.
+
 Timing on a MacBook Pro (Apple M2, 8 GB, PyTorch MPS, Ultralytics 8.4.183, image size 640, one frame at a time): the
 2-minute 1080p demo (3000 frames) took 75 s for detection, tracking, camera-motion compensation and colour features
 (40 fps) and 27 s to draw the annotated video, 1 min 50 s in total. A 31 s 720p clip ran at 43 fps in the same stage.
@@ -226,7 +235,7 @@ uv run python scripts/make_figures.py                                   # README
 
 Tuning happens on val only (`scripts/tune_tracker.py` refuses other splits).
 
-Layout: `src/ftt/` (data, detect, track, team, eval, schema, export, render, video), `scripts/` (one command per
+Layout: `src/ftt/` (data, detect, track, team, eval, schema, export, render, video, scale, pipeline), `scripts/` (one command per
 experiment), `configs/` (tracker YAMLs, `team.yaml`), `tests/` (CI runs ruff and pytest on every push).
 
 ## Limitations
@@ -264,7 +273,6 @@ experiment), `configs/` (tracker YAMLs, `team.yaml`), `tests/` (CI runs ruff and
 - Re-identification across camera cuts, so a player keeps one id for the whole match.
 - A colour rule that scales with each team's own colour spread (a white kit varies more than a red one).
 - TrackTrack, the one Ultralytics tracker not yet benchmarked.
-- A live demo on Hugging Face Spaces.
 
 ## Data and attribution
 
