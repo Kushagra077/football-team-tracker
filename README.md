@@ -319,8 +319,9 @@ that runs the same `process_video` function on a free ZeroGPU (`scripts/sync_spa
 Limits of the free demo:
 
 - Only the first 20 s of a clip are used, and wider uploads are shrunk to 1280 px.
-- Each visitor has a small daily GPU quota. A 20 s, 25 fps clip is tracked in about 12-20 s on the GPU (12 s before the
-  colour histogram, 19 s right after it; the speed fix since then is not timed on the Space).
+- Each visitor has a small daily GPU quota. A 20 s, 25 fps clip (500 frames, 1280x720) was tracked in 13.2 s on the GPU in the
+  latest timed run (the Space's own log line, one run). Earlier runs took 12 s before the colour histogram and 19 s right after
+  it, before the speed fix.
 - In my tests each run took roughly half a minute off the quota meter (probably including GPU start-up), so expect around
   ten runs a day when signed in.
 - The Space runs Python 3.12 and PyTorch 2.8-2.13; this repo is developed on Python 3.13 and PyTorch 2.14. The two setups
