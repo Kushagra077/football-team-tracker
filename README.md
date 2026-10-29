@@ -170,7 +170,7 @@ BoT-SORT + GMC with the same shared tuned setting for every detector (`scripts/c
 - **Team accuracy barely moves** (98.9% -> 99.0% on test): the colour step was already near its limit with v3's boxes.
 - **The tuned setting still fits v6.** A one-knob-at-a-time sweep on val (`results/football_detection_v6/tuning_val.jsonl`)
   favours the same knobs as before: `track_high_thresh` 0.2-0.3 and `match_thresh` 0.9-0.95. So `configs/tuned.yaml` is unchanged.
-- **Cost:** a larger input is slower. On one 50-frame clip on CPU, v3 took 2.7 s, v7 2.9 s and v6 4.7 s (one clip, CPU, a rough check; not timed on a GPU).
+- **Cost:** a larger input is slower on CPU: on one 50-frame clip, v3 took 2.7 s, v7 2.9 s and v6 4.7 s (a rough check). On the Space's GPU the difference is small: 500 frames took 13.2 s with v3 and 12.0 s with v6 (one run each).
 - **What was not re-run with v6:** the other six trackers, the ReID test, the colour-feature study, SportsMOT and the Space timing.
   Every table above this section is still v3.
 - The detector's own mAP (from its repo): test mAP50-95 0.365 (v3), 0.443 (v6), 0.418 (v7), 0.390 (v8); v8 is the weakest of the new ones on test.
@@ -349,14 +349,14 @@ that runs the same `process_video` function on a free ZeroGPU (`scripts/sync_spa
 Limits of the free demo:
 
 - Only the first 20 s of a clip are used, and wider uploads are shrunk to 1280 px.
-- Each visitor has a small daily GPU quota. A 20 s, 25 fps clip (500 frames, 1280x720) was tracked in 13.2 s on the GPU in the
-  latest timed run (the Space's own log line, one run). Earlier runs took 12 s before the colour histogram and 19 s right after
+- Each visitor has a small daily GPU quota. A 20 s, 25 fps clip (500 frames, 1280x720) was tracked in 13.2 s on the GPU with v3 in the
+  timed run (the Space's own log line, one run). Earlier runs took 12 s before the colour histogram and 19 s right after
   it, before the speed fix.
 - In my tests each run took roughly half a minute off the quota meter (probably including GPU start-up), so expect around
   ten runs a day when signed in.
 - The Space runs Python 3.12 and PyTorch 2.8-2.13; this repo is developed on Python 3.13 and PyTorch 2.14. The two setups
   were not compared output by output.
-- The Track tab has a **Model** dropdown, like the Detect tab: fast (v3, 640 px), balanced (v7, 960 px) and accurate (v6, 1280 px). The default is fast, and the timings above are for it. The larger models track better but take longer and use more quota, and I have not timed them on the Space's GPU yet.
+- The Track tab has a **Model** dropdown, like the Detect tab: fast (v3, 640 px), balanced (v7, 960 px) and accurate (v6, 1280 px), which is the default. In one timed run each, a 20 s clip took 12.0 s with v6 and 13.2 s with v3 on the GPU, so the larger input costs almost nothing there (one run each, so treat the difference as noise; v7 was not timed). On CPU the larger input is slower (see below).
 - The Space's other tab, **Detect (image)**, is the detector on its own.
 
 Timing on a MacBook Pro (Apple M2, 8 GB, PyTorch MPS, Ultralytics 8.4.183, image size 640, one frame at a time): the
