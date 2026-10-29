@@ -6,8 +6,8 @@ boxes, and a detector thresholded at 0.5 silently disables it. Keep player/goalk
 drop ball/other.
 Weights path comes from ``configs/paths.yaml``; never copy weights into this repo.
 
-Defaults mirror how the detector itself is evaluated (imgsz 640, NMS IoU 0.7, max 300 detections
-per image).
+Defaults mirror how the detector itself is evaluated (NMS IoU 0.7, max 300 detections per image,
+and the input size the weights were trained at: 640 for v3, 960 for v7 and v8, 1280 for v6).
 Ultralytics resizes each frame for the network and maps boxes back to original pixel coordinates.
 """
 
@@ -43,18 +43,38 @@ def load_detector(weights: Path) -> YOLO:
     return model
 
 
+def detector_imgsz(model, default: int = 640) -> int:
+    """The input size (px) the weights were trained at, read from the weights themselves.
+
+    A detector is meant to run at its training size: v3 at 640, v7 at 960, v6 at 1280. Reading it
+    from the file means a new model needs no code change. ``default`` is for objects that carry
+    no training arguments.
+    """
+    args = getattr(getattr(model, "model", None), "args", None)
+    size = args.get("imgsz") if isinstance(args, dict) else None
+    if size is None:
+        size = (getattr(model, "overrides", None) or {}).get("imgsz")
+    if isinstance(size, (list, tuple)):  # (h, w) in some exports
+        size = max(size)
+    return int(size) if size else default
+
+
 def run_detector(
     frame_paths: Sequence[Path],
     model: YOLO,
     out_path: Path,
     conf: float = 0.1,
     iou: float = 0.7,
-    imgsz: int = 640,
+    imgsz: int | None = None,
     max_det: int = 300,
     device: str | None = None,
     batch: int = 16,
 ) -> Path:
-    """Detect persons in ``frame_paths`` with a loaded ``model``; save a validated parquet."""
+    """Detect persons in ``frame_paths`` with a loaded ``model``; save a validated parquet.
+
+    ``imgsz=None`` uses the size the weights were trained at (``detector_imgsz``).
+    """
+    imgsz = imgsz or detector_imgsz(model)
     device = device or default_device()  # at call time: CUDA may only exist inside the call
     rows = []
     for start in range(0, len(frame_paths), batch):

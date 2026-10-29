@@ -15,9 +15,9 @@ from pathlib import Path
 
 import numpy as np
 import pandas as pd
-import yaml
 
 from ftt.data.sn_tracking import SPLITS, list_clips, load_persons_gt, load_roles
+from ftt.paths import load_paths
 
 ROOT = Path(__file__).resolve().parents[1]
 
@@ -67,7 +67,7 @@ def frames_per_clip(detector_images: Path, split: str) -> Counter:
 
 
 def main() -> None:
-    paths = yaml.safe_load((ROOT / "configs" / "paths.yaml").read_text())
+    paths = load_paths(ROOT)
     meta_root = ROOT / paths["meta_root"]
     detector_images = (ROOT / paths["detector_images"]).resolve()
 

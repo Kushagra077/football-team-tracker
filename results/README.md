@@ -14,6 +14,8 @@ taken after the final runs. Only derived numbers are here, no SoccerNet frames o
 | `team_gt_{val,test}.json` | `eval_team.py --source gt` | Team assignment: ground-truth boxes row |
 | `team_real_{val,test}.json` | `eval_team.py --source real` | Team assignment: detector boxes row |
 | `team_vote_{val,test}.json` | `eval_team_vote.py` | Team assignment: tracked + vote row, label flips |
+| `detector_comparison.json` | `compare_detectors.py` | Newer detectors table (v3, v6, v7, v8) |
+| `football_detection_v6/` | `run_ablation.py`, `eval_team_vote.py`, `tune_tracker.py` with `FTT_DETECTOR=football_detection_v6` | Newer detectors: v6 tracking, team and tuning files (same names as above) |
 | `team_features_{train,val}.json` | `eval_team_features.py` | "Which colour feature?" table |
 
 In `tracking_*.json`, `botsort_gmc_reid__tuned` is BoT-SORT + GMC with appearance ReID (the "Does appearance ReID help?"

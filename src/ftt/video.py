@@ -15,6 +15,7 @@ import cv2
 import pandas as pd
 
 from ftt.data.detections import CLASS_IDS
+from ftt.detect.run_detector import detector_imgsz
 from ftt.device import default_device
 from ftt.scale import clean_fps
 from ftt.team.features import FRAME_COLS, box_features, extra_names
@@ -53,7 +54,7 @@ def track_video(
     *,
     conf: float = 0.1,
     iou: float = 0.7,
-    imgsz: int = 640,
+    imgsz: int | None = None,
     max_det: int = 300,
     device: str | None = None,
     max_frames: int | None = None,
@@ -61,8 +62,10 @@ def track_video(
     """Run ``model.track`` over a video file; keep boxes + player torso colours, not frames.
 
     ``conf`` must stay low (0.1): the tracker's second association pass needs weak boxes.
-    ``max_frames`` stops after that many frames (a demo cap).
+    ``max_frames`` stops after that many frames (a demo cap). ``imgsz=None`` uses the size the
+    weights were trained at.
     """
+    imgsz = imgsz or detector_imgsz(model)
     device = device or default_device()  # at call time: CUDA may only exist inside the call
     fps, n_declared, size = video_info(source)
     stream = model.track(

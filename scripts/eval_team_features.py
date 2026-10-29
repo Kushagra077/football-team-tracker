@@ -26,6 +26,7 @@ from sklearn.cluster import KMeans
 from ftt.data.detections import detector_name
 from ftt.data.sn_tracking import frame_path, list_clips, load_persons_gt
 from ftt.eval.team_metrics import best_permutation_accuracy
+from ftt.paths import load_paths
 from ftt.team.cluster import choose_fit_frames
 from ftt.team.crops import grass_mask, torso_crop
 from ftt.team.features import HIST_RANGE, histogram_feature, lab_pixels, mean_feature
@@ -103,7 +104,7 @@ def main() -> None:
     ap.add_argument("--split", default="train", choices=["train", "val", "test"])
     ap.add_argument("--stride", type=int, default=25)
     args = ap.parse_args()
-    paths = yaml.safe_load((ROOT / "configs" / "paths.yaml").read_text())
+    paths = load_paths(ROOT)
     cfg = yaml.safe_load((ROOT / "configs" / "team.yaml").read_text())
 
     results = {}

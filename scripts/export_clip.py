@@ -19,6 +19,7 @@ import yaml
 from ftt.data.detections import detector_name, load_cached_detections
 from ftt.data.sn_tracking import frame_path, load_persons_gt
 from ftt.export import build_tracks, export_tracks, read_tracks
+from ftt.paths import load_paths
 from ftt.team.assign import label_players, team_for_tracks
 from ftt.track.adapters import UltralyticsTracker
 from ftt.track.config import load_tracker_cfg
@@ -36,7 +37,7 @@ def main() -> None:
     ap.add_argument("--tracker", default="botsort_gmc")
     args = ap.parse_args()
 
-    paths = yaml.safe_load((ROOT / "configs" / "paths.yaml").read_text())
+    paths = load_paths(ROOT)
     cfg = yaml.safe_load((ROOT / "configs" / "team.yaml").read_text())
     images_root = (ROOT / paths["detector_images"]).resolve()
     folder = "test" if args.split == "test" else "train"

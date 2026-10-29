@@ -25,6 +25,7 @@ import yaml
 from ftt.data.detections import CLASS_IDS, detector_name, load_cached_detections
 from ftt.data.sn_tracking import frame_path, list_clips, load_persons_gt
 from ftt.eval.team_metrics import match_to_gt
+from ftt.paths import load_paths
 from ftt.team.assign import label_players
 from ftt.team.vote import vote_labels
 from ftt.track.adapters import UltralyticsTracker
@@ -58,7 +59,7 @@ def main() -> None:
     )
     args = ap.parse_args()
 
-    paths = yaml.safe_load((ROOT / "configs" / "paths.yaml").read_text())
+    paths = load_paths(ROOT)
     cfg = yaml.safe_load((ROOT / "configs" / "team.yaml").read_text())
     meta_root = ROOT / paths["meta_root"]
     images_root = (ROOT / paths["detector_images"]).resolve()

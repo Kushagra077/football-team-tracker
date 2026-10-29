@@ -16,12 +16,12 @@ from pathlib import Path
 
 import matplotlib
 import pandas as pd
-import yaml
 
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt  # noqa: E402
 
 from ftt.data.detections import detector_name  # noqa: E402
+from ftt.paths import load_paths  # noqa: E402
 
 ROOT = Path(__file__).parents[1]
 OUT = ROOT / "reports" / "figures"
@@ -121,7 +121,7 @@ def main() -> None:
     ap.add_argument("--start", type=int, default=1, help="first frame of the trails window")
     ap.add_argument("--frames", type=int, default=125, help="trails window length in frames")
     args = ap.parse_args()
-    paths = yaml.safe_load((ROOT / "configs" / "paths.yaml").read_text())
+    paths = load_paths(ROOT)
     OUT.mkdir(parents=True, exist_ok=True)
     print("wrote", benchmark(detector_name(paths["detector_weights"])))
     if args.trails:

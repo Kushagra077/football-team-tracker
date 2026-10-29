@@ -15,12 +15,12 @@ import json
 from pathlib import Path
 
 import pandas as pd
-import yaml
 
 from ftt.data.detections import detector_name, gt_as_detections, load_cached_detections
 from ftt.data.sn_tracking import list_clips
 from ftt.eval.mot_io import write_mot
 from ftt.eval.trackeval_wrap import evaluate
+from ftt.paths import load_paths
 
 ROOT = Path(__file__).parents[1]
 
@@ -38,7 +38,7 @@ def main() -> None:
     ap.add_argument("--confs", type=float, nargs="+", default=[0.1, 0.25, 0.5])
     args = ap.parse_args()
 
-    paths = yaml.safe_load((ROOT / "configs" / "paths.yaml").read_text())
+    paths = load_paths(ROOT)
     meta_root = ROOT / paths["meta_root"]
     folder = "test" if args.split == "test" else "train"
     clips = list_clips(meta_root, args.split)

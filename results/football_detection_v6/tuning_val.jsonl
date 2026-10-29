@@ -1,0 +1,12 @@
+{"tracker": "botsort_gmc", "overrides": {}, "seconds": 184.9, "HOTA": 64.81, "DetA": 76.03, "AssA": 55.31, "IDF1": 75.1, "IDSW": 301.0}
+{"tracker": "botsort_gmc", "overrides": {"track_high_thresh": 0.2}, "seconds": 174.9, "HOTA": 65.47, "DetA": 76.32, "AssA": 56.24, "IDF1": 76.17, "IDSW": 309.0}
+{"tracker": "botsort_gmc", "overrides": {"track_high_thresh": 0.25}, "seconds": 191.0, "HOTA": 65.4, "DetA": 76.43, "AssA": 56.03, "IDF1": 75.96, "IDSW": 309.0}
+{"tracker": "botsort_gmc", "overrides": {"track_high_thresh": 0.3}, "seconds": 196.4, "HOTA": 65.52, "DetA": 76.48, "AssA": 56.2, "IDF1": 76.04, "IDSW": 301.0}
+{"tracker": "botsort_gmc", "overrides": {"track_high_thresh": 0.7}, "seconds": 197.0, "HOTA": 63.47, "DetA": 73.83, "AssA": 54.63, "IDF1": 73.87, "IDSW": 293.0}
+{"tracker": "botsort_gmc", "overrides": {"new_track_thresh": 0.4}, "seconds": 206.7, "HOTA": 64.81, "DetA": 76.03, "AssA": 55.31, "IDF1": 75.1, "IDSW": 301.0}
+{"tracker": "botsort_gmc", "overrides": {"new_track_thresh": 0.7}, "seconds": 191.0, "HOTA": 64.31, "DetA": 74.82, "AssA": 55.35, "IDF1": 75.18, "IDSW": 270.0}
+{"tracker": "botsort_gmc", "overrides": {"track_buffer": 15}, "seconds": 157.0, "HOTA": 64.68, "DetA": 76.15, "AssA": 55.02, "IDF1": 74.73, "IDSW": 302.0}
+{"tracker": "botsort_gmc", "overrides": {"track_buffer": 60}, "seconds": 126.0, "HOTA": 64.89, "DetA": 76.02, "AssA": 55.48, "IDF1": 75.34, "IDSW": 302.0}
+{"tracker": "botsort_gmc", "overrides": {"match_thresh": 0.7}, "seconds": 99.6, "HOTA": 64.17, "DetA": 76.21, "AssA": 54.12, "IDF1": 73.42, "IDSW": 356.0}
+{"tracker": "botsort_gmc", "overrides": {"match_thresh": 0.9}, "seconds": 98.5, "HOTA": 65.2, "DetA": 76.13, "AssA": 55.92, "IDF1": 75.84, "IDSW": 289.0}
+{"tracker": "botsort_gmc", "overrides": {"match_thresh": 0.95}, "seconds": 98.5, "HOTA": 65.17, "DetA": 76.09, "AssA": 55.89, "IDF1": 75.83, "IDSW": 285.0}

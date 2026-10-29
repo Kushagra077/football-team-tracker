@@ -40,3 +40,28 @@ def test_smoke_three_frames(tmp_path):
     assert per_frame.between(8, 80).all(), per_frame.to_dict()
     # Boxes are in original 1920x1080 pixel coordinates, not the 640 network size.
     assert dets["x2"].max() > 640
+
+
+class _Weights:
+    """Stands in for a loaded YOLO: only the attributes ``detector_imgsz`` reads."""
+
+    def __init__(self, model_args=None, overrides=None):
+        self.model = type("M", (), {"args": model_args})() if model_args is not None else None
+        self.overrides = overrides or {}
+
+
+def test_detector_imgsz_reads_the_training_size():
+    from ftt.detect.run_detector import detector_imgsz
+
+    assert detector_imgsz(_Weights({"imgsz": 1280})) == 1280  # v6
+    assert detector_imgsz(_Weights({"imgsz": 960})) == 960  # v7, v8
+    assert detector_imgsz(_Weights({"imgsz": 640})) == 640  # v3
+
+
+def test_detector_imgsz_fallbacks():
+    from ftt.detect.run_detector import detector_imgsz
+
+    assert detector_imgsz(_Weights(overrides={"imgsz": 960})) == 960  # no model args
+    assert detector_imgsz(_Weights({"imgsz": [736, 1280]})) == 1280  # (h, w) pair: the long side
+    assert detector_imgsz(_Weights({})) == 640  # nothing recorded: the default
+    assert detector_imgsz(object()) == 640  # a plain fake model

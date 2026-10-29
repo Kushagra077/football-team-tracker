@@ -20,6 +20,7 @@ matplotlib.use("Agg")
 import matplotlib.pyplot as plt  # noqa: E402
 
 from ftt.data.sn_tracking import list_clips, load_persons_gt  # noqa: E402
+from ftt.paths import load_paths  # noqa: E402
 from ftt.team.cluster import assign_goalkeepers  # noqa: E402
 
 ROOT = Path(__file__).parents[1]
@@ -32,7 +33,7 @@ def main() -> None:
     ap.add_argument("--out", type=Path, default=ROOT / "reports" / "goalkeepers.png")
     args = ap.parse_args()
 
-    paths = yaml.safe_load((ROOT / "configs" / "paths.yaml").read_text())
+    paths = load_paths(ROOT)
     cfg = yaml.safe_load((ROOT / "configs" / "team.yaml").read_text())
     gk_cfg = cfg["goalkeeper"]
     meta_root = ROOT / paths["meta_root"]

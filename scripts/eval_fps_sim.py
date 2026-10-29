@@ -27,6 +27,7 @@ from ftt.eval.mot_io import write_mot
 from ftt.eval.team_metrics import best_permutation_accuracy, match_to_gt
 from ftt.eval.trackeval_wrap import evaluate
 from ftt.export import build_tracks
+from ftt.paths import load_paths
 from ftt.scale import scale_team_cfg, scale_tracker_cfg
 from ftt.team.assign import label_from_features, team_for_tracks
 from ftt.team.gate import pitch_view_frames, small_boxes
@@ -39,7 +40,7 @@ ap.add_argument("--clips", nargs="+", default=["SNMOT-064", "SNMOT-103", "SNMOT-
 ap.add_argument("--steps", nargs="+", type=int, default=[1, 2, 3], help="keep every Nth frame")
 args = ap.parse_args()
 CLIPS, STEPS = args.clips, args.steps
-paths = yaml.safe_load((ROOT / "configs/paths.yaml").read_text())
+paths = load_paths(ROOT)
 CFG0 = yaml.safe_load((ROOT / "configs/team.yaml").read_text())
 images = (ROOT / paths["detector_images"]).resolve()
 meta = ROOT / paths["meta_root"]

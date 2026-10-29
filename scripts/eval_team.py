@@ -28,6 +28,7 @@ from ftt.data.detections import (
 )
 from ftt.data.sn_tracking import frame_path, list_clips, load_persons_gt
 from ftt.eval.team_metrics import best_permutation_accuracy, match_to_gt, per_track_accuracy
+from ftt.paths import load_paths
 from ftt.team.cluster import choose_fit_frames, fit_team_clusters
 from ftt.team.features import FRAME_COLS, box_features, feature_names
 
@@ -53,7 +54,7 @@ def main() -> None:
     ap.add_argument("--min-iou", type=float, default=0.5)
     args = ap.parse_args()
 
-    paths = yaml.safe_load((ROOT / "configs" / "paths.yaml").read_text())
+    paths = load_paths(ROOT)
     cfg = yaml.safe_load((ROOT / "configs" / "team.yaml").read_text())
     meta_root = ROOT / paths["meta_root"]
     images_root = ROOT / paths["detector_images"]

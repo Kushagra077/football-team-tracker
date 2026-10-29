@@ -19,6 +19,7 @@ import yaml
 from ftt.data.detections import detector_name
 from ftt.detect.run_detector import load_detector
 from ftt.device import default_device
+from ftt.paths import load_paths
 from ftt.pipeline import NoPitchViewError, process_video
 from ftt.track.config import load_tracker_cfg
 
@@ -35,7 +36,7 @@ def main() -> None:
     ap.add_argument("--no-render", action="store_true", help="skip the annotated video")
     args = ap.parse_args()
 
-    paths = yaml.safe_load((ROOT / "configs" / "paths.yaml").read_text())
+    paths = load_paths(ROOT)
     team_cfg = yaml.safe_load((ROOT / "configs" / "team.yaml").read_text())
     tracker_cfg = load_tracker_cfg(ROOT / "configs", args.tracker)
     weights = (ROOT / paths["detector_weights"]).resolve()

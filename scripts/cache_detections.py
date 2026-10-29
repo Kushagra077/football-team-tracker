@@ -9,12 +9,16 @@ import argparse
 import time
 from pathlib import Path
 
-import yaml
-
 from ftt.data.detections import cached_path, detector_name
 from ftt.data.sn_tracking import list_clips
-from ftt.detect.run_detector import frame_number, load_detector, run_detector
+from ftt.detect.run_detector import (
+    detector_imgsz,
+    frame_number,
+    load_detector,
+    run_detector,
+)
 from ftt.device import default_device
+from ftt.paths import load_paths
 
 ROOT = Path(__file__).parents[1]
 
@@ -34,12 +38,15 @@ def main() -> None:
     ap.add_argument("--limit", type=int, default=None, help="only the first N clips")
     ap.add_argument("--conf", type=float, default=0.1)
     ap.add_argument(
+        "--imgsz", type=int, default=None, help="default: the size the weights were trained at"
+    )
+    ap.add_argument(
         "--device", default=default_device(), help="default: cuda, mps or cpu, whichever exists"
     )
     ap.add_argument("--force", action="store_true", help="re-run clips that are already cached")
     args = ap.parse_args()
 
-    paths = yaml.safe_load((ROOT / "configs" / "paths.yaml").read_text())
+    paths = load_paths(ROOT)
     weights = (ROOT / paths["detector_weights"]).resolve()
     images_root = (ROOT / paths["detector_images"]).resolve()
     cache_dir = ROOT / paths["cache_dir"]
@@ -47,7 +54,8 @@ def main() -> None:
     clips = list_clips(ROOT / paths["meta_root"], args.split)[: args.limit]
 
     model = load_detector(weights)  # once, not per clip
-    print(f"detector {detector} on {args.device}, conf {args.conf}")
+    imgsz = args.imgsz or detector_imgsz(model)
+    print(f"detector {detector} on {args.device}, conf {args.conf}, imgsz {imgsz}")
     print(f"{len(clips)} {args.split} clips")
     start = time.perf_counter()
     for clip in clips:
@@ -57,7 +65,7 @@ def main() -> None:
             continue
         t = time.perf_counter()
         frames = clip_frames(images_root, args.split, clip)
-        run_detector(frames, model, out, conf=args.conf, device=args.device)
+        run_detector(frames, model, out, conf=args.conf, imgsz=imgsz, device=args.device)
         print(f"  {clip}: {len(frames)} frames in {time.perf_counter() - t:.1f}s", flush=True)
     print(f"done in {time.perf_counter() - start:.0f}s")
 

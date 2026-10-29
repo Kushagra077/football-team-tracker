@@ -1,0 +1,67 @@
+{
+  "tracker": "botsort_gmc__tuned",
+  "detectors": {
+    "football_detection_v3": {
+      "val": {
+        "HOTA": 63.3,
+        "DetA": 74.5,
+        "AssA": 53.9,
+        "IDF1": 74.4,
+        "IDSW": 414.0,
+        "team_acc_vote": 99.0,
+        "team_acc_raw": 98.7,
+        "label_flips_vote": 138
+      },
+      "test": {
+        "HOTA": 59.0,
+        "DetA": 70.9,
+        "AssA": 49.4,
+        "IDF1": 68.5,
+        "IDSW": 2705.0,
+        "team_acc_vote": 98.9,
+        "team_acc_raw": 98.5,
+        "label_flips_vote": 759
+      }
+    },
+    "football_detection_v6": {
+      "val": {
+        "HOTA": 66.0,
+        "DetA": 76.5,
+        "AssA": 57.0,
+        "IDF1": 77.0,
+        "IDSW": 299.0,
+        "team_acc_vote": 99.1,
+        "team_acc_raw": 98.6,
+        "label_flips_vote": 119
+      },
+      "test": {
+        "HOTA": 63.6,
+        "DetA": 74.1,
+        "AssA": 54.7,
+        "IDF1": 73.3,
+        "IDSW": 1849.0,
+        "team_acc_vote": 99.0,
+        "team_acc_raw": 98.5,
+        "label_flips_vote": 570
+      }
+    },
+    "football_detection_v7": {
+      "val": {
+        "HOTA": 64.9,
+        "DetA": 75.3,
+        "AssA": 56.1,
+        "IDF1": 76.2,
+        "IDSW": 363.0
+      }
+    },
+    "football_detection_v8": {
+      "val": {
+        "HOTA": 64.9,
+        "DetA": 75.5,
+        "AssA": 55.9,
+        "IDF1": 76.2,
+        "IDSW": 388.0
+      }
+    }
+  }
+}

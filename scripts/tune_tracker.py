@@ -22,6 +22,7 @@ from ftt.data.detections import detector_name, load_cached_detections
 from ftt.data.sn_tracking import frame_path, list_clips, load_persons_gt
 from ftt.eval.mot_io import write_mot
 from ftt.eval.trackeval_wrap import evaluate
+from ftt.paths import load_paths
 from ftt.track.adapters import UltralyticsTracker
 from ftt.track.runner import run_clip
 
@@ -60,7 +61,7 @@ def main() -> None:
     args = ap.parse_args()
     trackers = ALL_TRACKERS if args.trackers == ["all"] else args.trackers
 
-    paths = yaml.safe_load((ROOT / "configs" / "paths.yaml").read_text())
+    paths = load_paths(ROOT)
     meta_root = ROOT / paths["meta_root"]
     images_root = (ROOT / paths["detector_images"]).resolve()
     clips = list_clips(meta_root, args.split)

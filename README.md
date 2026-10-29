@@ -70,7 +70,7 @@ flowchart LR
     G --> P[tracks.parquet<br/>+ annotated mp4]
 ```
 
-1. **Detect.** My YOLO detector ([football-detect-serve](https://github.com/Kushagra077/football-detect-serve), v3, yolo26n) finds players, goalkeepers and referees. Confidence is kept low (0.1) so the
+1. **Detect.** My YOLO detector ([football-detect-serve](https://github.com/Kushagra077/football-detect-serve); v3, yolo26n, is pinned for the main study and v6 is better, see [Newer detectors](#newer-detectors-v6-v7-v8)) finds players, goalkeepers and referees. Confidence is kept low (0.1) so the
    tracker's second pass can use weak boxes.
 2. **Track.** Ultralytics' tracker classes give each box an id. Evaluation feeds cached boxes to the tracker; uploaded
    video goes through `model.track(stream=True)`, and both give identical output on one val clip's frames.
@@ -144,6 +144,36 @@ the same shared tuned setting; the ReID thresholds are the defaults, not tuned).
   (+104 and +898). On val the two are tied (oracle 85.9 vs 86.0, real 63.2 vs 63.3).
 - This is one ReID model with untuned thresholds, so it shows ReID is not a free win here, not that no ReID could help.
   Why it fails is my expectation (identical kits), not something I measured.
+
+### Newer detectors (v6, v7, v8)
+
+After the study above I trained three more detectors in [football-detect-serve](https://github.com/Kushagra077/football-detect-serve).
+Each runs at the input size it was trained at (v3 640 px, v7 and v8 960 px, v6 1280 px). The size is read from the weights
+(`detector_imgsz` in `src/ftt/detect/run_detector.py`), so a new model needs no code change, and `FTT_DETECTOR=<name>` runs any
+script with another model. Boxes and results are stored per detector, so v3's results were not overwritten.
+
+BoT-SORT + GMC with the same shared tuned setting for every detector (`scripts/compare_detectors.py`, file `results/detector_comparison.json`):
+
+| Detector | Split | HOTA | DetA | AssA | IDF1 | ID switches | Team accuracy (centred vote) |
+|---|---|---|---|---|---|---|---|
+| v3 | val | 63.3 | 74.5 | 53.9 | 74.4 | 414 | 99.0% |
+| v7 | val | 64.9 | 75.3 | 56.1 | 76.2 | 363 | not run |
+| v8 | val | 64.9 | 75.5 | 55.9 | 76.2 | 388 | not run |
+| **v6** | val | **66.0** | **76.5** | **57.0** | **77.0** | **299** | 99.1% |
+| v3 | test | 59.0 | 70.9 | 49.4 | 68.5 | 2705 | 98.9% |
+| **v6** | test | **63.6** | **74.1** | **54.7** | **73.3** | **1849** | **99.0%** |
+
+- **How v6 was chosen:** on val it was best on every column. Then the test split was run once, for v6 only (the study's
+  rule: choose on val, run test once). v7 and v8 were not run on test.
+- **Result on test:** v6 gains +4.6 HOTA over v3 (59.0 -> 63.6) and has 32% fewer ID switches. The gap to the true-box ceiling
+  (84.2) shrinks from 25.2 to 20.6 points, so the detector is still the bottleneck, just a smaller one.
+- **Team accuracy barely moves** (98.9% -> 99.0% on test): the colour step was already near its limit with v3's boxes.
+- **The tuned setting still fits v6.** A one-knob-at-a-time sweep on val (`results/football_detection_v6/tuning_val.jsonl`)
+  favours the same knobs as before: `track_high_thresh` 0.2-0.3 and `match_thresh` 0.9-0.95. So `configs/tuned.yaml` is unchanged.
+- **Cost:** a larger input is slower. On one 50-frame clip on CPU, v3 took 2.7 s, v7 2.9 s and v6 4.7 s (one clip, CPU, a rough check; not timed on a GPU).
+- **What was not re-run with v6:** the other six trackers, the ReID test, the colour-feature study, SportsMOT and the Space timing.
+  Every table above this section is still v3.
+- The detector's own mAP (from its repo): test mAP50-95 0.365 (v3), 0.443 (v6), 0.418 (v7), 0.390 (v8); v8 is the weakest of the new ones on test.
 
 ### Team assignment
 
@@ -326,6 +356,7 @@ Limits of the free demo:
   ten runs a day when signed in.
 - The Space runs Python 3.12 and PyTorch 2.8-2.13; this repo is developed on Python 3.13 and PyTorch 2.14. The two setups
   were not compared output by output.
+- The Track tab has a **Model** dropdown, like the Detect tab: fast (v3, 640 px), balanced (v7, 960 px) and accurate (v6, 1280 px). The default is fast, and the timings above are for it. The larger models track better but take longer and use more quota, and I have not timed them on the Space's GPU yet.
 - The Space's other tab, **Detect (image)**, is the detector on its own.
 
 Timing on a MacBook Pro (Apple M2, 8 GB, PyTorch MPS, Ultralytics 8.4.183, image size 640, one frame at a time): the
@@ -363,6 +394,9 @@ uv run python scripts/run_ablation.py --source real --split test \
     --configs botsort_gmc botsort_nogmc deepocsort_gmc ocsort_byte bytetrack ocsort fasttrack \
     --set track_high_thresh=0.25 match_thresh=0.9 --tag tuned
 uv run python scripts/eval_team_vote.py --split test
+# another detector (newer models): the same commands with FTT_DETECTOR set, then compare
+FTT_DETECTOR=football_detection_v6 uv run python scripts/cache_detections.py --split val
+uv run python scripts/compare_detectors.py football_detection_v3 football_detection_v6
 # the ReID test (needs onnxruntime; downloads yolo26n-reid.onnx on first use):
 uv run --with onnxruntime python scripts/run_ablation.py --source oracle --split test --configs botsort_gmc_reid \
     --set track_high_thresh=0.25 match_thresh=0.9 --tag tuned     # and again with --source real
