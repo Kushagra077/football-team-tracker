@@ -51,7 +51,20 @@
         "DetA": 75.3,
         "AssA": 56.1,
         "IDF1": 76.2,
-        "IDSW": 363.0
+        "IDSW": 363.0,
+        "team_acc_vote": 99.2,
+        "team_acc_raw": 98.7,
+        "label_flips_vote": 118
+      },
+      "test": {
+        "HOTA": 62.5,
+        "DetA": 73.5,
+        "AssA": 53.3,
+        "IDF1": 72.2,
+        "IDSW": 2039.0,
+        "team_acc_vote": 98.9,
+        "team_acc_raw": 98.5,
+        "label_flips_vote": 645
       }
     },
     "football_detection_v8": {
@@ -60,7 +73,20 @@
         "DetA": 75.5,
         "AssA": 55.9,
         "IDF1": 76.2,
-        "IDSW": 388.0
+        "IDSW": 388.0,
+        "team_acc_vote": 99.1,
+        "team_acc_raw": 98.7,
+        "label_flips_vote": 122
+      },
+      "test": {
+        "HOTA": 61.3,
+        "DetA": 72.7,
+        "AssA": 51.8,
+        "IDF1": 70.4,
+        "IDSW": 2407.0,
+        "team_acc_vote": 98.9,
+        "team_acc_raw": 98.5,
+        "label_flips_vote": 668
       }
     }
   }

@@ -157,23 +157,46 @@ BoT-SORT + GMC with the same shared tuned setting for every detector (`scripts/c
 | Detector | Split | HOTA | DetA | AssA | IDF1 | ID switches | Team accuracy (centred vote) |
 |---|---|---|---|---|---|---|---|
 | v3 | val | 63.3 | 74.5 | 53.9 | 74.4 | 414 | 99.0% |
-| v7 | val | 64.9 | 75.3 | 56.1 | 76.2 | 363 | not run |
-| v8 | val | 64.9 | 75.5 | 55.9 | 76.2 | 388 | not run |
+| v8 | val | 64.9 | 75.5 | 55.9 | 76.2 | 388 | 99.1% |
+| v7 | val | 64.9 | 75.3 | 56.1 | 76.2 | 363 | 99.2% |
 | **v6** | val | **66.0** | **76.5** | **57.0** | **77.0** | **299** | 99.1% |
 | v3 | test | 59.0 | 70.9 | 49.4 | 68.5 | 2705 | 98.9% |
+| v8 | test | 61.3 | 72.7 | 51.8 | 70.4 | 2407 | 98.9% |
+| v7 | test | 62.5 | 73.5 | 53.3 | 72.2 | 2039 | 98.9% |
 | **v6** | test | **63.6** | **74.1** | **54.7** | **73.3** | **1849** | **99.0%** |
 
-- **How v6 was chosen:** on val it was best on every column. Then the test split was run once, for v6 only (the study's
-  rule: choose on val, run test once). v7 and v8 were not run on test.
+- **How v6 was chosen:** on val it was best on every tracking column. The test split was then run once for v6 (the study's rule:
+  choose on val, run test once). v7 and v8 were run on test afterwards, for information; they did not change the choice.
 - **Result on test:** v6 gains +4.6 HOTA over v3 (59.0 -> 63.6) and has 32% fewer ID switches. The gap to the true-box ceiling
   (84.2) shrinks from 25.2 to 20.6 points, so the detector is still the bottleneck, just a smaller one.
+- **The order on test is v3 < v8 < v7 < v6.** v7 and v8 tie on val (64.9) and separate on test (62.5 vs 61.3), as in the
+  detector's own mAP (test mAP50-95 0.365 for v3, 0.390 for v8, 0.418 for v7, 0.443 for v6). v7 (960 px) gets 3.5 of v6's 4.6 HOTA points.
 - **Team accuracy barely moves** (98.9% -> 99.0% on test): the colour step was already near its limit with v3's boxes.
 - **The tuned setting still fits v6.** A one-knob-at-a-time sweep on val (`results/football_detection_v6/tuning_val.jsonl`)
   favours the same knobs as before: `track_high_thresh` 0.2-0.3 and `match_thresh` 0.9-0.95. So `configs/tuned.yaml` is unchanged.
 - **Cost:** a larger input is slower on CPU: on one 50-frame clip, v3 took 2.7 s, v7 2.9 s and v6 4.7 s (a rough check). On the Space's GPU the difference is small: 500 frames took 13.2 s with v3 and 12.0 s with v6 (one run each).
-- **What was not re-run with v6:** the other six trackers, the ReID test, the colour-feature study, SportsMOT and the Space timing.
-  Every table above this section is still v3.
-- The detector's own mAP (from its repo): test mAP50-95 0.365 (v3), 0.443 (v6), 0.418 (v7), 0.390 (v8); v8 is the weakest of the new ones on test.
+
+**Do the tracker conclusions hold with v6?** All seven trackers on the test split, same tuned setting (files in `results/football_detection_v6/`):
+
+| Tracker | HOTA v3 -> v6 | v6 DetA / AssA / IDF1 | ID switches v3 -> v6 |
+|---|---|---|---|
+| **BoT-SORT + GMC** | 59.0 -> **63.6** (+4.6) | 74.1 / 54.7 / 73.3 | 2705 -> 1849 |
+| Deep OC-SORT + GMC | 56.0 -> 61.0 (+5.0) | 71.9 / 51.9 / 71.3 | 3534 -> 2350 |
+| BoT-SORT (no GMC) | 56.6 -> 60.6 (+4.0) | 72.8 / 50.5 / 69.2 | 3338 -> 2511 |
+| OC-SORT | 55.2 -> 59.3 (+4.1) | 70.8 / 49.8 / 69.6 | 3805 -> 2770 |
+| FastTracker | 55.0 -> 59.2 (+4.2) | 71.2 / 49.3 / 68.8 | 3271 -> 2395 |
+| OC-SORT (+ BYTE low-conf pass) | 55.4 -> 59.1 (+3.7) | 70.8 / 49.5 / 69.4 | 3771 -> 2693 |
+| ByteTrack | 55.3 -> 59.1 (+3.8) | 71.0 / 49.4 / 69.0 | 3356 -> 2485 |
+
+- **Yes, mostly.** BoT-SORT+GMC is still first, now by 2.6 HOTA on test (2.2 on val). Every tracker gains 3.7-5.0 HOTA and
+  loses 25-34% of its ID switches, so a better detector helps all of them about equally.
+- **GMC still helps:** +3.0 HOTA for BoT-SORT (it was +2.4 with v3).
+- **The bottom four are still tied** (59.1-59.3 on test).
+- **One change in the middle:** Deep OC-SORT + GMC (61.0) now ranks above BoT-SORT without GMC (60.6) on test, and on val too
+  (63.8 vs 63.0); with v3 it was below on both. The gap is 0.4-0.8 HOTA, so treat them as close.
+- The detector's cost (true-box HOTA minus real HOTA) is now 15-21 points, down from 19-25.
+- **What was not re-run with v6:** the ReID test, the colour-feature study, the detector-only DetA table and SportsMOT.
+  (True-box results do not depend on the detector.) Every table above this section is still v3.
 
 ### Team assignment
 

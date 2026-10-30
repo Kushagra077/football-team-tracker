@@ -1,0 +1,1051 @@
+{
+  "args": {
+    "split": "test",
+    "tracker": "botsort_gmc",
+    "limit": null,
+    "centred_windows": []
+  },
+  "mean_acc": {
+    "raw": 0.9853424575347348,
+    "vote": 0.9893300709176992,
+    "vote_causal": 0.9835353092869669,
+    "vote_lock15": 0.9084859394675577
+  },
+  "total_flips": {
+    "raw": 3435,
+    "vote": 668,
+    "vote_causal": 732,
+    "vote_lock15": 180
+  },
+  "clips": {
+    "SNMOT-116": {
+      "scored": 8693,
+      "tracks": 51,
+      "raw": {
+        "acc": 0.969285632117796,
+        "flips": 117
+      },
+      "vote": {
+        "acc": 0.9706660531462096,
+        "flips": 40
+      },
+      "vote_causal": {
+        "acc": 0.9489244219486943,
+        "flips": 45
+      },
+      "vote_lock15": {
+        "acc": 0.8532152306453469,
+        "flips": 8
+      },
+      "mixed_team_tracks": 18
+    },
+    "SNMOT-117": {
+      "scored": 6896,
+      "tracks": 40,
+      "raw": {
+        "acc": 0.9950696055684455,
+        "flips": 16
+      },
+      "vote": {
+        "acc": 0.9966647331786543,
+        "flips": 3
+      },
+      "vote_causal": {
+        "acc": 0.9934744779582366,
+        "flips": 4
+      },
+      "vote_lock15": {
+        "acc": 0.925899071925754,
+        "flips": 2
+      },
+      "mixed_team_tracks": 5
+    },
+    "SNMOT-118": {
+      "scored": 8338,
+      "tracks": 34,
+      "raw": {
+        "acc": 0.9914847685296234,
+        "flips": 45
+      },
+      "vote": {
+        "acc": 0.9973614775725593,
+        "flips": 8
+      },
+      "vote_causal": {
+        "acc": 0.9901655073159031,
+        "flips": 12
+      },
+      "vote_lock15": {
+        "acc": 0.7610937874790118,
+        "flips": 4
+      },
+      "mixed_team_tracks": 8
+    },
+    "SNMOT-119": {
+      "scored": 6150,
+      "tracks": 43,
+      "raw": {
+        "acc": 0.9876422764227643,
+        "flips": 30
+      },
+      "vote": {
+        "acc": 0.9931707317073171,
+        "flips": 4
+      },
+      "vote_causal": {
+        "acc": 0.9913821138211382,
+        "flips": 6
+      },
+      "vote_lock15": {
+        "acc": 0.9921951219512195,
+        "flips": 2
+      },
+      "mixed_team_tracks": 5
+    },
+    "SNMOT-120": {
+      "scored": 9306,
+      "tracks": 47,
+      "raw": {
+        "acc": 0.9939823769611004,
+        "flips": 52
+      },
+      "vote": {
+        "acc": 0.9987105093488072,
+        "flips": 9
+      },
+      "vote_causal": {
+        "acc": 0.9897915323447238,
+        "flips": 10
+      },
+      "vote_lock15": {
+        "acc": 0.9529335912314636,
+        "flips": 2
+      },
+      "mixed_team_tracks": 6
+    },
+    "SNMOT-121": {
+      "scored": 9467,
+      "tracks": 43,
+      "raw": {
+        "acc": 0.9915495933241787,
+        "flips": 39
+      },
+      "vote": {
+        "acc": 0.9940847153269251,
+        "flips": 8
+      },
+      "vote_causal": {
+        "acc": 0.9894369916552234,
+        "flips": 12
+      },
+      "vote_lock15": {
+        "acc": 0.9744375198056406,
+        "flips": 8
+      },
+      "mixed_team_tracks": 7
+    },
+    "SNMOT-122": {
+      "scored": 9228,
+      "tracks": 54,
+      "raw": {
+        "acc": 0.9749674902470741,
+        "flips": 91
+      },
+      "vote": {
+        "acc": 0.979952319029042,
+        "flips": 18
+      },
+      "vote_causal": {
+        "acc": 0.9747507585609017,
+        "flips": 20
+      },
+      "vote_lock15": {
+        "acc": 0.7713480710879931,
+        "flips": 6
+      },
+      "mixed_team_tracks": 12
+    },
+    "SNMOT-123": {
+      "scored": 10128,
+      "tracks": 43,
+      "raw": {
+        "acc": 0.9945695102685624,
+        "flips": 41
+      },
+      "vote": {
+        "acc": 0.9972353870458136,
+        "flips": 5
+      },
+      "vote_causal": {
+        "acc": 0.9946682464454977,
+        "flips": 6
+      },
+      "vote_lock15": {
+        "acc": 0.9074842022116903,
+        "flips": 1
+      },
+      "mixed_team_tracks": 5
+    },
+    "SNMOT-124": {
+      "scored": 7313,
+      "tracks": 47,
+      "raw": {
+        "acc": 0.9913852044304663,
+        "flips": 38
+      },
+      "vote": {
+        "acc": 0.9963079447559141,
+        "flips": 5
+      },
+      "vote_causal": {
+        "acc": 0.9930261178722822,
+        "flips": 7
+      },
+      "vote_lock15": {
+        "acc": 0.9898810337754683,
+        "flips": 2
+      },
+      "mixed_team_tracks": 6
+    },
+    "SNMOT-125": {
+      "scored": 6536,
+      "tracks": 54,
+      "raw": {
+        "acc": 0.976438188494492,
+        "flips": 80
+      },
+      "vote": {
+        "acc": 0.9755201958384333,
+        "flips": 17
+      },
+      "vote_causal": {
+        "acc": 0.9649632802937577,
+        "flips": 18
+      },
+      "vote_lock15": {
+        "acc": 0.9101897184822522,
+        "flips": 2
+      },
+      "mixed_team_tracks": 10
+    },
+    "SNMOT-126": {
+      "scored": 7943,
+      "tracks": 33,
+      "raw": {
+        "acc": 0.9938310462042049,
+        "flips": 25
+      },
+      "vote": {
+        "acc": 0.9962230895127785,
+        "flips": 4
+      },
+      "vote_causal": {
+        "acc": 0.99471232531789,
+        "flips": 6
+      },
+      "vote_lock15": {
+        "acc": 0.9981115447563893,
+        "flips": 2
+      },
+      "mixed_team_tracks": 3
+    },
+    "SNMOT-127": {
+      "scored": 12383,
+      "tracks": 27,
+      "raw": {
+        "acc": 0.9916013890010498,
+        "flips": 16
+      },
+      "vote": {
+        "acc": 0.9930549947508681,
+        "flips": 6
+      },
+      "vote_causal": {
+        "acc": 0.9921666801259792,
+        "flips": 5
+      },
+      "vote_lock15": {
+        "acc": 0.94872001938141,
+        "flips": 0
+      },
+      "mixed_team_tracks": 2
+    },
+    "SNMOT-128": {
+      "scored": 11444,
+      "tracks": 39,
+      "raw": {
+        "acc": 0.9892520097867878,
+        "flips": 39
+      },
+      "vote": {
+        "acc": 0.993533729465222,
+        "flips": 5
+      },
+      "vote_causal": {
+        "acc": 0.9909122684376093,
+        "flips": 7
+      },
+      "vote_lock15": {
+        "acc": 0.9280845858091576,
+        "flips": 2
+      },
+      "mixed_team_tracks": 9
+    },
+    "SNMOT-129": {
+      "scored": 9958,
+      "tracks": 45,
+      "raw": {
+        "acc": 0.9865434826270335,
+        "flips": 101
+      },
+      "vote": {
+        "acc": 0.9926692106848765,
+        "flips": 14
+      },
+      "vote_causal": {
+        "acc": 0.9857401084555132,
+        "flips": 19
+      },
+      "vote_lock15": {
+        "acc": 0.8804980919863427,
+        "flips": 9
+      },
+      "mixed_team_tracks": 16
+    },
+    "SNMOT-130": {
+      "scored": 9228,
+      "tracks": 34,
+      "raw": {
+        "acc": 0.9851538794971825,
+        "flips": 68
+      },
+      "vote": {
+        "acc": 0.9886215864759428,
+        "flips": 11
+      },
+      "vote_causal": {
+        "acc": 0.9865626354573038,
+        "flips": 10
+      },
+      "vote_lock15": {
+        "acc": 0.9482011270047681,
+        "flips": 0
+      },
+      "mixed_team_tracks": 7
+    },
+    "SNMOT-131": {
+      "scored": 11434,
+      "tracks": 43,
+      "raw": {
+        "acc": 0.9927409480496764,
+        "flips": 55
+      },
+      "vote": {
+        "acc": 0.9953647017666608,
+        "flips": 13
+      },
+      "vote_causal": {
+        "acc": 0.991953821934581,
+        "flips": 17
+      },
+      "vote_lock15": {
+        "acc": 0.8810564981633724,
+        "flips": 8
+      },
+      "mixed_team_tracks": 16
+    },
+    "SNMOT-132": {
+      "scored": 8993,
+      "tracks": 39,
+      "raw": {
+        "acc": 0.9221616813076837,
+        "flips": 91
+      },
+      "vote": {
+        "acc": 0.927499166018014,
+        "flips": 9
+      },
+      "vote_causal": {
+        "acc": 0.9273879684198821,
+        "flips": 10
+      },
+      "vote_lock15": {
+        "acc": 0.9589680862893362,
+        "flips": 2
+      },
+      "mixed_team_tracks": 4
+    },
+    "SNMOT-133": {
+      "scored": 8994,
+      "tracks": 42,
+      "raw": {
+        "acc": 0.9936624416277519,
+        "flips": 40
+      },
+      "vote": {
+        "acc": 0.9968868134311764,
+        "flips": 8
+      },
+      "vote_causal": {
+        "acc": 0.9977762953079831,
+        "flips": 9
+      },
+      "vote_lock15": {
+        "acc": 0.9906604402935291,
+        "flips": 3
+      },
+      "mixed_team_tracks": 2
+    },
+    "SNMOT-134": {
+      "scored": 6780,
+      "tracks": 36,
+      "raw": {
+        "acc": 0.9908554572271386,
+        "flips": 30
+      },
+      "vote": {
+        "acc": 0.9949852507374631,
+        "flips": 10
+      },
+      "vote_causal": {
+        "acc": 0.9938053097345133,
+        "flips": 7
+      },
+      "vote_lock15": {
+        "acc": 0.9927728613569321,
+        "flips": 6
+      },
+      "mixed_team_tracks": 2
+    },
+    "SNMOT-135": {
+      "scored": 9251,
+      "tracks": 50,
+      "raw": {
+        "acc": 0.9865960436709544,
+        "flips": 85
+      },
+      "vote": {
+        "acc": 0.9935142146794941,
+        "flips": 14
+      },
+      "vote_causal": {
+        "acc": 0.9824883796346341,
+        "flips": 16
+      },
+      "vote_lock15": {
+        "acc": 0.8213166144200627,
+        "flips": 3
+      },
+      "mixed_team_tracks": 14
+    },
+    "SNMOT-136": {
+      "scored": 7002,
+      "tracks": 35,
+      "raw": {
+        "acc": 0.9740074264495858,
+        "flips": 90
+      },
+      "vote": {
+        "acc": 0.9867180805484147,
+        "flips": 16
+      },
+      "vote_causal": {
+        "acc": 0.974150242787775,
+        "flips": 18
+      },
+      "vote_lock15": {
+        "acc": 0.8876035418451871,
+        "flips": 2
+      },
+      "mixed_team_tracks": 10
+    },
+    "SNMOT-137": {
+      "scored": 6994,
+      "tracks": 36,
+      "raw": {
+        "acc": 0.9894195024306548,
+        "flips": 66
+      },
+      "vote": {
+        "acc": 0.9942808121246783,
+        "flips": 14
+      },
+      "vote_causal": {
+        "acc": 0.9869888475836431,
+        "flips": 16
+      },
+      "vote_lock15": {
+        "acc": 0.9147841006577067,
+        "flips": 6
+      },
+      "mixed_team_tracks": 5
+    },
+    "SNMOT-138": {
+      "scored": 9760,
+      "tracks": 45,
+      "raw": {
+        "acc": 0.9815573770491803,
+        "flips": 90
+      },
+      "vote": {
+        "acc": 0.9852459016393442,
+        "flips": 14
+      },
+      "vote_causal": {
+        "acc": 0.9823770491803279,
+        "flips": 15
+      },
+      "vote_lock15": {
+        "acc": 0.8939549180327869,
+        "flips": 4
+      },
+      "mixed_team_tracks": 13
+    },
+    "SNMOT-139": {
+      "scored": 8352,
+      "tracks": 35,
+      "raw": {
+        "acc": 0.9840756704980843,
+        "flips": 61
+      },
+      "vote": {
+        "acc": 0.9886254789272031,
+        "flips": 14
+      },
+      "vote_causal": {
+        "acc": 0.9827586206896551,
+        "flips": 13
+      },
+      "vote_lock15": {
+        "acc": 0.8480603448275862,
+        "flips": 1
+      },
+      "mixed_team_tracks": 9
+    },
+    "SNMOT-140": {
+      "scored": 10751,
+      "tracks": 54,
+      "raw": {
+        "acc": 0.9891172914147521,
+        "flips": 72
+      },
+      "vote": {
+        "acc": 0.9933029485629243,
+        "flips": 10
+      },
+      "vote_causal": {
+        "acc": 0.9891172914147521,
+        "flips": 11
+      },
+      "vote_lock15": {
+        "acc": 0.961212910426937,
+        "flips": 4
+      },
+      "mixed_team_tracks": 12
+    },
+    "SNMOT-141": {
+      "scored": 8512,
+      "tracks": 46,
+      "raw": {
+        "acc": 0.9903665413533834,
+        "flips": 43
+      },
+      "vote": {
+        "acc": 0.9955357142857143,
+        "flips": 5
+      },
+      "vote_causal": {
+        "acc": 0.9936560150375939,
+        "flips": 7
+      },
+      "vote_lock15": {
+        "acc": 0.9434915413533834,
+        "flips": 0
+      },
+      "mixed_team_tracks": 3
+    },
+    "SNMOT-142": {
+      "scored": 7819,
+      "tracks": 54,
+      "raw": {
+        "acc": 0.9634224325361299,
+        "flips": 124
+      },
+      "vote": {
+        "acc": 0.9703286865328047,
+        "flips": 49
+      },
+      "vote_causal": {
+        "acc": 0.9443662872490088,
+        "flips": 44
+      },
+      "vote_lock15": {
+        "acc": 0.7953702519503772,
+        "flips": 8
+      },
+      "mixed_team_tracks": 24
+    },
+    "SNMOT-143": {
+      "scored": 5525,
+      "tracks": 36,
+      "raw": {
+        "acc": 0.9873303167420815,
+        "flips": 48
+      },
+      "vote": {
+        "acc": 0.9904072398190045,
+        "flips": 8
+      },
+      "vote_causal": {
+        "acc": 0.9898642533936651,
+        "flips": 9
+      },
+      "vote_lock15": {
+        "acc": 0.9607239819004525,
+        "flips": 2
+      },
+      "mixed_team_tracks": 6
+    },
+    "SNMOT-144": {
+      "scored": 7507,
+      "tracks": 50,
+      "raw": {
+        "acc": 0.9937391767683496,
+        "flips": 45
+      },
+      "vote": {
+        "acc": 0.9990675369654989,
+        "flips": 2
+      },
+      "vote_causal": {
+        "acc": 0.9964033568669242,
+        "flips": 7
+      },
+      "vote_lock15": {
+        "acc": 0.954575729319302,
+        "flips": 5
+      },
+      "mixed_team_tracks": 3
+    },
+    "SNMOT-145": {
+      "scored": 6354,
+      "tracks": 43,
+      "raw": {
+        "acc": 0.9815864022662889,
+        "flips": 56
+      },
+      "vote": {
+        "acc": 0.9872521246458924,
+        "flips": 8
+      },
+      "vote_causal": {
+        "acc": 0.9817437834435001,
+        "flips": 10
+      },
+      "vote_lock15": {
+        "acc": 0.9126534466477809,
+        "flips": 2
+      },
+      "mixed_team_tracks": 11
+    },
+    "SNMOT-146": {
+      "scored": 5456,
+      "tracks": 27,
+      "raw": {
+        "acc": 0.9943181818181818,
+        "flips": 25
+      },
+      "vote": {
+        "acc": 0.9974340175953079,
+        "flips": 6
+      },
+      "vote_causal": {
+        "acc": 0.9917521994134897,
+        "flips": 6
+      },
+      "vote_lock15": {
+        "acc": 0.8344941348973607,
+        "flips": 0
+      },
+      "mixed_team_tracks": 6
+    },
+    "SNMOT-147": {
+      "scored": 4221,
+      "tracks": 45,
+      "raw": {
+        "acc": 0.9881544657664061,
+        "flips": 14
+      },
+      "vote": {
+        "acc": 0.9933665008291874,
+        "flips": 3
+      },
+      "vote_causal": {
+        "acc": 0.9857853589196873,
+        "flips": 5
+      },
+      "vote_lock15": {
+        "acc": 0.9710968964700308,
+        "flips": 2
+      },
+      "mixed_team_tracks": 5
+    },
+    "SNMOT-148": {
+      "scored": 8127,
+      "tracks": 38,
+      "raw": {
+        "acc": 0.9907715023994094,
+        "flips": 45
+      },
+      "vote": {
+        "acc": 0.995447274517042,
+        "flips": 8
+      },
+      "vote_causal": {
+        "acc": 0.9892949427833149,
+        "flips": 11
+      },
+      "vote_lock15": {
+        "acc": 0.96776178171527,
+        "flips": 3
+      },
+      "mixed_team_tracks": 4
+    },
+    "SNMOT-149": {
+      "scored": 8180,
+      "tracks": 33,
+      "raw": {
+        "acc": 0.9787286063569682,
+        "flips": 75
+      },
+      "vote": {
+        "acc": 0.9795843520782396,
+        "flips": 14
+      },
+      "vote_causal": {
+        "acc": 0.9787286063569682,
+        "flips": 14
+      },
+      "vote_lock15": {
+        "acc": 0.9812958435207824,
+        "flips": 0
+      },
+      "mixed_team_tracks": 5
+    },
+    "SNMOT-150": {
+      "scored": 8075,
+      "tracks": 57,
+      "raw": {
+        "acc": 0.9845201238390093,
+        "flips": 35
+      },
+      "vote": {
+        "acc": 0.9903405572755418,
+        "flips": 11
+      },
+      "vote_causal": {
+        "acc": 0.990092879256966,
+        "flips": 7
+      },
+      "vote_lock15": {
+        "acc": 0.9934365325077399,
+        "flips": 2
+      },
+      "mixed_team_tracks": 3
+    },
+    "SNMOT-187": {
+      "scored": 12262,
+      "tracks": 46,
+      "raw": {
+        "acc": 0.9759419344315773,
+        "flips": 111
+      },
+      "vote": {
+        "acc": 0.9789593867232099,
+        "flips": 17
+      },
+      "vote_causal": {
+        "acc": 0.9706410047300603,
+        "flips": 20
+      },
+      "vote_lock15": {
+        "acc": 0.7438427662697765,
+        "flips": 5
+      },
+      "mixed_team_tracks": 15
+    },
+    "SNMOT-188": {
+      "scored": 14077,
+      "tracks": 43,
+      "raw": {
+        "acc": 0.9945300845350572,
+        "flips": 53
+      },
+      "vote": {
+        "acc": 0.9951694253036869,
+        "flips": 8
+      },
+      "vote_causal": {
+        "acc": 0.9926831000923492,
+        "flips": 11
+      },
+      "vote_lock15": {
+        "acc": 0.8601974852596433,
+        "flips": 4
+      },
+      "mixed_team_tracks": 9
+    },
+    "SNMOT-189": {
+      "scored": 9983,
+      "tracks": 74,
+      "raw": {
+        "acc": 0.9822698587598918,
+        "flips": 132
+      },
+      "vote": {
+        "acc": 0.9888810978663728,
+        "flips": 24
+      },
+      "vote_causal": {
+        "acc": 0.9792647500751277,
+        "flips": 21
+      },
+      "vote_lock15": {
+        "acc": 0.914154061905239,
+        "flips": 1
+      },
+      "mixed_team_tracks": 19
+    },
+    "SNMOT-190": {
+      "scored": 9037,
+      "tracks": 58,
+      "raw": {
+        "acc": 0.9935819409095938,
+        "flips": 92
+      },
+      "vote": {
+        "acc": 0.9967909704547969,
+        "flips": 22
+      },
+      "vote_causal": {
+        "acc": 0.9872745380104017,
+        "flips": 21
+      },
+      "vote_lock15": {
+        "acc": 0.9159012946774372,
+        "flips": 5
+      },
+      "mixed_team_tracks": 8
+    },
+    "SNMOT-191": {
+      "scored": 10291,
+      "tracks": 47,
+      "raw": {
+        "acc": 0.9919347002234963,
+        "flips": 70
+      },
+      "vote": {
+        "acc": 0.996113108541444,
+        "flips": 14
+      },
+      "vote_causal": {
+        "acc": 0.9885336701972598,
+        "flips": 14
+      },
+      "vote_lock15": {
+        "acc": 0.8417063453503061,
+        "flips": 0
+      },
+      "mixed_team_tracks": 12
+    },
+    "SNMOT-192": {
+      "scored": 8781,
+      "tracks": 73,
+      "raw": {
+        "acc": 0.9919143605511901,
+        "flips": 100
+      },
+      "vote": {
+        "acc": 0.9945336522036214,
+        "flips": 17
+      },
+      "vote_causal": {
+        "acc": 0.989978362373306,
+        "flips": 17
+      },
+      "vote_lock15": {
+        "acc": 0.9600273317389819,
+        "flips": 5
+      },
+      "mixed_team_tracks": 10
+    },
+    "SNMOT-193": {
+      "scored": 9452,
+      "tracks": 96,
+      "raw": {
+        "acc": 0.9728099873042743,
+        "flips": 194
+      },
+      "vote": {
+        "acc": 0.9778882776132035,
+        "flips": 37
+      },
+      "vote_causal": {
+        "acc": 0.968049090139653,
+        "flips": 36
+      },
+      "vote_lock15": {
+        "acc": 0.9471011426153195,
+        "flips": 13
+      },
+      "mixed_team_tracks": 12
+    },
+    "SNMOT-194": {
+      "scored": 12513,
+      "tracks": 80,
+      "raw": {
+        "acc": 0.996163989450971,
+        "flips": 59
+      },
+      "vote": {
+        "acc": 0.9964836569967234,
+        "flips": 16
+      },
+      "vote_causal": {
+        "acc": 0.990010389195237,
+        "flips": 16
+      },
+      "vote_lock15": {
+        "acc": 0.8883561096459682,
+        "flips": 5
+      },
+      "mixed_team_tracks": 10
+    },
+    "SNMOT-195": {
+      "scored": 10465,
+      "tracks": 73,
+      "raw": {
+        "acc": 0.9924510272336359,
+        "flips": 78
+      },
+      "vote": {
+        "acc": 0.9956999522216914,
+        "flips": 18
+      },
+      "vote_causal": {
+        "acc": 0.9883420926899188,
+        "flips": 22
+      },
+      "vote_lock15": {
+        "acc": 0.6989010989010989,
+        "flips": 7
+      },
+      "mixed_team_tracks": 12
+    },
+    "SNMOT-196": {
+      "scored": 8151,
+      "tracks": 71,
+      "raw": {
+        "acc": 0.9939884676726782,
+        "flips": 53
+      },
+      "vote": {
+        "acc": 0.9973009446693657,
+        "flips": 4
+      },
+      "vote_causal": {
+        "acc": 0.9931296773402036,
+        "flips": 7
+      },
+      "vote_lock15": {
+        "acc": 0.9411115200588884,
+        "flips": 1
+      },
+      "mixed_team_tracks": 6
+    },
+    "SNMOT-197": {
+      "scored": 11411,
+      "tracks": 47,
+      "raw": {
+        "acc": 0.992551047235124,
+        "flips": 67
+      },
+      "vote": {
+        "acc": 0.9950048199106125,
+        "flips": 13
+      },
+      "vote_causal": {
+        "acc": 0.991674699851021,
+        "flips": 15
+      },
+      "vote_lock15": {
+        "acc": 0.990272544036456,
+        "flips": 3
+      },
+      "mixed_team_tracks": 8
+    },
+    "SNMOT-198": {
+      "scored": 11072,
+      "tracks": 60,
+      "raw": {
+        "acc": 0.9785946531791907,
+        "flips": 163
+      },
+      "vote": {
+        "acc": 0.9827492774566474,
+        "flips": 29
+      },
+      "vote_causal": {
+        "acc": 0.9745303468208093,
+        "flips": 28
+      },
+      "vote_lock15": {
+        "acc": 0.8434790462427746,
+        "flips": 2
+      },
+      "mixed_team_tracks": 17
+    },
+    "SNMOT-199": {
+      "scored": 11071,
+      "tracks": 65,
+      "raw": {
+        "acc": 0.9682052208472586,
+        "flips": 201
+      },
+      "vote": {
+        "acc": 0.9710053292385512,
+        "flips": 42
+      },
+      "vote_causal": {
+        "acc": 0.9619727215247041,
+        "flips": 46
+      },
+      "vote_lock15": {
+        "acc": 0.8149218679432753,
+        "flips": 10
+      },
+      "mixed_team_tracks": 18
+    },
+    "SNMOT-200": {
+      "scored": 9199,
+      "tracks": 93,
+      "raw": {
+        "acc": 0.9869551038156321,
+        "flips": 74
+      },
+      "vote": {
+        "acc": 0.991629524948364,
+        "flips": 14
+      },
+      "vote_causal": {
+        "acc": 0.9859767366018045,
+        "flips": 19
+      },
+      "vote_lock15": {
+        "acc": 0.9482552451353408,
+        "flips": 6
+      },
+      "mixed_team_tracks": 7
+    }
+  }
+}
