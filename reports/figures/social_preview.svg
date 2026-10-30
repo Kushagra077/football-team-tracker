@@ -53,8 +53,8 @@
     <text x="88" y="456" font-size="56" font-weight="700" fill="#e8edf3">84.2</text>
     <text x="88" y="492" font-size="19" fill="#8a9bb0">HOTA, oracle boxes</text>
     <rect x="334" y="392" width="250" height="124" rx="10" fill="#16263d" stroke="#22324a" stroke-width="2"/>
-    <text x="358" y="456" font-size="56" font-weight="700" fill="#3ddc84">59.0</text>
-    <text x="358" y="492" font-size="19" fill="#8a9bb0">HOTA, my detector</text>
+    <text x="358" y="456" font-size="56" font-weight="700" fill="#3ddc84">63.6</text>
+    <text x="358" y="492" font-size="19" fill="#8a9bb0">HOTA, my detector (v6)</text>
     <text x="64" y="566" font-size="19" fill="#8a9bb0">BoT-SORT + GMC, SoccerNet-Tracking test, 49 clips</text>
   </g>
 </svg>

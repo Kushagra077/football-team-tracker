@@ -37,10 +37,11 @@ COPY scripts ./scripts
 COPY tests ./tests
 RUN uv pip install --no-deps -e .
 
-# The detector weights, from the public detector repo, pinned to the commit that added them. They go
-# where configs/paths.yaml expects them (next to the repo), so scripts/process_video.py runs as is.
-ADD https://github.com/Kushagra077/football-detect-serve/raw/71824d8e00bfa1256568f333cf56ab4192abe766/models/football_detection_v3.pt \
-    /football-detect-serve/models/football_detection_v3.pt
+# The detector weights (v6). The detector repo does not carry v6.pt (it is gitignored there), so they come from my
+# public Hugging Face Space, pinned to the commit that added them. They go where configs/paths.yaml expects them
+# (next to the repo), so scripts/process_video.py runs as is.
+ADD https://huggingface.co/spaces/Kushagra77/football-detect-serve/resolve/2c1f74a19a4ac387da580f7f0d7387761bd718c3/models/football_detection_v6.pt \
+    /football-detect-serve/models/football_detection_v6.pt
 
 # Plain pytest, not `uv run`: uv run would re-sync the venv from the lockfile and bring the GPU libraries back.
 CMD ["pytest", "-m", "not integration", "-q"]

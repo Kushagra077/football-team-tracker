@@ -1,0 +1,309 @@
+{
+  "args": {
+    "split": "test",
+    "source": "real",
+    "conf": 0.5,
+    "stride": 25,
+    "min_iou": 0.5
+  },
+  "mean": [
+    0.9894230600974537,
+    0.9990281827016521
+  ],
+  "clips": {
+    "SNMOT-116": {
+      "scored": 312,
+      "unmatched": 18,
+      "per_detection": 0.9903846153846154,
+      "per_track": 1.0
+    },
+    "SNMOT-117": {
+      "scored": 260,
+      "unmatched": 5,
+      "per_detection": 0.9961538461538462,
+      "per_track": 1.0
+    },
+    "SNMOT-118": {
+      "scored": 313,
+      "unmatched": 9,
+      "per_detection": 0.9904153354632588,
+      "per_track": 1.0
+    },
+    "SNMOT-119": {
+      "scored": 239,
+      "unmatched": 1,
+      "per_detection": 0.9874476987447699,
+      "per_track": 0.9523809523809523
+    },
+    "SNMOT-120": {
+      "scored": 335,
+      "unmatched": 7,
+      "per_detection": 0.9880597014925373,
+      "per_track": 1.0
+    },
+    "SNMOT-121": {
+      "scored": 369,
+      "unmatched": 2,
+      "per_detection": 0.986449864498645,
+      "per_track": 1.0
+    },
+    "SNMOT-122": {
+      "scored": 329,
+      "unmatched": 6,
+      "per_detection": 0.9756838905775076,
+      "per_track": 1.0
+    },
+    "SNMOT-123": {
+      "scored": 389,
+      "unmatched": 4,
+      "per_detection": 0.9897172236503856,
+      "per_track": 1.0
+    },
+    "SNMOT-124": {
+      "scored": 259,
+      "unmatched": 12,
+      "per_detection": 0.9884169884169884,
+      "per_track": 1.0
+    },
+    "SNMOT-125": {
+      "scored": 228,
+      "unmatched": 15,
+      "per_detection": 0.9824561403508771,
+      "per_track": 1.0
+    },
+    "SNMOT-126": {
+      "scored": 300,
+      "unmatched": 5,
+      "per_detection": 0.9933333333333333,
+      "per_track": 1.0
+    },
+    "SNMOT-127": {
+      "scored": 503,
+      "unmatched": 0,
+      "per_detection": 0.9940357852882704,
+      "per_track": 1.0
+    },
+    "SNMOT-128": {
+      "scored": 431,
+      "unmatched": 9,
+      "per_detection": 0.9953596287703016,
+      "per_track": 1.0
+    },
+    "SNMOT-129": {
+      "scored": 399,
+      "unmatched": 10,
+      "per_detection": 0.9899749373433584,
+      "per_track": 1.0
+    },
+    "SNMOT-130": {
+      "scored": 362,
+      "unmatched": 23,
+      "per_detection": 0.9861878453038674,
+      "per_track": 1.0
+    },
+    "SNMOT-131": {
+      "scored": 449,
+      "unmatched": 3,
+      "per_detection": 0.9977728285077951,
+      "per_track": 1.0
+    },
+    "SNMOT-132": {
+      "scored": 337,
+      "unmatched": 10,
+      "per_detection": 0.9169139465875371,
+      "per_track": 1.0
+    },
+    "SNMOT-133": {
+      "scored": 339,
+      "unmatched": 19,
+      "per_detection": 0.9970501474926253,
+      "per_track": 1.0
+    },
+    "SNMOT-134": {
+      "scored": 252,
+      "unmatched": 3,
+      "per_detection": 0.996031746031746,
+      "per_track": 1.0
+    },
+    "SNMOT-135": {
+      "scored": 301,
+      "unmatched": 17,
+      "per_detection": 0.9900332225913622,
+      "per_track": 1.0
+    },
+    "SNMOT-136": {
+      "scored": 256,
+      "unmatched": 14,
+      "per_detection": 0.984375,
+      "per_track": 1.0
+    },
+    "SNMOT-137": {
+      "scored": 262,
+      "unmatched": 12,
+      "per_detection": 0.9961832061068703,
+      "per_track": 1.0
+    },
+    "SNMOT-138": {
+      "scored": 361,
+      "unmatched": 1,
+      "per_detection": 0.9889196675900277,
+      "per_track": 1.0
+    },
+    "SNMOT-139": {
+      "scored": 316,
+      "unmatched": 1,
+      "per_detection": 0.9873417721518988,
+      "per_track": 1.0
+    },
+    "SNMOT-140": {
+      "scored": 419,
+      "unmatched": 9,
+      "per_detection": 0.9904534606205251,
+      "per_track": 1.0
+    },
+    "SNMOT-141": {
+      "scored": 313,
+      "unmatched": 10,
+      "per_detection": 0.9808306709265175,
+      "per_track": 1.0
+    },
+    "SNMOT-142": {
+      "scored": 271,
+      "unmatched": 5,
+      "per_detection": 0.996309963099631,
+      "per_track": 1.0
+    },
+    "SNMOT-143": {
+      "scored": 193,
+      "unmatched": 12,
+      "per_detection": 0.9948186528497409,
+      "per_track": 1.0
+    },
+    "SNMOT-144": {
+      "scored": 291,
+      "unmatched": 8,
+      "per_detection": 1.0,
+      "per_track": 1.0
+    },
+    "SNMOT-145": {
+      "scored": 186,
+      "unmatched": 6,
+      "per_detection": 1.0,
+      "per_track": 1.0
+    },
+    "SNMOT-146": {
+      "scored": 213,
+      "unmatched": 1,
+      "per_detection": 0.9953051643192489,
+      "per_track": 1.0
+    },
+    "SNMOT-147": {
+      "scored": 131,
+      "unmatched": 10,
+      "per_detection": 0.9923664122137404,
+      "per_track": 1.0
+    },
+    "SNMOT-148": {
+      "scored": 314,
+      "unmatched": 0,
+      "per_detection": 0.9936305732484076,
+      "per_track": 1.0
+    },
+    "SNMOT-149": {
+      "scored": 311,
+      "unmatched": 5,
+      "per_detection": 0.9839228295819936,
+      "per_track": 1.0
+    },
+    "SNMOT-150": {
+      "scored": 291,
+      "unmatched": 53,
+      "per_detection": 0.9862542955326461,
+      "per_track": 1.0
+    },
+    "SNMOT-187": {
+      "scored": 486,
+      "unmatched": 46,
+      "per_detection": 0.9835390946502057,
+      "per_track": 1.0
+    },
+    "SNMOT-188": {
+      "scored": 588,
+      "unmatched": 51,
+      "per_detection": 0.9965986394557823,
+      "per_track": 1.0
+    },
+    "SNMOT-189": {
+      "scored": 396,
+      "unmatched": 52,
+      "per_detection": 0.9949494949494949,
+      "per_track": 1.0
+    },
+    "SNMOT-190": {
+      "scored": 361,
+      "unmatched": 37,
+      "per_detection": 0.9944598337950139,
+      "per_track": 1.0
+    },
+    "SNMOT-191": {
+      "scored": 397,
+      "unmatched": 36,
+      "per_detection": 0.9974811083123426,
+      "per_track": 1.0
+    },
+    "SNMOT-192": {
+      "scored": 333,
+      "unmatched": 47,
+      "per_detection": 0.996996996996997,
+      "per_track": 1.0
+    },
+    "SNMOT-193": {
+      "scored": 345,
+      "unmatched": 40,
+      "per_detection": 0.9739130434782609,
+      "per_track": 1.0
+    },
+    "SNMOT-194": {
+      "scored": 497,
+      "unmatched": 44,
+      "per_detection": 0.9979879275653923,
+      "per_track": 1.0
+    },
+    "SNMOT-195": {
+      "scored": 420,
+      "unmatched": 64,
+      "per_detection": 0.9952380952380953,
+      "per_track": 1.0
+    },
+    "SNMOT-196": {
+      "scored": 278,
+      "unmatched": 34,
+      "per_detection": 1.0,
+      "per_track": 1.0
+    },
+    "SNMOT-197": {
+      "scored": 457,
+      "unmatched": 41,
+      "per_detection": 0.9934354485776805,
+      "per_track": 1.0
+    },
+    "SNMOT-198": {
+      "scored": 437,
+      "unmatched": 65,
+      "per_detection": 0.9862700228832952,
+      "per_track": 1.0
+    },
+    "SNMOT-199": {
+      "scored": 381,
+      "unmatched": 24,
+      "per_detection": 0.9763779527559056,
+      "per_track": 1.0
+    },
+    "SNMOT-200": {
+      "scored": 370,
+      "unmatched": 53,
+      "per_detection": 0.9918918918918919,
+      "per_track": 1.0
+    }
+  }
+}

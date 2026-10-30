@@ -7,13 +7,13 @@ ROOT = Path(__file__).parents[1]
 
 def test_paths_default_is_the_pinned_detector(monkeypatch):
     monkeypatch.delenv(DETECTOR_ENV, raising=False)
-    assert load_paths(ROOT)["detector_weights"].endswith("football_detection_v3.pt")
+    assert load_paths(ROOT)["detector_weights"].endswith("football_detection_v6.pt")
 
 
 def test_env_var_switches_the_detector_in_the_same_folder(monkeypatch):
-    monkeypatch.setenv(DETECTOR_ENV, "football_detection_v6")
+    monkeypatch.setenv(DETECTOR_ENV, "football_detection_v3")
     pinned = Path(load_paths(ROOT)["detector_weights"])
-    assert pinned.name == "football_detection_v6.pt"
+    assert pinned.name == "football_detection_v3.pt"
     assert pinned.parent.name == "models"  # same folder as the pinned one
 
 

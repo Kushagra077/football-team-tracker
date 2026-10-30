@@ -1,5 +1,5 @@
 # The detector project (football-detect-serve) is referenced, never copied. Paths are relative to this repo root.
-detector_weights: ../football-detect-serve/models/football_detection_v3.pt   # pinned: v3 (yolo26n, 20 epochs), the promoted nano model of football-detect-serve
+detector_weights: ../football-detect-serve/models/football_detection_v6.pt   # pinned: v6 (1280 px input), the best detector on val; v3 was the first one used. v6.pt is not in the detector repo: see the README's Setup
 
 # Original SoccerNet-Tracking text files (gt.txt, gameinfo.ini, seqinfo.ini, det.txt), copied from Drive.
 meta_root: data/raw_meta          # data/raw_meta/{train,test}/<clip>/...

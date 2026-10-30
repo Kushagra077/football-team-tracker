@@ -11,7 +11,7 @@ the two teams by shirt colour, with seven trackers benchmarked on SoccerNet-Trac
   </a>
   <br>
   <sub><b>▶ Click for the full 2-minute demo on YouTube</b> (unlisted). Five seconds of a broadcast highlights clip run
-  through <code>scripts/process_video.py</code>: orange and cyan are the two teams, white is "no team" (keepers, referees).
+  through <code>scripts/process_video.py</code> with my first detector (v3): orange and cyan are the two teams, white is "no team" (keepers, referees).
   Footage © its rights holder, shown as a non-commercial portfolio demo.<br>
   The numbers drawn on players are <b>tracker IDs, not jersey numbers</b>: the tracker numbers each new track it starts
   (so #122 is simply the 122nd track), and reading shirt numbers is a separate, later task.</sub>
@@ -19,12 +19,12 @@ the two teams by shirt colour, with seven trackers benchmarked on SoccerNet-Trac
 
 <p align="center"><b>Try it live:</b> <a href="https://huggingface.co/spaces/Kushagra77/football-detect-serve">Hugging Face Space</a> (upload a short football clip on the <i>Track (video)</i> tab; runs on a free ZeroGPU, so a visitor gets a few minutes of GPU per day, and only the first 20 s of a clip are used).</p>
 
-| Headline result (SoccerNet-Tracking test split, 49 clips, best tracker BoT-SORT + GMC) | |
+| Headline result (SoccerNet-Tracking test split, 49 clips, best tracker BoT-SORT + GMC, my detector v6) | |
 |---|---|
 | Tracking score (HOTA) with a perfect detector (**oracle**) | **84.2** |
-| Tracking score (HOTA) with my own detector (**real**) | **59.0** |
-| Players given the correct team (tracked + voted, per detection; 98.5% without the vote, see below) | **98.9%** |
-| Speed: detector + tracker + camera-motion compensation + colour features, 1080p, no rendering, MacBook Pro (Apple M2, 8 GB, PyTorch MPS) | **~35-45 fps** |
+| Tracking score (HOTA) with my own detector (**real**) | **63.6** (59.0 with my first detector, v3) |
+| Players given the correct team (tracked + voted, per detection; 98.5% without the vote, see below) | **99.0%** |
+| Speed: detector + tracker + camera-motion compensation + colour features, 1080p, no rendering, MacBook Pro (Apple M2, 8 GB, PyTorch MPS) | **~35-45 fps** with v3 at 640 px (v6 reads 1280 px frames, so it is slower on a laptop; not re-timed there) |
 
 ## What this project does
 
@@ -70,7 +70,7 @@ flowchart LR
     G --> P[tracks.parquet<br/>+ annotated mp4]
 ```
 
-1. **Detect.** My YOLO detector ([football-detect-serve](https://github.com/Kushagra077/football-detect-serve); v3, yolo26n, is pinned for the main study and v6 is better, see [Newer detectors](#newer-detectors-v6-v7-v8)) finds players, goalkeepers and referees. Confidence is kept low (0.1) so the
+1. **Detect.** My YOLO detector ([football-detect-serve](https://github.com/Kushagra077/football-detect-serve); v6 is the default, v3 was the first model, see [Detector comparison](#detector-comparison-v3-v6-v7-v8)) finds players, goalkeepers and referees. Confidence is kept low (0.1) so the
    tracker's second pass can use weak boxes.
 2. **Track.** Ultralytics' tracker classes give each box an id. Evaluation feeds cached boxes to the tracker; uploaded
    video goes through `model.track(stream=True)`, and both give identical output on one val clip's frames.
@@ -92,7 +92,7 @@ flowchart LR
 
 ### Trackers (SoccerNet-Tracking test split, 49 clips, run once)
 
-Settings were chosen on the 11 validation clips only; the test split was run once at the end with them fixed.
+Detector: **v6** (the best of my four detectors on val, see [Detector comparison](#detector-comparison-v3-v6-v7-v8)); the last column shows the same tracker with my first detector, v3. Settings were chosen on the 11 validation clips only; the test split was run once per detector with them fixed.
 
 **How it was scored.** Metrics come from [TrackEval](https://github.com/JonathonLuiten/TrackEval)'s HOTA, CLEAR and
 Identity classes, called through my own thin wrapper (`src/ftt/eval/trackeval_wrap.py`), so the numbers are not
@@ -105,37 +105,37 @@ checkpoint, so validation numbers may be slightly optimistic; the numbers below 
   <img src="reports/figures/tracker_benchmark.svg" alt="Oracle vs real HOTA for seven trackers" width="90%">
 </p>
 
-| Tracker | Oracle HOTA | Oracle DetA / AssA | Real HOTA | Real DetA | Real AssA | Real IDF1 | ID switches (oracle / real) | Detector cost |
-|---|---|---|---|---|---|---|---|---|
-| **BoT-SORT + GMC** | **84.2** | 95.4 / 74.4 | **59.0** | **70.9** | **49.4** | **68.5** | 1251 / 2705 | 25.2 |
-| BoT-SORT (no GMC) | 80.4 | 93.2 / 69.5 | 56.6 | 69.9 | 46.0 | 65.2 | 3524 / 3338 | 23.9 |
-| Deep OC-SORT + GMC | 76.6 | 87.1 / 67.3 | 56.0 | 69.0 | 45.6 | 65.4 | 1544 / 3534 | 20.6 |
-| OC-SORT (+ BYTE low-conf pass) | 75.2 | 86.1 / 65.8 | 55.4 | 68.0 | 45.3 | 65.5 | 3062 / 3771 | 19.8 |
-| ByteTrack | 74.1 | 86.0 / 64.0 | 55.3 | 68.1 | 45.1 | 65.2 | 3650 / 3356 | 18.8 |
-| OC-SORT | 75.2 | 86.1 / 65.8 | 55.2 | 68.1 | 44.9 | 65.2 | 3062 / 3805 | 20.1 |
-| FastTracker | 74.1 | 86.0 / 64.0 | 55.0 | 68.2 | 44.5 | 64.4 | 3687 / 3271 | 19.2 |
+| Tracker | Oracle HOTA | Oracle DetA / AssA | Real HOTA | Real DetA | Real AssA | Real IDF1 | ID switches (oracle / real) | Detector cost | Real HOTA with v3 |
+|---|---|---|---|---|---|---|---|---|---|
+| **BoT-SORT + GMC** | **84.2** | 95.4 / 74.4 | **63.6** | **74.1** | **54.7** | **73.3** | 1251 / 1849 | 20.6 | 59.0 |
+| Deep OC-SORT + GMC | 76.6 | 87.1 / 67.3 | 61.0 | 71.9 | 51.9 | 71.3 | 1544 / 2350 | 15.6 | 56.0 |
+| BoT-SORT (no GMC) | 80.4 | 93.2 / 69.5 | 60.6 | 72.8 | 50.5 | 69.2 | 3524 / 2511 | 19.9 | 56.6 |
+| OC-SORT | 75.2 | 86.1 / 65.8 | 59.3 | 70.8 | 49.8 | 69.6 | 3062 / 2770 | 15.9 | 55.2 |
+| FastTracker | 74.1 | 86.0 / 64.0 | 59.2 | 71.2 | 49.3 | 68.8 | 3687 / 2395 | 15.0 | 55.0 |
+| ByteTrack | 74.1 | 86.0 / 64.0 | 59.1 | 71.0 | 49.4 | 69.0 | 3650 / 2485 | 15.0 | 55.3 |
+| OC-SORT (+ BYTE low-conf pass) | 75.2 | 86.1 / 65.8 | 59.1 | 70.8 | 49.5 | 69.4 | 3062 / 2693 | 16.1 | 55.4 |
 
-- **The detector costs about 19-25 HOTA points**, e.g. BoT-SORT+GMC 84.2 -> 59.0 and ByteTrack 74.1 -> 55.3.
+- **The detector costs about 15-21 HOTA points** (19-25 with v3), e.g. BoT-SORT+GMC 84.2 -> 63.6 and ByteTrack 74.1 -> 59.1.
   The split is approximate, not additive: a missed box hurts differently depending on the tracker's settings.
-- **Detection and association both drop by about 18-25 points** (e.g. BoT-SORT+GMC DetA 95.4 -> 70.9, AssA 74.4 -> 49.4).
-  Association ends up the weaker of the two (45-49 vs 68-71).
+- **Detection and association both drop by about 15-21 points** (e.g. BoT-SORT+GMC DetA 95.4 -> 74.1, AssA 74.4 -> 54.7).
+  Association still ends up the weaker of the two (49-55 vs 71-74).
 - **Camera-motion compensation (GMC) matters for broadcast video.** It is BoT-SORT+GMC's edge: on oracle boxes it cuts
-  ID switches from 3524 to 1251.
-- **The bottom four trackers (55.0-55.4 real HOTA) are within 0.4 HOTA** and swap places between val and test, so treat them as equal.
+  ID switches from 3524 to 1251, and on my detector's boxes it adds 3.0 HOTA (60.6 -> 63.6; 2.4 with v3).
+- **The bottom four trackers (59.1-59.3 real HOTA) are within 0.2 HOTA** and swap places between val and test, so treat them as equal.
 - Tuning (one shared setting for all trackers, stored once in `configs/tuned.yaml`: `track_high_thresh 0.25`, `match_thresh 0.9`) gained +1.1..+3.5 HOTA on
-  val and +0.3..+2.7 on test (val log: `results/tuning_val.jsonl`).
-- **Tuning has a cost: more ID switches.** On test the shared setting raises ID switches for 6 of 7 trackers (e.g.
+  val and +0.3..+2.7 on test, measured with v3's boxes (val log: `results/tuning_val.jsonl`). A check on v6 chose the same knobs, so the setting was kept.
+- **Tuning has a cost: more ID switches** (measured with v3's boxes). On test the shared setting raises ID switches for 6 of 7 trackers (e.g.
   BoT-SORT+GMC 2398 -> 2705, OC-SORT 3525 -> 3805; FastTracker is the exception, 3368 -> 3271). It lowers the first-pass
   confidence from 0.5 to 0.25, so weaker boxes are tracked: DetA and HOTA go up, switches too.
-- **The detector is the bottleneck, not the association step.** On val the detector alone reaches DetA 68.3 / 72.8 / 73.1
+- **The detector is the bottleneck, not the association step** (measured with v3's boxes). On val the detector alone reaches DetA 68.3 / 72.8 / 73.1
   at confidence 0.1 / 0.25 / 0.5 (no tracker), and BoT-SORT+GMC's tracked DetA is 74.2 (untuned): the tracker finds about
   as many players as the detector does.
 
 **Does appearance ReID help?** I expected little help, since ten teammates in identical kits look alike. To test it, I added
 Ultralytics' trained ReID model (`yolo26n-reid.onnx`) to BoT-SORT + GMC and changed nothing else (`configs/botsort_gmc_reid.yaml`,
-the same shared tuned setting; the ReID thresholds are the defaults, not tuned). Test split, run once:
+the same shared tuned setting; the ReID thresholds are the defaults, not tuned). This test used my first detector, v3, and was not re-run with v6. Test split, run once:
 
-| | Oracle HOTA | Oracle ID switches | Real HOTA | Real AssA | Real ID switches |
+| (detector v3) | Oracle HOTA | Oracle ID switches | Real HOTA | Real AssA | Real ID switches |
 |---|---|---|---|---|---|
 | BoT-SORT + GMC | **84.2** | **1251** | **59.0** | **49.4** | **2705** |
 | + appearance ReID | 82.9 | 1355 | 58.2 | 48.3 | 3603 |
@@ -145,12 +145,13 @@ the same shared tuned setting; the ReID thresholds are the defaults, not tuned).
 - This is one ReID model with untuned thresholds, so it shows ReID is not a free win here, not that no ReID could help.
   Why it fails is my expectation (identical kits), not something I measured.
 
-### Newer detectors (v6, v7, v8)
+### Detector comparison (v3, v6, v7, v8)
 
-After the study above I trained three more detectors in [football-detect-serve](https://github.com/Kushagra077/football-detect-serve).
+The study first used v3 (the nano model, 640 px). I then trained three more detectors in [football-detect-serve](https://github.com/Kushagra077/football-detect-serve).
 Each runs at the input size it was trained at (v3 640 px, v7 and v8 960 px, v6 1280 px). The size is read from the weights
 (`detector_imgsz` in `src/ftt/detect/run_detector.py`), so a new model needs no code change, and `FTT_DETECTOR=<name>` runs any
 script with another model. Boxes and results are stored per detector, so v3's results were not overwritten.
+The tables in this README use v6; the v3 numbers stay in the last column of the tracker table and in `results/`.
 
 BoT-SORT + GMC with the same shared tuned setting for every detector (`scripts/compare_detectors.py`, file `results/detector_comparison.json`):
 
@@ -176,54 +177,46 @@ BoT-SORT + GMC with the same shared tuned setting for every detector (`scripts/c
   favours the same knobs as before: `track_high_thresh` 0.2-0.3 and `match_thresh` 0.9-0.95. So `configs/tuned.yaml` is unchanged.
 - **Cost:** a larger input is slower on CPU: on one 50-frame clip, v3 took 2.7 s, v7 2.9 s and v6 4.7 s (a rough check). On the Space's GPU the difference is small: 500 frames took 13.2 s with v3 and 12.0 s with v6 (one run each).
 
-**Do the tracker conclusions hold with v6?** All seven trackers on the test split, same tuned setting (files in `results/football_detection_v6/`):
+**Do the tracker conclusions hold with v6?** Yes, mostly (all seven trackers, test split, in the tracker table above):
 
-| Tracker | HOTA v3 -> v6 | v6 DetA / AssA / IDF1 | ID switches v3 -> v6 |
-|---|---|---|---|
-| **BoT-SORT + GMC** | 59.0 -> **63.6** (+4.6) | 74.1 / 54.7 / 73.3 | 2705 -> 1849 |
-| Deep OC-SORT + GMC | 56.0 -> 61.0 (+5.0) | 71.9 / 51.9 / 71.3 | 3534 -> 2350 |
-| BoT-SORT (no GMC) | 56.6 -> 60.6 (+4.0) | 72.8 / 50.5 / 69.2 | 3338 -> 2511 |
-| OC-SORT | 55.2 -> 59.3 (+4.1) | 70.8 / 49.8 / 69.6 | 3805 -> 2770 |
-| FastTracker | 55.0 -> 59.2 (+4.2) | 71.2 / 49.3 / 68.8 | 3271 -> 2395 |
-| OC-SORT (+ BYTE low-conf pass) | 55.4 -> 59.1 (+3.7) | 70.8 / 49.5 / 69.4 | 3771 -> 2693 |
-| ByteTrack | 55.3 -> 59.1 (+3.8) | 71.0 / 49.4 / 69.0 | 3356 -> 2485 |
-
-- **Yes, mostly.** BoT-SORT+GMC is still first, now by 2.6 HOTA on test (2.2 on val). Every tracker gains 3.7-5.0 HOTA and
-  loses 25-34% of its ID switches, so a better detector helps all of them about equally.
-- **GMC still helps:** +3.0 HOTA for BoT-SORT (it was +2.4 with v3).
-- **The bottom four are still tied** (59.1-59.3 on test).
+- BoT-SORT+GMC is still first, now by 2.6 HOTA on test (2.2 on val). Every tracker gains 3.7-5.0 HOTA over v3 and loses
+  25-34% of its ID switches, so a better detector helps all of them about equally.
+- GMC still helps (+3.0 HOTA for BoT-SORT, 2.4 with v3), and the bottom four are still tied (59.1-59.3).
 - **One change in the middle:** Deep OC-SORT + GMC (61.0) now ranks above BoT-SORT without GMC (60.6) on test, and on val too
   (63.8 vs 63.0); with v3 it was below on both. The gap is 0.4-0.8 HOTA, so treat them as close.
-- The detector's cost (true-box HOTA minus real HOTA) is now 15-21 points, down from 19-25.
-- **What was not re-run with v6:** the ReID test, the colour-feature study, the detector-only DetA table and SportsMOT.
-  (True-box results do not depend on the detector.) Every table above this section is still v3.
+- **Not re-run with v6** (still v3): the ReID test, the tuning-gain and bottleneck bullets, the detector-only DetA numbers, the
+  Chelsea demo footage and SportsMOT. True-box (oracle) results do not depend on the detector.
 
 ### Team assignment
 
-| What is scored | Val (11 clips) | Test (49 clips) |
+| What is scored (detector v6) | Val (11 clips) | Test (49 clips) |
 |---|---|---|
 | Ground-truth boxes, per detection / per player (A) | 97.5% / 100% | 97.6% / 99.9% |
-| Detector boxes (matched to GT players), per detection / per player (A) | 99.0% / 100% | 98.7% / 99.9% |
-| Tracked, colour per frame (no vote), per detection (B) | 98.7% | 98.5% |
-| Tracked + causal vote, last 25 frames only (B) | 98.6% | 98.2% |
-| **Tracked + centred vote, 12 frames back and forward (B, the default)** | **99.0%** | **98.9%** |
-| Coverage of the two tracked rows: tracked players matched to a GT player that got a label | 99.97% (111,576 of 111,606) | 99.99% (434,559 of 434,589) |
-| Label flips: raw -> causal vote -> centred vote | 733 -> 147 -> 138 | 3693 -> 852 -> 759 (-79%) |
+| Detector boxes (matched to GT players), per detection / per player (A) | 99.0% / 100% | 98.9% / 99.9% |
+| Tracked, colour per frame (no vote), per detection (B) | 98.6% | 98.5% |
+| Tracked + causal vote, last 25 frames only (B) | 98.6% | 98.5% |
+| **Tracked + centred vote, 12 frames back and forward (B, the default)** | **99.1%** | **99.0%** |
+| Coverage of the two tracked rows: tracked players matched to a GT player that got a label | 99.97% (111,576 of 111,606) | 99.99% (434,559 of 434,589) (measured with v3's boxes, not re-counted for v6) |
+| Label flips: raw -> causal vote -> centred vote | 646 -> 125 -> 119 | 3065 -> 638 -> 570 (-81%) |
 | Goalkeepers: right / wrong / unknown (C) | 8 / 1 / 7 of 16 | 21 / 5 / 37 of 63 |
+
+With v3's boxes the same rows were 98.7 / 98.6 / 99.0% on val and 98.5 / 98.2 / 98.9% on test (flips 3693 -> 852 -> 759 on test).
+Team accuracy hardly depends on the detector.
 
 How each group was measured: **(A)** detector confidence 0.5, every 25th frame, boxes matched to ground truth at IoU 0.5.
 **(B)** the pipeline's own settings: detector confidence 0.1, BoT-SORT+GMC, every frame. **(C)** team positions are taken
 from the ground-truth labels, so this scores the goalkeeper rule on its own, not the whole pipeline.
 
-**Does the vote help?** Yes, with a centred window. My first vote only looked back over the last 25 frames, and it cost
-accuracy (-0.1 points on val, -0.3 on test, worse than no vote on 34 of 49 test clips). A likely reason: 21% of tracks (491 of
-2,344 on test) contain boxes from both teams (the tracker's id jumped between players), and a vote that only looks back keeps
-the old label for a while after each jump. I measured the 21%, not the cause. The fix is to look both ways:
+**Does the vote help?** Yes, with a centred window. My first vote only looked back over the last 25 frames. With v3's boxes it cost
+accuracy (-0.1 points on val, -0.3 on test, worse than no vote on 34 of 49 test clips); with v6's boxes it is about neutral
+(+0.0 on val, -0.0 on test, worse than no vote on 19 of 49 test clips). A likely reason: 17% of tracks (375 of
+2,246 on test, 21% with v3) contain boxes from both teams (the tracker's id jumped between players), and a vote that only looks back keeps
+the old label for a while after each jump. I measured those shares, not the cause. The fix is to look both ways:
 
-- **Window and test run:** I tried the centred vote because the test diagnosis above showed the backward-looking vote hurting, so it was prompted by a test result. The window (25 frames, the same size as before) was fixed on val, and the test split was run once with it.
-- **Result on test:** 98.9% against 98.5% with no vote and 98.2% with the backward-looking vote, and 79% fewer label flips.
-  It beats no vote on all 49 test clips (and on 10 of 11 val clips, with one tie), and beats the backward-looking vote on every clip.
-- **Window size:** on val, 13 frames gave 98.9% (228 flips) and 51 gave 99.1% (92 flips); I kept 25 rather than tune further (`results/team_vote_val.json`, keys `vote_centred_13` and `vote_centred_51`).
+- **Window and test run:** I tried the centred vote because the test diagnosis above (with v3's boxes) showed the backward-looking vote hurting, so it was prompted by a test result. The window (25 frames, the same size as before) was fixed on val, and the test split was run once with it.
+- **Result on test (v6):** 99.0% against 98.5% with no vote and 98.5% with the backward-looking vote, and 81% fewer label flips.
+  It beats no vote on 48 of 49 test clips (and on all 11 val clips), and is at least as good as the backward-looking vote on 45 of 49.
+- **Window size:** on val, with v3's boxes, 13 frames gave 98.9% (228 flips) and 51 gave 99.1% (92 flips); I kept 25 rather than tune further (`results/team_vote_val.json`, keys `vote_centred_13` and `vote_centred_51`).
 - **Limit:** a track that really contains two players still gets some wrong labels around the jump; the vote only softens it.
 
 The detector rows only score players the detector found, so they are not "better than GT". Cluster ids are arbitrary,
@@ -246,7 +239,7 @@ What the table shows:
 
 - Dropping brightness is clearly worse (a white and a dark kit then look alike).
 - The histogram's bin size hardly matters (3x5x5 to 5x8x8 gave 97.3-97.5% on train).
-- On the full pipeline (real boxes, tracker, vote) the histogram also wins: val 98.2% -> 98.6%, test 97.8% -> 98.2% (measured with the first, backward-looking vote).
+- On the full pipeline (real boxes, tracker, vote) the histogram also wins: val 98.2% -> 98.6%, test 97.8% -> 98.2% (measured with v3's boxes and the first, backward-looking vote).
 - The feature was chosen on train and val only. The test column is the final choice, and 97.8% was the earlier
   mean-colour result.
 - One team setting did change after a test result: the rule for which frames the two colours are learned from (one test
@@ -293,20 +286,20 @@ SoccerNet has few striped kits, so I also hand-labelled boxes from three amateur
   not how often it is right.
 
 **Where team assignment is weakest (SoccerNet).** Of the 60 val and test clips, **none falls below 80%** and only one is under
-95% (pipeline accuracy with the centred vote, no frames shown because SoccerNet's terms forbid publishing them):
+95% (pipeline accuracy with the centred vote and v6's boxes, no frames shown because SoccerNet's terms forbid publishing them):
 
 | Clip | Accuracy | What goes wrong (from looking at its frames) |
 |---|---|---|
-| SNMOT-132 (test) | 92.4% | A floodlit night match that ends in fog: by the last third the colours wash out, and white and dark-red shirts drift towards the grey haze. The colours learned on the clear opening no longer fit. |
+| SNMOT-132 (test) | 92.0% | A floodlit night match that ends in fog: by the last third the colours wash out, and white and dark-red shirts drift towards the grey haze. The colours learned on the clear opening no longer fit. |
 | SNMOT-063 (train clip, true boxes; outside the 60 above) | 94.0% | White against green kits on a green pitch: a green shirt is close to the grass hue, so the grass mask and the shirt colour overlap. |
-| SNMOT-142 (test) | 97.0% | Not a colour problem: 27 of its 65 tracks contain boxes from both teams, so the tracker's id jumped between players and the vote can only soften it. |
+| SNMOT-142 (test) | 97.6% | Not a colour problem: 26 of its 51 tracks contain boxes from both teams, so the tracker's id jumped between players and the vote can only soften it. |
 
 Each of these was a hard visual condition (fog, kit close to the pitch, id swaps), not a bug. The amateur and broadcast cases that
 do fail badly are under "Limitations" and in the Chelsea picture above.
 
 ### Out-of-domain check: SportsMOT
 
-The same one-command pipeline (`process_video.py`, settings unchanged) on 2 football clips from
+The same one-command pipeline (`process_video.py`, settings unchanged; run with my first detector, v3) on 2 football clips from
 [SportsMOT](https://github.com/MCG-NJU/SportsMOT)'s val split: a different broadcaster and stadium, 720p instead of 1080p,
 53 s in total. Scored against SportsMOT's player boxes (players and goalkeepers kept).
 
@@ -316,7 +309,7 @@ The same one-command pipeline (`process_video.py`, settings unchanged) on 2 foot
 | v_ITo3sCnpw_k_c011 (31 s, fast pan + blur) | 46.9 | 55.9 | 40.2 | 51.1 | 145 |
 | **Both** | **56.1** | **63.1** | **50.3** | **63.1** | 173 |
 
-- **Tracking transfers about as well as on SoccerNet** (BoT-SORT+GMC real HOTA 59.0 on SoccerNet test), with only 2 clips,
+- **Tracking transfers about as well as on SoccerNet** (BoT-SORT+GMC real HOTA 59.0 on SoccerNet test, also with v3), with only 2 clips,
   so this is a sanity check, not a benchmark. The two datasets also draw boxes slightly differently.
 - **Team colours:** SportsMOT has no team labels, so this is checked by eye only (with the first, mean-colour version).
   - The histogram then cut label flips from 13 to 7 and from 50 to 28 on the two clips (backward-looking vote; not re-inspected by eye).
@@ -329,12 +322,15 @@ The same one-command pipeline (`process_video.py`, settings unchanged) on 2 foot
 
 ## Setup
 
-Python 3.13 and [uv](https://docs.astral.sh/uv/). The detector weights come from my detector project, football-detect-serve, which is
-public and must be cloned next to this repo (`configs/paths.yaml` points there):
+Python 3.13 and [uv](https://docs.astral.sh/uv/). The detector project, football-detect-serve, is public and must be cloned next to
+this repo (`configs/paths.yaml` points there). The default detector, v6, is not in that repo (it keeps only v3 and the v6/v7 ONNX
+files), so its weights are downloaded from my Hugging Face Space repo, pinned to a commit:
 
 ```bash
 git clone https://github.com/Kushagra077/football-team-tracker
-git clone https://github.com/Kushagra077/football-detect-serve   # detector: provides models/football_detection_v3.pt
+git clone https://github.com/Kushagra077/football-detect-serve   # detector project (and where the weights go)
+curl -L -o football-detect-serve/models/football_detection_v6.pt \
+  https://huggingface.co/spaces/Kushagra77/football-detect-serve/resolve/2c1f74a19a4ac387da580f7f0d7387761bd718c3/models/football_detection_v6.pt
 cd football-team-tracker
 uv sync --extra dev
 uv run ruff check .
@@ -357,11 +353,11 @@ docker build -t football-team-tracker .
 docker run --rm football-team-tracker                      # runs the tests
 docker run --rm -v "$PWD/clips:/clips" -v "$PWD/out:/app/reports" football-team-tracker \
     python scripts/process_video.py /clips/my_clip.mp4 --device cpu
-#   -> out/football_detection_v3/process_video/my_clip/tracks.parquet + annotated.mp4
+#   -> out/football_detection_v6/process_video/my_clip/tracks.parquet + annotated.mp4
 ```
 
-- The image has the locked dependencies and the detector weights (downloaded from my detector repo at a pinned commit).
-- It is **CPU only** (about 12 fps on my MacBook, 150 frames of 720p in 12 s): the lockfile's GPU libraries are left out
+- The image has the locked dependencies and the detector weights (v6, downloaded from my Hugging Face Space repo at a pinned commit).
+- It is **CPU only** (about 4 fps with v6 on my MacBook: 100 frames of 720p in 25 s; the v3 model ran at about 12 fps): the lockfile's GPU libraries are left out
   and the CPU build of the same PyTorch version is installed instead.
 - The 16 tests that need SoccerNet files or local weights skip inside the container, the same as in CI.
 
@@ -409,7 +405,7 @@ redistributed here. `configs/paths.yaml` expects the original text files under `
 and the frames in the detector project's layout (`../football-detect-serve/dataset/images/{train,val,test}/<clip>_<frame>.jpg`).
 
 ```bash
-uv run python scripts/cache_detections.py --split test                  # detector boxes, cached once
+uv run python scripts/cache_detections.py --split test                  # detector boxes (v6), cached once
 uv run python scripts/run_ablation.py --source oracle --split test \
     --configs botsort_gmc botsort_nogmc deepocsort_gmc ocsort_byte bytetrack ocsort fasttrack \
     --set track_high_thresh=0.25 match_thresh=0.9 --tag tuned
@@ -440,17 +436,17 @@ The choices that shaped the project, what each one bought, and what it cost.
 
 | Decision | Why | Cost / trade-off |
 |---|---|---|
-| **Score every tracker twice: true boxes (oracle) and my detector's boxes (real)** | Separates "the tracker is weak" from "the detector is weak". The gap (19-25 HOTA points) is the detector's cost, so the next improvement is obvious. | Every experiment runs twice. |
+| **Score every tracker twice: true boxes (oracle) and my detector's boxes (real)** | Separates "the tracker is weak" from "the detector is weak". The gap (15-21 HOTA points with v6, 19-25 with v3) is the detector's cost, so the next improvement is obvious. | Every experiment runs twice. |
 | **Tune on val only, run the test split once** (`tune_tracker.py` refuses other splits); **one shared setting for all trackers** | Test numbers are not tuned on, and no tracker gets a private advantage. | A per-tracker setting might lift some of them a little. |
 | **Use Ultralytics' trackers instead of writing my own** (and test appearance ReID, which did not help) | The question is how they compare on football with my detector, not who can re-implement ByteTrack. | The code is AGPL-3.0, so this repo is too. |
 | **BoT-SORT with camera-motion compensation (GMC)** | Broadcast cameras pan and zoom. On true boxes GMC cut ID switches from 3524 to 1251. | It still loses IDs at camera cuts: there is no re-identification across shots. |
-| **Team colour from the torso minus grass, KMeans with k=2, no labels** | No team labels are needed, so it works on any footage. A per-track vote that looks both ways cut label flips by 79% on the test split and gained 0.4 accuracy points over no vote. | Only two colours, and teams in similar kits are not handled. My first vote only looked back and cost 0.3 points, so I changed it (see "Does the vote help?"). |
+| **Team colour from the torso minus grass, KMeans with k=2, no labels** | No team labels are needed, so it works on any footage. A per-track vote that looks both ways cut label flips by 81% on the test split and gained 0.5 accuracy points over no vote. | Only two colours, and teams in similar kits are not handled. My first vote only looked back and (with v3's boxes) cost 0.3 points, so I changed it (see "Does the vote help?"). |
 | **Lab colour histogram instead of the mean colour** | A mean blends a striped shirt into a colour neither stripe has. Chosen on train clips, confirmed on val: better on SoccerNet and on two of my three amateur clips. | Worse on dark-blue shirts in shade or blur (Chelsea demo). It is one line in `configs/team.yaml` to switch back to `mean_lab`. |
 | **Abstain rather than guess** (pitch-view check, colour-outlier rule, goalkeeper rule) | A wrong team colour on screen looks worse than no colour. | Lower coverage on uploads (92.7-97.0% of boxes got a team, measured before the centred vote), and the keeper rule abstains on more than half the test keepers. |
 | **One `process_video` function** for the command line, the Space and the tests | The live demo runs exactly the code that is tested here. | `src/ftt` is copied into the Space by a script, not installed as a package. |
-| **CPU-only Docker image** | Runs anywhere with one command. The lockfile's GPU libraries (about 4 GB) are skipped and the CPU build of the same PyTorch version is used. | About 12 fps instead of the GPU's speed. |
+| **CPU-only Docker image** | Runs anywhere with one command. The lockfile's GPU libraries (about 4 GB) are skipped and the CPU build of the same PyTorch version is used. | About 4 fps with v6 (12 fps with v3) instead of the GPU's speed. |
 
-What I would change next: a better detector (the biggest single lever, since the detector costs 25 points of HOTA for the best tracker),
+What I would change next: a better detector (still the biggest single lever: moving from v3 to v6 gained 4.6 HOTA, and the detector still costs 21 points for the best tracker),
 pitch coordinates so the goalkeeper rule stops depending on the camera, and re-identification across camera cuts.
 
 ## Limitations

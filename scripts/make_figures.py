@@ -72,12 +72,15 @@ def benchmark(detector: str) -> Path:
     ax.grid(axis="x", color=GRID, lw=0.6)
     ax.set_axisbelow(True)
     ax.scatter([], [], s=60, color=BG, edgecolor=WHITE, lw=2, label="oracle: ground-truth boxes")
-    ax.scatter([], [], s=60, color=GREEN, label="real: my detector's boxes")
-    leg = ax.legend(loc="lower right", frameon=False, fontsize=9)
+    version = detector.removeprefix("football_detection_")
+    ax.scatter([], [], s=60, color=GREEN, label=f"real: my detector's boxes ({version})")
+    leg = ax.legend(
+        loc="upper center", bbox_to_anchor=(0.5, -0.16), ncol=2, frameon=False, fontsize=9
+    )  # below the plot, clear of the rows
     for t in leg.get_texts():
         t.set_color(TEXT)
     ax.set_title(
-        "SoccerNet-Tracking test, 49 clips: what each tracker loses to the detector",
+        f"SoccerNet-Tracking test, 49 clips: what each tracker loses to the detector ({version})",
         color=TEXT, fontsize=11, loc="left", pad=12,
     )  # fmt: skip
     out = OUT / "tracker_benchmark.svg"
